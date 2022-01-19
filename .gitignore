@@ -32,3 +32,5 @@
 *.app
 
 data/music
+bin/
+bin/*
