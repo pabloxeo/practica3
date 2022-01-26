@@ -1,15 +1,27 @@
-# include "ParchisGUI.h"
+/**
+ * Main de prueba para los gráficos. La idea es llevar la mayor parte de este código más adelante a ParchisGUI. 
+ */
+
+# include <SFML/Graphics.hpp>
+# include <SFML/Audio.hpp>
+# include <iostream>
+# include <math.h>
+# include <fstream>
 
 #define PI 3.14159265
 
-void ParchisGUI::display()
-{
+using namespace sf;
+using namespace std;
+
+int main(int argc, char const *argv[]){
     // El juego se crea dentro de la RenderWindow. Se le pasa tamaño, título y opciones (en este caso, que tenga barra de título y botón de cierre.)
     RenderWindow window(VideoMode(1600, 800), "SFML works!", Style::Titlebar | Style::Close);
     CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
 
     Cursor cursor;
+    //if (cursor.loadFromSystem(sf::Cursor::Hand))
+    //    window.setMouseCursor(cursor);
 
     // Imágenes de texturas.
     Texture tBoard; // Textura del tablero de juego.
@@ -133,19 +145,18 @@ void ParchisGUI::display()
             // Ejemplo de manejo de teclas. En este caso desplaza la ficha según la dirección que se pulse. Creo que poca utilidad para el parchís.
             if(event.type == Event::KeyPressed){
                 if(event.key.code == Keyboard::Up){
-                    pos_ficha_y -= 1;
+                    pos_ficha_y -= 5;
                 }
                 if(event.key.code == Keyboard::Down){
-                    pos_ficha_y += 1;
+                    pos_ficha_y += 5;
                 }
                 if(event.key.code == Keyboard::Left){
-                    pos_ficha_x -= 1;
+                    pos_ficha_x -= 5;
                 }
                 if(event.key.code == Keyboard::Right){
-                    pos_ficha_x += 1;
+                    pos_ficha_x += 5;
                 }
                 ficha1.setPosition(pos_ficha_x, pos_ficha_y);
-                cout << pos_ficha_x << " " << pos_ficha_y << endl;
             }
 
             if(event.type == Event::MouseButtonPressed){ // Eventos de ratón.
@@ -210,33 +221,7 @@ void ParchisGUI::display()
         window.draw(ficha1);
         // window.draw(shape);
         window.display();
-    }  
-}
-
-
-void ParchisGUI::moveFichas(){
-    Vector2f start_anim, end_anim(385, 365);
-
-    Clock animation_clock;
-
-
-    Texture tFichas; // Textura para las fichas.
-    tFichas.loadFromFile("data/textures/fichas_parchis_resized.png");
-
-    Sprite ficha1(tFichas); // Sprite para una ficha. Se harían tantos sprites como fichas haya, pero todos se montarían sobre la misma textura, la de las fichas.
-    ficha1.setTextureRect(IntRect(0,30,30,30)); // La textura de las fichas contiene las fichas de todos los colores. Seleccionamos el rectángulo (esquina_x, esquina_y, largo, alto) con el color que nos interesa
-    //ficha1.setScale(0.25, 0.25);
-    int pos_ficha_x = 25;
-    int pos_ficha_y = 305;
-    ficha1.setPosition(box2position[{1, box_type::normal, color::none}][0].x, box2position[{1, box_type::normal, color::none}][0].y); // Posición del sprite dentro de la ventana.
-
-    for (int i = 2; i++; i < 68){
-        start_anim = ficha1.getPosition();
-        float t = animation_clock.getElapsedTime().asMilliseconds();
-        if(t > 1000){
-            t = 1000;
-        }
-
-        ficha1.setPosition(box2position[{1, box_type::normal, color::none}][0].x, box2position[{1, box_type::normal, color::none}][0].y);
     }
+
+    return 0;
 }
