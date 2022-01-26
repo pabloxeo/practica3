@@ -24,9 +24,7 @@ struct Piece
     color col;
 };
 
-bool operator <(const Piece & a, const Piece & b){
-    return a.num > b.num; 
-}
+inline bool operator <(const Piece & a, const Piece & b){ return a.num > b.num; }
 
 class ParchisGUI{
     private: 
@@ -102,7 +100,7 @@ class ParchisGUI{
     };
     
     public:
-        ParchisGUI(){};
+        inline ParchisGUI(){};
         void display();
         void moveFichas();
 };
