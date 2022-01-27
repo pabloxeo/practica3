@@ -14,4 +14,5 @@ Próximamente
   
 ## Mac
 
-Próximamente
+`brew install sfml`
+

@@ -6,7 +6,7 @@ using namespace std;
 int main(int argc, char const *argv[]){
     ParchisGUI parchis;
     parchis.display();
-    parchis.moveFichas();
+    //parchis.moveFichas();
 
     return 0;
 }
