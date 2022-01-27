@@ -1,10 +1,10 @@
 all: bin/Parchis
 
 obj/main.o: src/main.cpp
-	g++ -c src/main.cpp -o obj/main.o -I include/
+	g++ -c src/main.cpp -o obj/main.o -I include/ -std=c++14
 
 obj/ParchisGUI.o: src/ParchisGUI.cpp
-	g++ -c src/ParchisGUI.cpp -o obj/ParchisGUI.o -I include/
+	g++ -c src/ParchisGUI.cpp -o obj/ParchisGUI.o -I include/ -std=c++14
 
 bin/Parchis: obj/main.o obj/ParchisGUI.o
 	g++ obj/main.o obj/ParchisGUI.o -o bin/Parchis -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio

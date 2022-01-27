@@ -5,7 +5,7 @@
 void ParchisGUI::display()
 {
     // El juego se crea dentro de la RenderWindow. Se le pasa tamaño, título y opciones (en este caso, que tenga barra de título y botón de cierre.)
-    RenderWindow window(VideoMode(1600, 800), "SFML works!", Style::Titlebar | Style::Close);
+    RenderWindow window(VideoMode(3200, 1600), "SFML works!", Style::Titlebar | Style::Close);
     CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
 
@@ -230,13 +230,13 @@ void ParchisGUI::moveFichas(){
     int pos_ficha_y = 305;
     ficha1.setPosition(box2position[{1, box_type::normal, color::none}][0].x, box2position[{1, box_type::normal, color::none}][0].y); // Posición del sprite dentro de la ventana.
 
-    for (int i = 2; i++; i < 68){
+    for (int i = 2; i < 68; i++){
         start_anim = ficha1.getPosition();
         float t = animation_clock.getElapsedTime().asMilliseconds();
         if(t > 1000){
             t = 1000;
         }
 
-        ficha1.setPosition(box2position[{1, box_type::normal, color::none}][0].x, box2position[{1, box_type::normal, color::none}][0].y);
+        ficha1.setPosition(box2position[{i, box_type::normal, color::none}][0].x, box2position[{i, box_type::normal, color::none}][0].y);
     }
 }
