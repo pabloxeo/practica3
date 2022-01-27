@@ -96,7 +96,13 @@ void ParchisGUI::display()
     bool clicked = false;
     Vector2i click_pos = Vector2i(0, 0);
 
-    int casilla = 1;
+    // Pruebas para la animación
+    int casilla = 2;
+    box_type bt = box_type::normal;
+    color c = color::none;
+    int cas_old = 1;
+    box_type bt_old = box_type::normal;
+    color c_old = color::none;
 
     cout << pos.x << " " << pos.y << endl;
     // cout << ficha1.getGlobalBounds() << endl;
@@ -198,11 +204,93 @@ void ParchisGUI::display()
         // Mover ficha (de forma animada) si se activó en el evento.
         if(animate_ficha){
             float t = animation_clock.getElapsedTime().asMilliseconds();
-            // cout << t << endl;
-            moveFichas(t, casilla, ficha1);
+            cout << t << endl;
+            cout << casilla << " " << bt << " " << c << endl;
+            moveFichas(t, cas_old, bt_old, c_old, casilla, bt, c, ficha1);
+            
             if(t > 1000){
-                casilla = (casilla) % 68 + 1;
-                cout << casilla << endl;
+                cas_old = casilla;
+                bt_old = bt;
+                c_old = c;
+                switch(bt){
+                case normal:
+                    casilla = casilla + 1;
+                    if(casilla > 68){
+                        casilla = 1;
+                        bt = final_queue;
+                        c = blue;
+                    }
+                    break;
+                case final_queue:
+                    casilla = casilla + 1;
+                    if(casilla > 7){
+                        casilla = 1;
+                        switch(c){
+                            case blue:
+                                c = red;
+                                break;
+                            case red:
+                                c = green;
+                                break;
+                            case green:
+                                c = yellow;
+                                break;
+                            case yellow:
+                                c = blue;
+                                bt = goal;
+                                casilla = 0;
+                                break;
+                        }
+                    }
+                    break;
+
+                case goal:
+                    casilla = casilla + 1;
+                    if(casilla > 0){
+                        casilla = 0;
+                        switch(c){
+                            case blue:
+                                c = red;
+                                break;
+                            case red:
+                                c = green;
+                                break;
+                            case green:
+                                c = yellow;
+                                break;
+                            case yellow:
+                                c = blue;
+                                bt = home;
+                                break;
+                        }
+                    }
+                    break;
+
+                case home:
+                    casilla = casilla + 1;
+                    if(casilla > 0){
+                        casilla = 0;
+                        switch(c){
+                            case blue:
+                                c = red;
+                                break;
+                            case red:
+                                c = green;
+                                break;
+                            case green:
+                                c = yellow;
+                                break;
+                            case yellow:
+                                c = none;
+                                bt = normal;
+                                casilla = 1;
+                                break;
+                        }
+                    }
+                    break;
+                }
+                //casilla = (casilla) % 68 + 1;
+                //cout << casilla << endl;
                 animation_clock.restart();
             }
             /*
@@ -228,9 +316,9 @@ void ParchisGUI::display()
 }
 
 
-void ParchisGUI::moveFichas(float t, int i, Sprite & ficha1){
+void ParchisGUI::moveFichas(float t, int i, box_type bt, color c, Sprite & ficha1){
     Vector2f start_anim, end_anim;
-
+    cout << t << endl;
     // Clock animation_clock;
 
 
@@ -244,15 +332,44 @@ void ParchisGUI::moveFichas(float t, int i, Sprite & ficha1){
     // int pos_ficha_y = 305;
     // ficha1.setPosition(box2position[{1, box_type::normal, color::none}][0].x, box2position[{1, box_type::normal, color::none}][0].y); // Posición del sprite dentro de la ventana.
 
-    start_anim = (Vector2f) box2position[{i, box_type::normal, color::none}][0];
+    start_anim = (Vector2f) box2position[{i, bt, c}][0];
     end_anim = (Vector2f) box2position[{(i + 1) % 68 + 1, box_type::normal, color::none}][0];
     //for (int i = 2; i < 68; i++){
-    start_anim = ficha1.getPosition();
+    // start_anim = ficha1.getPosition();
         // float t = animation_clock.getElapsedTime().asMilliseconds();
     if(t > 1000){
         t = 1000;
     }
-    Vector2f new_ficha_position = (1.f - t/1000) * start_anim + (t/1000) * end_anim;
+    Vector2f new_ficha_position = (1.f - t/1000.f) * start_anim + (t/1000.f) * end_anim;
+    ficha1.setPosition(new_ficha_position);
+    //}
+}
+
+void ParchisGUI::moveFichas(float t, int i_orig, box_type bt_orig, color c_orig, int i_end, box_type bt_end, color c_end, Sprite & ficha1){
+    Vector2f start_anim, end_anim;
+    cout << t << endl;
+    // Clock animation_clock;
+
+
+    // Texture tFichas; // Textura para las fichas.
+    // tFichas.loadFromFile("data/textures/fichas_parchis_resized.png");
+
+    // Sprite ficha1(tFichas); // Sprite para una ficha. Se harían tantos sprites como fichas haya, pero todos se montarían sobre la misma textura, la de las fichas.
+    // ficha1.setTextureRect(IntRect(0,30,30,30)); // La textura de las fichas contiene las fichas de todos los colores. Seleccionamos el rectángulo (esquina_x, esquina_y, largo, alto) con el color que nos interesa
+    // ficha1.setScale(0.25, 0.25);
+    // int pos_ficha_x = 25;
+    // int pos_ficha_y = 305;
+    // ficha1.setPosition(box2position[{1, box_type::normal, color::none}][0].x, box2position[{1, box_type::normal, color::none}][0].y); // Posición del sprite dentro de la ventana.
+
+    start_anim = (Vector2f) box2position[{i_orig, bt_orig, c_orig}][0];
+    end_anim = (Vector2f) box2position[{i_end, bt_end, c_end}][0];
+    //for (int i = 2; i < 68; i++){
+    // start_anim = ficha1.getPosition();
+        // float t = animation_clock.getElapsedTime().asMilliseconds();
+    if(t > 1000){
+        t = 1000;
+    }
+    Vector2f new_ficha_position = (1.f - t/1000.f) * start_anim + (t/1000.f) * end_anim;
     ficha1.setPosition(new_ficha_position);
     //}
 }
