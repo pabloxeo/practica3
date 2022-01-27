@@ -24,7 +24,10 @@ struct Piece
     color col;
 };
 
-inline bool operator <(const Piece & a, const Piece & b){ return a.num > b.num; }
+inline bool operator <(const Piece & a, const Piece & b){
+    return a.num > b.num or (a.num == b.num and a.type > b.type) or
+           (a.num == b.num and a.type == b.type and a.col > b.col); 
+}
 
 class ParchisGUI{
     private: 
@@ -149,6 +152,17 @@ class ParchisGUI{
     //Amarillas
     {{0, box_type::goal, color::yellow}, {Vector2i(329, 385), Vector2i(360, 385), Vector2i(329, 350), Vector2i(329, 420)}},
 
+    //Casillas home
+    //Ponemos 4 posiciones, correspondientes a las 4 fichas
+    //Verdes
+    {{0, box_type::home, color::green}, {Vector2i(632, 594), Vector2i(594, 632), Vector2i(632, 670), Vector2i(670, 632)}},
+    //Azules
+    {{0, box_type::home, color::blue}, {Vector2i(139, 101), Vector2i(101, 139), Vector2i(139, 177), Vector2i(177, 139)}},
+    //Rojas
+    {{0, box_type::home, color::red}, {Vector2i(139, 594), Vector2i(101, 632), Vector2i(139, 670), Vector2i(177, 632)}},
+    //Amarillas
+    {{0, box_type::home, color::yellow}, {Vector2i(632, 101), Vector2i(594, 139), Vector2i(632, 139), Vector2i(670, 139)}},
+
 
     //Casillas de salida
     //Ponemos 4 posiciones, correspondientes a las 4 fichas
@@ -159,7 +173,7 @@ class ParchisGUI{
     public:
         inline ParchisGUI(){};
         void display();
-        void moveFichas();
+        void moveFichas(float t, int i, Sprite &);
 };
 
 

@@ -37,3 +37,4 @@ bin/*
 data/music.zip
 
 .idea/
+.vscode/

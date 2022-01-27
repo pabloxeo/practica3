@@ -5,7 +5,7 @@
 void ParchisGUI::display()
 {
     // El juego se crea dentro de la RenderWindow. Se le pasa tamaño, título y opciones (en este caso, que tenga barra de título y botón de cierre.)
-    RenderWindow window(VideoMode(3200, 1600), "SFML works!", Style::Titlebar | Style::Close);
+    RenderWindow window(VideoMode(1600, 800), "SFML works!", Style::Titlebar | Style::Close);
     CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
 
@@ -95,6 +95,8 @@ void ParchisGUI::display()
     Vector2f world_pos = window.mapPixelToCoords(pos);
     bool clicked = false;
     Vector2i click_pos = Vector2i(0, 0);
+
+    int casilla = 1;
 
     cout << pos.x << " " << pos.y << endl;
     // cout << ficha1.getGlobalBounds() << endl;
@@ -192,17 +194,29 @@ void ParchisGUI::display()
             angle0 = angle;
             window.setView(view1);
         }
-
+        animate_ficha = true;
         // Mover ficha (de forma animada) si se activó en el evento.
         if(animate_ficha){
             float t = animation_clock.getElapsedTime().asMilliseconds();
+            // cout << t << endl;
+            moveFichas(t, casilla, ficha1);
+            if(t > 1000){
+                casilla = (casilla) % 68 + 1;
+                cout << casilla << endl;
+                animation_clock.restart();
+            }
+            /*
             if(t > 1000){
                 t = 1000;
                 animate_ficha = false;
             }
             Vector2f new_ficha_position = (1.f - t/1000) * start_anim + (t/1000) * end_anim;
             ficha1.setPosition(new_ficha_position);
+            */
+           
         }
+
+        
 
         // Se limpia la ventana y se redibujan los elementos.
         window.clear(Color::White);
@@ -214,29 +228,31 @@ void ParchisGUI::display()
 }
 
 
-void ParchisGUI::moveFichas(){
-    Vector2f start_anim, end_anim(385, 365);
+void ParchisGUI::moveFichas(float t, int i, Sprite & ficha1){
+    Vector2f start_anim, end_anim;
 
-    Clock animation_clock;
+    // Clock animation_clock;
 
 
-    Texture tFichas; // Textura para las fichas.
-    tFichas.loadFromFile("data/textures/fichas_parchis_resized.png");
+    // Texture tFichas; // Textura para las fichas.
+    // tFichas.loadFromFile("data/textures/fichas_parchis_resized.png");
 
-    Sprite ficha1(tFichas); // Sprite para una ficha. Se harían tantos sprites como fichas haya, pero todos se montarían sobre la misma textura, la de las fichas.
-    ficha1.setTextureRect(IntRect(0,30,30,30)); // La textura de las fichas contiene las fichas de todos los colores. Seleccionamos el rectángulo (esquina_x, esquina_y, largo, alto) con el color que nos interesa
-    //ficha1.setScale(0.25, 0.25);
-    int pos_ficha_x = 25;
-    int pos_ficha_y = 305;
-    ficha1.setPosition(box2position[{1, box_type::normal, color::none}][0].x, box2position[{1, box_type::normal, color::none}][0].y); // Posición del sprite dentro de la ventana.
+    // Sprite ficha1(tFichas); // Sprite para una ficha. Se harían tantos sprites como fichas haya, pero todos se montarían sobre la misma textura, la de las fichas.
+    // ficha1.setTextureRect(IntRect(0,30,30,30)); // La textura de las fichas contiene las fichas de todos los colores. Seleccionamos el rectángulo (esquina_x, esquina_y, largo, alto) con el color que nos interesa
+    // ficha1.setScale(0.25, 0.25);
+    // int pos_ficha_x = 25;
+    // int pos_ficha_y = 305;
+    // ficha1.setPosition(box2position[{1, box_type::normal, color::none}][0].x, box2position[{1, box_type::normal, color::none}][0].y); // Posición del sprite dentro de la ventana.
 
-    for (int i = 2; i < 68; i++){
-        start_anim = ficha1.getPosition();
-        float t = animation_clock.getElapsedTime().asMilliseconds();
-        if(t > 1000){
-            t = 1000;
-        }
-
-        ficha1.setPosition(box2position[{i, box_type::normal, color::none}][0].x, box2position[{i, box_type::normal, color::none}][0].y);
+    start_anim = (Vector2f) box2position[{i, box_type::normal, color::none}][0];
+    end_anim = (Vector2f) box2position[{(i + 1) % 68 + 1, box_type::normal, color::none}][0];
+    //for (int i = 2; i < 68; i++){
+    start_anim = ficha1.getPosition();
+        // float t = animation_clock.getElapsedTime().asMilliseconds();
+    if(t > 1000){
+        t = 1000;
     }
+    Vector2f new_ficha_position = (1.f - t/1000) * start_anim + (t/1000) * end_anim;
+    ficha1.setPosition(new_ficha_position);
+    //}
 }
