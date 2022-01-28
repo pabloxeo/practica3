@@ -146,11 +146,11 @@ class ParchisGUI{
     //Verdes
     {{0, box_type::goal, color::green}, {Vector2i(384, 440), Vector2i(384, 408), Vector2i(415, 440), Vector2i(350, 440)}},
     //Azules
-    {{0, box_type::goal, color::blue}, {Vector2i(384, 354), Vector2i(384, 408), Vector2i(415, 326), Vector2i(350, 326)}},
+    {{0, box_type::goal, color::blue}, {Vector2i(384, 408), Vector2i(384, 354), Vector2i(415, 326), Vector2i(350, 326)}},
     //Rojas
     {{0, box_type::goal, color::red}, {Vector2i(329, 385), Vector2i(360, 385), Vector2i(329, 350), Vector2i(329, 420)}},
     //Amarillas
-    {{0, box_type::goal, color::yellow}, {Vector2i(329, 385), Vector2i(360, 385), Vector2i(329, 350), Vector2i(329, 420)}},
+    {{0, box_type::goal, color::yellow}, {Vector2i(445, 385), Vector2i(412, 385), Vector2i(445, 350), Vector2i(445, 420)}},
 
     //Casillas home
     //Ponemos 4 posiciones, correspondientes a las 4 fichas
@@ -162,12 +162,6 @@ class ParchisGUI{
     {{0, box_type::home, color::red}, {Vector2i(139, 594), Vector2i(101, 632), Vector2i(139, 670), Vector2i(177, 632)}},
     //Amarillas
     {{0, box_type::home, color::yellow}, {Vector2i(632, 101), Vector2i(594, 139), Vector2i(632, 139), Vector2i(670, 139)}},
-
-
-    //Casillas de salida
-    //Ponemos 4 posiciones, correspondientes a las 4 fichas
-    //Verdes
-
     };
     
     public:
