@@ -20,17 +20,17 @@ enum color {blue, red, green, yellow, none};
 struct Piece
 {
     int num;
-    box_type type; 
+    box_type type;
     color col;
 };
 
 inline bool operator <(const Piece & a, const Piece & b){
     return a.num > b.num or (a.num == b.num and a.type > b.type) or
-           (a.num == b.num and a.type == b.type and a.col > b.col); 
+           (a.num == b.num and a.type == b.type and a.col > b.col);
 }
 
 class ParchisGUI{
-    private: 
+    private:
     map<Piece, vector<Vector2i> > box2position{
     //Definición de las casillas normales
     //Para cada casilla definimos 3 posiciones: (1) En el centro de la casilla, (2) y (3) a ambos lados de la casilla para poder colocar 2 fichas en la misma casilla.
@@ -163,12 +163,15 @@ class ParchisGUI{
     //Amarillas
     {{0, box_type::home, color::yellow}, {Vector2i(632, 101), Vector2i(594, 139), Vector2i(632, 139), Vector2i(670, 139)}},
     };
-    
+
     public:
         inline ParchisGUI(){};
         void display();
         void moveFichas(float t, int i, box_type bt, color c, Sprite &);
         void moveFichas(float t, int i_orig, box_type bt_orig, color c_orig, int i_end, box_type bt_end, color c_end, Sprite &);
+        void set_color(color my_color, Sprite &);
+        void load_player(color my_color, Sprite & ficha1, Sprite & ficha2, Sprite & ficha3, Sprite & ficha4);
+        int num_box(int pos_x, int pos_y);
 };
 
 
