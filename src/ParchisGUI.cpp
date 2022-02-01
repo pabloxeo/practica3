@@ -148,6 +148,7 @@ void ParchisGUI::display()
     // cout << ficha1.getGlobalBounds() << endl;
     while(window.isOpen())
     {
+        window.setView(view1);
         // Bucle principal. Se va refrescando en función de lo que ocurra en el juego.
         pos = Mouse::getPosition(window);
         world_pos = window.mapPixelToCoords(pos);
@@ -198,6 +199,7 @@ void ParchisGUI::display()
 
             if(event.type == Event::MouseButtonPressed){ // Eventos de ratón.
                 cout << pos.x << " " << pos.y << " " << world_pos.x << " " << world_pos.y << endl;
+                cout << board.getGlobalBounds().top << " " << board.getGlobalBounds().left << endl;
                 if(event.mouseButton.button == Mouse::Left){
                     if(clicked==false){
                         clicked = true;
@@ -244,8 +246,8 @@ void ParchisGUI::display()
         // Mover ficha (de forma animada) si se activó en el evento.
         if(animate_ficha){
             float t = animation_clock.getElapsedTime().asMilliseconds();
-            cout << t << endl;
-            cout << casilla << " " << bt << " " << c << endl;
+            // cout << t << endl;
+            // cout << casilla << " " << bt << " " << c << endl;
             moveFichas(t, cas_old, bt_old, c_old, casilla, bt, c, ficha1);
 
             if(t > 1000){
@@ -365,6 +367,8 @@ void ParchisGUI::display()
         window.draw(ficha_g3);
         window.draw(ficha_g4);
 
+        window.setView(view2);
+        world_pos = window.mapPixelToCoords(pos);
         //Control para el dado 1
         if (dice1_used){                        //El número 1 ya se ha usado --> se oculta
             dice1.setColor(Color(255,255,255,0));
@@ -399,7 +403,7 @@ void ParchisGUI::display()
 
 void ParchisGUI::moveFichas(float t, int i, box_type bt, color c, Sprite & ficha1){
     Vector2f start_anim, end_anim;
-    cout << t << endl;
+    // cout << t << endl;
     // Clock animation_clock;
 
 
@@ -428,7 +432,7 @@ void ParchisGUI::moveFichas(float t, int i, box_type bt, color c, Sprite & ficha
 
 void ParchisGUI::moveFichas(float t, int i_orig, box_type bt_orig, color c_orig, int i_end, box_type bt_end, color c_end, Sprite & ficha1){
     Vector2f start_anim, end_anim;
-    cout << t << endl;
+    // cout << t << endl;
     // Clock animation_clock;
 
 
