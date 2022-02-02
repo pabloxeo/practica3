@@ -151,10 +151,52 @@ private:
 
     RenderWindow game_window;
     Parchis model;
+    
+    //Textures' definitions  
+    Texture tBoard;
+    Texture tPieces;
+
+    //Sprites' definitions
+    map <color, vector<Sprite>> pieces;
+    Sprite board;
+
+
+    /**
+     * @brief Función que procesa las colisiones del ratón con fichas, dados, etc.
+     * 
+     */
+    void processMouse();
+
+    /**
+     * @brief Función que procesa los eventos del ratón.
+     * 
+     */
+    void processEvents();
+
+    /**
+     * @brief Función que procesa las animaciones.
+     * 
+     */
+    void processAnimations();
+
+
+    /**
+     * @brief Función que refresca la ventana principal.
+     * 
+     */
+    void paint();
 
 public:
     ParchisGUI(const Parchis & model);
-    void display();
+    
+    
+    /**
+     * @brief Bucle principal del juego. 
+     * 
+     */
+    void mainLoop();
+
+
     void moveFichas(float t, int i, box_type bt, color c, Sprite &);
     void moveFichas(float t, int i_orig, box_type bt_orig, color c_orig, int i_end, box_type bt_end, color c_end, Sprite &);
     void set_color(color my_color, Sprite &);

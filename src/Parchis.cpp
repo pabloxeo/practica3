@@ -20,6 +20,10 @@ const vector<int> & Parchis::getDice(color player){
     return dice.getDice(player);
 }
 
+const Board & Parchis::getBoard () const{
+    return this->board;
+}
+
 bool Parchis::isLegalMove(color player, const Box & box, int dice_number){
     // Controlar si barreras, si está en la casa el movimiento solo sería legal si dice_number == 5, ...
     return true;

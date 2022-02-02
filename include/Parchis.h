@@ -37,6 +37,15 @@ class Parchis{
          */
         const vector<int> & getDice (color player);
 
+
+         /**
+         * @brief Get the Board object
+         * 
+         * @param player 
+         * @return const vector<int>& 
+         */
+        const Board & getBoard () const;
+
         /**
          * @brief Get the Available Pieces object
          * 

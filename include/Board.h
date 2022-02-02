@@ -34,7 +34,7 @@ class Board{
          * @param idx 
          * @return Box 
          */
-        const Box & getPiece(const color c, const int idx);
+        const Box & getPiece(const color c, const int idx) const;
 
         /**
          * @brief Función que devuelve el vector de Box del color "c".
@@ -42,7 +42,7 @@ class Board{
          * @param c 
          * @return Box 
          */
-        const vector<Box> & getPieces(const color c);
+        const vector<Box> & getPieces(const color c) const;
 
         /**
          * @brief Función que mueve la ficha de la posición "idx" del vector de fichas de color "c" al box "final_box".

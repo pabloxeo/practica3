@@ -15,12 +15,12 @@ Board::Board (const map <color, vector <Box> > & b){
 }
 
 
-const Box & Board::getPiece(const color c, const int idx){
-    return pieces[c][idx];
+const Box & Board::getPiece(const color c, const int idx) const{
+    return pieces.at(c)[idx];
 }
 
-const vector<Box> & Board::getPieces(const color c){
-    return pieces[c];
+const vector<Box> & Board::getPieces(const color c) const{
+    return pieces.at(c);
 }
 
 void Board::movePiece(const color c, const int idx, const Box & final_box){
