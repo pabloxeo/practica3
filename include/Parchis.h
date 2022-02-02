@@ -56,6 +56,17 @@ class Parchis{
         void movePiece(color player, int piece, int dice_number);
 
         /**
+         * @brief Comprobar si un movimiento es válido.
+         * 
+         * @param player 
+         * @param box 
+         * @param dice_number 
+         * @return true 
+         * @return false 
+         */
+        bool isLegalMove(color player, const Box & box, int dice_number);
+
+        /**
          * @brief Get the Last Moves object
          * 
          * @return const vector<tuple <color, int, Box>>& 
