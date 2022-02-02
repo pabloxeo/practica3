@@ -24,7 +24,7 @@ class Board{
          * 
          * @param d 
          */
-        Board (const map <color, vector <int> > & d);
+        Board (const map <color, vector <Box> > & b);
 
 
         /**
