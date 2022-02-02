@@ -6,32 +6,15 @@
 # include <iostream>
 # include <math.h>
 # include <fstream>
+# include "Board.h"
+# include "Attributes.h"
 
 using namespace sf;
 using namespace std;
 
-//Lista con los diferentes tipos de casillas
-enum box_type {normal, home, final_queue, goal};
-
-//Lista con los diferentes tipos de casillas
-enum color {blue, red, green, yellow, none};
-
-//Struct para definir las fichas: número de casilla y tipo
-struct Piece
-{
-    int num;
-    box_type type;
-    color col;
-};
-
-inline bool operator <(const Piece & a, const Piece & b){
-    return a.num > b.num or (a.num == b.num and a.type > b.type) or
-           (a.num == b.num and a.type == b.type and a.col > b.col);
-}
-
 class ParchisGUI{
     private:
-    map<Piece, vector<Vector2i> > box2position{
+    map<Box, vector<Vector2i> > box2position{
     //Definición de las casillas normales
     //Para cada casilla definimos 3 posiciones: (1) En el centro de la casilla, (2) y (3) a ambos lados de la casilla para poder colocar 2 fichas en la misma casilla.
     {{1, box_type::normal, color::none}, {Vector2i(746, 310), Vector2i(746, 325), Vector2i(746, 290)}},
