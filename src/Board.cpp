@@ -1,7 +1,7 @@
 # include "Board.h"
 
 Board::Board(){
-    map<color, vector<Box> > pieces{
+    this->pieces = map<color, vector<Box> >{
         {color::green, {{0, box_type::home, color::green},{0, box_type::home, color::green},{0, box_type::home, color::green},{0, box_type::home, color::green}}},
         {color::red, {{0, box_type::home, color::red},{0, box_type::home, color::red},{0, box_type::home, color::red},{0, box_type::home, color::red}}},
         {color::blue, {{0, box_type::home, color::blue},{0, box_type::home, color::blue},{0, box_type::home, color::blue},{0, box_type::home, color::blue}}},
@@ -11,7 +11,7 @@ Board::Board(){
     
 
 Board::Board (const map <color, vector <Box> > & b){
-    map<color, vector<Box> > pieces(b);
+    this->pieces = map<color, vector<Box> >(b);
 }
 
 

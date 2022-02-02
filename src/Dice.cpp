@@ -5,7 +5,7 @@
 
 
 Dice::Dice(){
-    map <color, vector <int> > dice{
+    this->dice =  map <color, vector <int> > {
         {color::red,    {1,2,3,4,5,6}},
         {color::blue,   {1,2,3,4,5,6}},
         {color::yellow, {1,2,3,4,5,6}},
@@ -14,7 +14,7 @@ Dice::Dice(){
 };
 
 Dice::Dice (const map <color, vector <int> > & d){
-    map <color, vector <int> > dice(d);
+    this->dice =  map <color, vector <int> >(d);
 };
 
 const vector<int> & Dice::getDice (color player){
