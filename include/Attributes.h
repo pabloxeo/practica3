@@ -16,6 +16,10 @@ struct Box
     int num;
     box_type type;
     color col;
+
+    inline Box(int num, box_type type, color col){
+        this->num = num; this->type = type; this->col = col;
+    }
 };
 
 
