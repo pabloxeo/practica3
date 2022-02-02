@@ -9,7 +9,7 @@ using namespace std;
 
 class Dice{
     private:
-        map <color, vector <int> > player_dice;        
+        map <color, vector <int> > dice;        
     
     public:
         /**
