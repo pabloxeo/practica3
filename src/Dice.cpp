@@ -25,7 +25,7 @@ void Dice::removeNumber (color player, int n){
     vector<int>::iterator aux = remove(dice[player].begin(), dice[player].end(), n);
 }
 
-void Dice::resetDice (color player , const vector<int> & new_dice = {1,2,3,4,5,6}){
+void Dice::resetDice (color player , const vector<int> & new_dice){
     dice[player] = new_dice;
 }
 

@@ -48,3 +48,51 @@ ParchisGUI::ParchisGUI(const Parchis &model)
     pieces.insert({color::yellow, yellow_pieces_sprites});
 
 }
+
+void ParchisGUI::mainLoop(){
+    // processMouse();
+    // processEvents();
+    // processAnimations();
+    paint();
+}
+
+void ParchisGUI::paint(){
+    game_window.clear(Color::White);
+
+    // Vista del tablero (crear view más adelante)
+
+    // Dibujar tablero
+    game_window.draw(this->board);
+
+    // Dibujar fichas
+    // Rojas
+    for(int i = 0; i < pieces.at(color::red).size(); i++)
+    {
+        game_window.draw(pieces.at(color::red).at(i));
+    }
+    // Azules
+    for (int i = 0; i < pieces.at(color::blue).size(); i++)
+    {
+        game_window.draw(pieces.at(color::blue).at(i));
+    }
+
+    // Verdes
+    for (int i = 0; i < pieces.at(color::green).size(); i++)
+    {
+        game_window.draw(pieces.at(color::green).at(i));
+    }
+
+    // Amarillas
+    for (int i = 0; i < pieces.at(color::yellow).size(); i++)
+    {
+        game_window.draw(pieces.at(color::yellow).at(i));
+    }
+
+    game_window.display();
+}
+
+void ParchisGUI::run(){
+    while(true){
+        mainLoop();
+    }
+}
