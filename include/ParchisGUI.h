@@ -146,7 +146,7 @@ private:
         //Rojas
         {{0, box_type::home, color::red}, {Vector2i(139, 594), Vector2i(101, 632), Vector2i(139, 670), Vector2i(177, 632)}},
         //Amarillas
-        {{0, box_type::home, color::yellow}, {Vector2i(632, 101), Vector2i(594, 139), Vector2i(632, 139), Vector2i(670, 139)}},
+        {{0, box_type::home, color::yellow}, {Vector2i(632, 101), Vector2i(594, 139), Vector2i(632, 177), Vector2i(670, 139)}},
     };
 
     RenderWindow game_window;

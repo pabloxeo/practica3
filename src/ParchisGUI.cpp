@@ -51,9 +51,22 @@ ParchisGUI::ParchisGUI(const Parchis &model)
 
 void ParchisGUI::mainLoop(){
     // processMouse();
-    // processEvents();
+    processEvents();
     // processAnimations();
     paint();
+}
+
+void ParchisGUI::processEvents(){
+    // Gestión de eventos (processEvents())
+    Event event;
+    while (game_window.pollEvent(event))
+    {
+        if (event.type == Event::Closed)
+        {
+            game_window.close();
+        }
+    }
+
 }
 
 void ParchisGUI::paint(){
@@ -92,7 +105,7 @@ void ParchisGUI::paint(){
 }
 
 void ParchisGUI::run(){
-    while(true){
+    while(game_window.isOpen()){
         mainLoop();
     }
 }
