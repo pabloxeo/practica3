@@ -391,7 +391,7 @@ void ParchisGUI::display()
         window.setView(view2);
         window.draw(dice1);
         window.draw(dice2);
-        window.draw(dice3);
+        window.draw(dice3);  
         window.draw(dice4);
         window.draw(dice5);
         window.draw(dice6);
