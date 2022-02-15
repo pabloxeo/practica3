@@ -18,8 +18,11 @@ obj/Dice.o: src/Dice.cpp
 obj/DiceSprite.o: src/DiceSprite.cpp
 	g++ -c src/DiceSprite.cpp -o obj/DiceSprite.o -I include/ -std=c++14
 
-bin/Parchis: obj/main.o obj/ParchisGUI.o obj/Parchis.o obj/Board.o obj/Dice.o obj/DiceSprite.o
-	g++ obj/main.o obj/ParchisGUI.o obj/Parchis.o obj/Board.o obj/Dice.o obj/DiceSprite.o -o bin/Parchis -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
+obj/SpriteAnimator.o: src/SpriteAnimator.cpp
+	g++ -c src/SpriteAnimator.cpp -o obj/SpriteAnimator.o -I include/ -std=c++14
+
+bin/Parchis: obj/main.o obj/ParchisGUI.o obj/Parchis.o obj/Board.o obj/Dice.o obj/DiceSprite.o obj/SpriteAnimator.o
+	g++ obj/main.o obj/ParchisGUI.o obj/Parchis.o obj/Board.o obj/Dice.o obj/DiceSprite.o obj/SpriteAnimator.o -o bin/Parchis -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
 clean:
 	rm -rf ./obj/*.o ./bin/*

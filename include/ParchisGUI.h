@@ -10,6 +10,8 @@
 #include "Attributes.h"
 #include "Parchis.h"
 #include "DiceSprite.h"
+#include "SpriteAnimator.h"
+#include <list>
 
 using namespace sf;
 using namespace std;
@@ -170,6 +172,8 @@ private:
     //Click booleans
     bool clicked;
 
+    //List of animations.
+    list<SpriteAnimator> animations;
 
     /**
      * @brief Función que procesa las colisiones del ratón con fichas, dados, etc.

@@ -69,7 +69,7 @@ void ParchisGUI::mainLoop(){
     processSettings();
     // processMouse();
     processEvents();
-    // processAnimations();
+    processAnimations();
     paint();
 }
 
@@ -100,7 +100,11 @@ void ParchisGUI::processEvents(){
                             model->movePiece(current_dice->getModelColor(), 0, current_dice->getNumber());
                             vector<tuple<color, int, Box>> last_moves = model->getLastMoves();
                             for (int i = 0; i < last_moves.size(); i++){
-                                pieces[get<0>(last_moves[i])][get<1>(last_moves[i])].setPosition(box2position[get<2>(last_moves[i])][0].x, box2position[get<2>(last_moves[i])][0].y);
+                                Sprite *animate_sprite = &pieces[get<0>(last_moves[i])][get<1>(last_moves[i])];
+                                Vector2f animate_pos = Vector2f(box2position[get<2>(last_moves[i])][0].x, box2position[get<2>(last_moves[i])][0].y);
+                                SpriteAnimator animator = SpriteAnimator(*animate_sprite, animate_pos, 1000);
+                                animations.push_back(animator);
+                                // pieces[get<0>(last_moves[i])][get<1>(last_moves[i])].setPosition(box2position[get<2>(last_moves[i])][0].x, box2position[get<2>(last_moves[i])][0].y);
                             }
 
                             //animation_clock.restart();
@@ -112,9 +116,21 @@ void ParchisGUI::processEvents(){
             }
         }
     }
+}
 
-
-
+void ParchisGUI::processAnimations()
+{
+    list<SpriteAnimator>::iterator it;
+    for (it = animations.begin(); it != animations.end();)
+    {
+        it->update();
+        if(it->hasEnded()){
+            it = animations.erase(it);
+        }
+        else{
+            ++it;
+        }
+    }
 }
 
 void ParchisGUI::processSettings()
