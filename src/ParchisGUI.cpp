@@ -1,9 +1,10 @@
 # include "ParchisGUI.h"
 
-ParchisGUI::ParchisGUI(const Parchis &model)
-    : game_window(VideoMode(1600, 800), "Parchís", Style::Titlebar | Style::Close)
+ParchisGUI::ParchisGUI(Parchis &model)
+    : game_window(VideoMode(1600, 800), L"Parchís", Style::Titlebar | Style::Close)
+    // L"string" parece que permite representar caraceteres unicode. Útil para acentos y demás.
 {
-    this->model = model;
+    this->model = &model;
 
     //Cargamos las texturas
     this->tPieces.loadFromFile("data/textures/fichas_parchis_resized.png");
@@ -26,7 +27,6 @@ ParchisGUI::ParchisGUI(const Parchis &model)
         blue_pieces_sprites.push_back(Sprite(tPieces));
         blue_pieces_sprites[i].setTextureRect(IntRect(0,30,30,30));
         blue_pieces_sprites[i].setPosition((Vector2f) box2position[model.getBoard().getPiece(color::blue, i)][i]);
-
     }
     pieces.insert({color::blue, blue_pieces_sprites});
 
@@ -50,6 +50,7 @@ ParchisGUI::ParchisGUI(const Parchis &model)
 }
 
 void ParchisGUI::mainLoop(){
+    processSettings();
     // processMouse();
     processEvents();
     // processAnimations();

@@ -150,7 +150,7 @@ private:
     };
 
     RenderWindow game_window;
-    Parchis model;
+    Parchis *model;
     
     //Textures' definitions  
     Texture tBoard;
@@ -159,6 +159,10 @@ private:
     //Sprites' definitions
     map <color, vector<Sprite>> pieces;
     Sprite board;
+
+    //Music booleans
+    bool music_enabled;
+    bool sound_effects_enabled;
 
 
     /**
@@ -179,6 +183,11 @@ private:
      */
     void processAnimations();
 
+    /**
+     * @brief Función que procesa el resto de elementos de la interfaz (música, etc)
+     * 
+     */
+    void processSettings();
 
     /**
      * @brief Función que refresca la ventana principal.
@@ -187,7 +196,7 @@ private:
     void paint();
 
 public:
-    ParchisGUI(const Parchis & model);
+    ParchisGUI(Parchis & model);
     
     
     /**
