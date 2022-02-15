@@ -70,6 +70,10 @@ void ParchisGUI::processEvents(){
 
 }
 
+void ParchisGUI::processSettings()
+{
+}
+
 void ParchisGUI::paint(){
     game_window.clear(Color::White);
 
