@@ -4,6 +4,8 @@
 # include <vector>
 # include <map>
 
+using namespace std;
+
 //Lista con los diferentes tipos de casillas
 enum color {blue, red, green, yellow, none};
 

@@ -9,6 +9,7 @@
 #include "Board.h"
 #include "Attributes.h"
 #include "Parchis.h"
+#include "DiceSprite.h"
 
 using namespace sf;
 using namespace std;
@@ -155,14 +156,19 @@ private:
     //Textures' definitions  
     Texture tBoard;
     Texture tPieces;
-
+    Texture tDices;
+    
     //Sprites' definitions
     map <color, vector<Sprite>> pieces;
+    map <color, vector<DiceSprite>> dices;
     Sprite board;
 
     //Music booleans
     bool music_enabled;
     bool sound_effects_enabled;
+
+    //Click booleans
+    bool clicked;
 
 
     /**
