@@ -20,7 +20,7 @@ const vector<int> & Parchis::getDice(color player){
     return dice.getDice(player);
 }
 
-const Board & Parchis::getBoard () const{
+const Board & Parchis::getBoard() const{
     return this->board;
 }
 
@@ -47,7 +47,7 @@ void Parchis::movePiece(color player, int piece, int dice_number){
     // Switch por colores
     Box piece_box = board.getPiece(player, piece);
     if(isLegalMove(player, piece_box, dice_number)){
-        Box final_box = Box(piece_box.num % 68 + dice_number, box_type::normal, color::none);
+        Box final_box = Box(1 + (piece_box.num+ dice_number - 1) % 68, box_type::normal, color::none);
         board.movePiece(player, piece, final_box);
 
         this->last_dice = dice_number;
