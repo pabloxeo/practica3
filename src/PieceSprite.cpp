@@ -15,8 +15,10 @@ PieceSprite::PieceSprite(const Texture & t, int id, color c) : ClickableSprite(t
     this->setTextureRect(IntRect(col2textrec.at(c).at(0), col2textrec.at(c).at(1), col2textrec.at(c).at(2), col2textrec.at(c).at(3)));
 }
 
-void PieceSprite::onClickAction(){}
+void PieceSprite::onClickAction(Window & container){}
 
-void PieceSprite::onEnableAction() {}
+void PieceSprite::onEnableAction(Window & container){}
 
-void PieceSprite::onSelectionAction() {}
+void PieceSprite::onSelectionAction(Window & container){}
+
+void PieceSprite::onHoverAction(Window & container){}

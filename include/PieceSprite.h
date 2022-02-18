@@ -4,6 +4,7 @@
 #include "ClickableSprite.h"
 #include "IncludesSFML.h"
 #include "Attributes.h"
+#include "ParchisGUI.h"
 
 using namespace std;
 
@@ -21,9 +22,10 @@ class PieceSprite: public ClickableSprite{
         inline int getId(){ return this->id;}
         inline color getModelColor(){return this->c;}
 
-        void onClickAction();
-        void onEnableAction();
-        void onSelectionAction();
+        void onClickAction(Window & container);
+        void onEnableAction(Window & container);
+        void onSelectionAction(Window & container);
+        void onHoverAction(Window & container);
 };
 
 #endif

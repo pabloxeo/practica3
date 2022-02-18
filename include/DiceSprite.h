@@ -4,8 +4,11 @@
 #include "ClickableSprite.h"
 #include "IncludesSFML.h"
 #include "Attributes.h"
+#include "ParchisGUI.h"
 
 using namespace std;
+
+//class ParchisGUI;
 
 class DiceSprite: public ClickableSprite{
     private:
@@ -24,9 +27,10 @@ class DiceSprite: public ClickableSprite{
         inline int getNumber(){return number;}
         inline color getModelColor(){return this->c;}
 
-        void onClickAction();
-        void onEnableAction();
-        void onSelectionAction();
+        void onClickAction(Window & container);
+        void onEnableAction(Window & container);
+        void onSelectionAction(Window & container);
+        void onHoverAction(Window & container);
 };
 
 #endif

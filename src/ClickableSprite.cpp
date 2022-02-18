@@ -1,18 +1,24 @@
 #include "ClickableSprite.h"
 
-void ClickableSprite::setEnabled(bool b){
+void ClickableSprite::setEnabled(bool b, Window & container){
     this->enabled = b;
-    onEnableAction();
+    onEnableAction(container);
 }
 
-void ClickableSprite::setSelected(bool b)
+void ClickableSprite::setSelected(bool b, Window & container)
 {
-    this->enabled = b;
-    onSelectionAction();
+    this->selected = b;
+    onSelectionAction(container);
 }
 
-void ClickableSprite::setClicked(bool b)
+void ClickableSprite::setClicked(bool b, Window & container)
 {
-    this->enabled = b;
-    onClickAction();
+    this->clicked = b;
+    onClickAction(container);
+}
+
+void ClickableSprite::setHovered(bool b, Window & container)
+{
+    this->hovered = b;
+    onHoverAction(container);
 }

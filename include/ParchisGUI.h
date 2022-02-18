@@ -18,12 +18,15 @@
 using namespace sf;
 using namespace std;
 
-class ParchisGUI
+class DiceSprite;
+class PieceSprite;
+
+class ParchisGUI: public RenderWindow
 {
 private:
     static const map<Box, vector<Vector2i>> box2position;
 
-    RenderWindow game_window;
+    //RenderWindow game_window;
     Parchis *model;
     
     //Textures' definitions  
@@ -120,6 +123,8 @@ public:
     int num_box(int pos_x, int pos_y);
 
 
+    friend class PieceSprite;
+    friend class DiceSprite;
 };
 
 #endif

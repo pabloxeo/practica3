@@ -134,7 +134,7 @@ const map<Box, vector<Vector2i>> ParchisGUI::box2position{
 };
 
 ParchisGUI::ParchisGUI(Parchis &model)
-    : game_window(VideoMode(1600, 800), L"Parchís", Style::Titlebar | Style::Close)
+    : RenderWindow(VideoMode(1600, 800), L"Parchís", Style::Titlebar | Style::Close)
     // L"string" parece que permite representar caraceteres unicode. Útil para acentos y demás.
 {
     this->model = &model;
@@ -226,11 +226,11 @@ void ParchisGUI::mainLoop(){
 void ParchisGUI::processEvents(){
     // Gestión de eventos (processEvents())
     Event event;
-    while (game_window.pollEvent(event))
+    while (this->pollEvent(event))
     {
         if (event.type == Event::Closed)
         {
-            game_window.close();
+            this->close();
         }
 
         if(event.type == Event::MouseButtonPressed){ // Eventos de ratón.
@@ -238,15 +238,24 @@ void ParchisGUI::processEvents(){
             //cout << board.getGlobalBounds().top << " " << board.getGlobalBounds().left << endl;
             if(event.mouseButton.button == Mouse::Left){
                 //clicked = true;
-                Vector2i pos = Mouse::getPosition(game_window);
+                Vector2i pos = Mouse::getPosition(*this);
                 
                 cout << pos.x << " " << pos.y << endl;
                 //world_pos = window.mapPixelToCoords(pos);
                 vector<color> colors = {red, blue, green, yellow};
 
                 // Eventos en la vista del tablero.
-                game_window.setView(dice_view);
-                Vector2f world_pos = game_window.mapPixelToCoords(pos);
+                this->setView(dice_view);
+                Vector2f world_pos = this->mapPixelToCoords(pos);
+
+                for(int i = dice_clickable_sprites.size() - 1; i >= 0; i--){
+                    ClickableSprite *current_sprite = dice_clickable_sprites[i];
+                    if(current_sprite->getGlobalBounds().contains(world_pos)){
+                        current_sprite->setClicked(true, *this);
+                    }
+                }
+
+                /*
                 for (int i = 0; i < colors.size(); i++){
                     for (int j = 0; j < dices[colors[i]].size(); j++){
                         DiceSprite *current_dice = &dices[colors[i]][j];
@@ -263,6 +272,7 @@ void ParchisGUI::processEvents(){
                         }
                     }
                 }
+                */
                 
             }
         }
@@ -289,83 +299,83 @@ void ParchisGUI::processSettings()
 }
 
 void ParchisGUI::paint(){
-    game_window.clear(Color::White);
+    this->clear(Color::White);
 
     //Dibujamos elementos de la vista del tablero.
-    game_window.setView(board_view);
+    this->setView(board_view);
     for(int i = 0; i < board_drawable_sprites.size(); i++){
-        game_window.draw(*board_drawable_sprites[i]);
+        this->draw(*board_drawable_sprites[i]);
     }
 
     // Dibujamos elementos de la vista de los dados.
-    game_window.setView(dice_view);
+    this->setView(dice_view);
     for (int i = 0; i < dice_drawable_sprites.size(); i++)
     {
-        game_window.draw(*dice_drawable_sprites[i]);
+        this->draw(*dice_drawable_sprites[i]);
     }
 
-    game_window.display();
+    this->display();
 
     /*
     // Vista del tablero (crear view más adelante)
 
     // Dibujar tablero
-    game_window.draw(this->board);
+    this->draw(this->board);
 
     // Dibujar fichas
     // Rojas
     for(int i = 0; i < pieces.at(color::red).size(); i++)
     {
-        game_window.draw(pieces.at(color::red).at(i));
+        this->draw(pieces.at(color::red).at(i));
     }
     // Azules
     for (int i = 0; i < pieces.at(color::blue).size(); i++)
     {
-        game_window.draw(pieces.at(color::blue).at(i));
+        this->draw(pieces.at(color::blue).at(i));
     }
 
     // Verdes
     for (int i = 0; i < pieces.at(color::green).size(); i++)
     {
-        game_window.draw(pieces.at(color::green).at(i));
+        this->draw(pieces.at(color::green).at(i));
     }
 
     // Amarillas
     for (int i = 0; i < pieces.at(color::yellow).size(); i++)
     {
-        game_window.draw(pieces.at(color::yellow).at(i));
+        this->draw(pieces.at(color::yellow).at(i));
     }
 
     //Dibujar dados
     // Rojas
     for(int i = 0; i < dices.at(color::red).size(); i++)
     {
-        game_window.draw(dices.at(color::red).at(i));
+        this->draw(dices.at(color::red).at(i));
     }
     // Azules
     for (int i = 0; i < dices.at(color::blue).size(); i++)
     {
-        game_window.draw(dices.at(color::blue).at(i));
+        this->draw(dices.at(color::blue).at(i));
     }
 
     // Verdes
     for (int i = 0; i < dices.at(color::green).size(); i++)
     {
-        game_window.draw(dices.at(color::green).at(i));
+        this->draw(dices.at(color::green).at(i));
     }
 
     // Amarillas
     for (int i = 0; i < dices.at(color::yellow).size(); i++)
     {
-        game_window.draw(dices.at(color::yellow).at(i));
+        this->draw(dices.at(color::yellow).at(i));
     }
 
-    game_window.display();
+    this->display();
     */
 }
 
 void ParchisGUI::run(){
-    while(game_window.isOpen()){
+    while(this->isOpen()){
         mainLoop();
     }
 }
