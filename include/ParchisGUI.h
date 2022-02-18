@@ -40,6 +40,17 @@ private:
     vector<Sprite*> all_drawable_sprites;
     vector<ClickableSprite*> all_clickable_sprites;
 
+    //Sprites lists separated by views.
+    vector<Sprite*> board_drawable_sprites;
+    vector<Sprite*> dice_drawable_sprites;
+
+    vector<ClickableSprite*> board_clickable_sprites;
+    vector<ClickableSprite*> dice_clickable_sprites;
+
+    // Views
+    View board_view;
+    View dice_view;
+
     //Music booleans
     bool music_enabled;
     bool sound_effects_enabled;

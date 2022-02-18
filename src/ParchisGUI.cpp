@@ -175,12 +175,21 @@ ParchisGUI::ParchisGUI(Parchis &model)
         } 
     }
 
+    //Creación de las vistas
+    board_view = View(FloatRect(0.f, 0.f, 800.f, 800.f));
+    board_view.setViewport(FloatRect(0.f, 0.f, 0.5f, 1.0f));
+
+    dice_view = View(FloatRect(850.f, 50.f, 420.f, 320.f));
+    dice_view.setViewport(FloatRect(0.55f, 0.05f, 0.3f, 0.4f));
+
+
     collectSprites();
 }
 
 void ParchisGUI::collectSprites(){
     // Tablero como sprite dibujable (IMPORTANTE: Añadir a all_drawable_sprites en el orden en que se dibujan)
     all_drawable_sprites.push_back(&board);
+    board_drawable_sprites.push_back(&board);
 
     // Vector de colores (ver cómo se podría obtener directamente del enumerado)
     vector<color> colors = {red, blue, green, yellow};
@@ -191,11 +200,17 @@ void ParchisGUI::collectSprites(){
         // Añadir fichas como dibujables y clickables.
         for(int j = 0; j < pieces[col].size(); j++){
             all_drawable_sprites.push_back(&pieces[col][j]);
+            all_clickable_sprites.push_back(&pieces[col][j]);
+            board_drawable_sprites.push_back(&pieces[col][j]);
+            board_clickable_sprites.push_back(&pieces[col][j]);
         }
 
         // Añadir dados como dibujables y clickables.
         for(int j = 0; j < dices[col].size(); j++){
             all_drawable_sprites.push_back(&dices[col][j]);
+            all_clickable_sprites.push_back(&dices[col][j]);
+            dice_drawable_sprites.push_back(&dices[col][j]);
+            dice_clickable_sprites.push_back(&dices[col][j]);
         }
     }
 }
@@ -224,12 +239,18 @@ void ParchisGUI::processEvents(){
             if(event.mouseButton.button == Mouse::Left){
                 //clicked = true;
                 Vector2i pos = Mouse::getPosition(game_window);
+                
+                cout << pos.x << " " << pos.y << endl;
                 //world_pos = window.mapPixelToCoords(pos);
                 vector<color> colors = {red, blue, green, yellow};
+
+                // Eventos en la vista del tablero.
+                game_window.setView(dice_view);
+                Vector2f world_pos = game_window.mapPixelToCoords(pos);
                 for (int i = 0; i < colors.size(); i++){
                     for (int j = 0; j < dices[colors[i]].size(); j++){
                         DiceSprite *current_dice = &dices[colors[i]][j];
-                        if(current_dice->getGlobalBounds().contains((Vector2f) pos)){ 
+                        if(current_dice->getGlobalBounds().contains(world_pos)){ 
                             cout << "Animacion " << i << " " << j << endl;
                             model->movePiece(current_dice->getModelColor(), 0, current_dice->getNumber());
                             vector<tuple<color, int, Box>> last_moves = model->getLastMoves();
@@ -270,8 +291,17 @@ void ParchisGUI::processSettings()
 void ParchisGUI::paint(){
     game_window.clear(Color::White);
 
-    for(int i = 0; i < all_drawable_sprites.size(); i++){
-        game_window.draw(*all_drawable_sprites[i]);
+    //Dibujamos elementos de la vista del tablero.
+    game_window.setView(board_view);
+    for(int i = 0; i < board_drawable_sprites.size(); i++){
+        game_window.draw(*board_drawable_sprites[i]);
+    }
+
+    // Dibujamos elementos de la vista de los dados.
+    game_window.setView(dice_view);
+    for (int i = 0; i < dice_drawable_sprites.size(); i++)
+    {
+        game_window.draw(*dice_drawable_sprites[i]);
     }
 
     game_window.display();
