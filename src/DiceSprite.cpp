@@ -40,7 +40,6 @@ void DiceSprite::onClickAction(Window & container) {
                     //Si ya hay una ficha en el centro del box...
                     if ((gui->pieces[(color)k][j].getPosition().x == gui->box2position.at(get<2>(last_moves[i]))[0].x) &&
                         (gui->pieces[(color)k][j].getPosition().y == gui->box2position.at(get<2>(last_moves[i]))[0].y)){
-                            cout << " Hay colisión con color:" << (color) k << endl;
                             collision = true;
                              //La ficha actual se va al lado 1 del box...
                             idx = 1;
@@ -53,13 +52,11 @@ void DiceSprite::onClickAction(Window & container) {
                     //Si ya hay una ficha en el lado 1 del box...
                     else if ((gui->pieces[(color)k][j].getPosition().x == gui->box2position.at(get<2>(last_moves[i]))[1].x) &&
                              (gui->pieces[(color)k][j].getPosition().y == gui->box2position.at(get<2>(last_moves[i]))[1].y)){
-                            cout << " Hay ficha en la posición 1:" << endl;
                             idx = 2; //Me nuevo al lado 2 del box
                     }
                     //Si ya hay una ficha en el lado 2 del box...
                     else if ((gui->pieces[(color)k][j].getPosition().x == gui->box2position.at(get<2>(last_moves[i]))[2].x) &&
                              (gui->pieces[(color)k][j].getPosition().y == gui->box2position.at(get<2>(last_moves[i]))[2].y)){
-                            cout << " Hay ficha en la posición 2:" << endl;
                             idx = 1; //Me nuevo al lado 1 del box
                     }
                 }
