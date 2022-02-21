@@ -142,9 +142,9 @@ ParchisGUI::ParchisGUI(Parchis &model)
     this->clicked = false;
 
     //Cargamos las texturas
-    this->tPieces.loadFromFile("data/textures/fichas_parchis_resized.png");
+    this->tPieces.loadFromFile("data/textures/fichas_parchis_extended.png");
     this->tBoard.loadFromFile("data/textures/parchis_board_resized.png");
-    this->tDices.loadFromFile("data/textures/dice1.png");
+    this->tDices.loadFromFile("data/textures/dice_extended.png");
 
     //Definimos los sprites
     this->board = Sprite(tBoard);
@@ -217,10 +217,44 @@ void ParchisGUI::collectSprites(){
 
 void ParchisGUI::mainLoop(){
     processSettings();
-    // processMouse();
+    processMouse();
     processEvents();
     processAnimations();
     paint();
+}
+
+void ParchisGUI::processMouse(){
+    Vector2i pos = Mouse::getPosition(*this);
+    Vector2f world_pos;
+
+    this->setView(board_view);
+    world_pos = this->mapPixelToCoords(pos);
+
+    for(int i = board_clickable_sprites.size() - 1; i >= 0; i--){
+        ClickableSprite *current_sprite = board_clickable_sprites[i];
+        if(current_sprite->getGlobalBounds().contains(world_pos)){
+            current_sprite->setHovered(true, *this);
+        }
+        else{
+            current_sprite->setHovered(false, *this);
+        }
+    }
+
+    this->setView(dice_view);
+    world_pos = this->mapPixelToCoords(pos);
+
+    for (int i = dice_clickable_sprites.size() - 1; i >= 0; i--)
+    {
+        ClickableSprite *current_sprite = dice_clickable_sprites[i];
+        if (current_sprite->getGlobalBounds().contains(world_pos))
+        {
+            current_sprite->setHovered(true, *this);
+        }
+        else
+        {
+            current_sprite->setHovered(false, *this);
+        }
+    }
 }
 
 void ParchisGUI::processEvents(){

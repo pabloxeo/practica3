@@ -15,6 +15,8 @@ class PieceSprite: public ClickableSprite{
 
         static const map <color, vector<int>> col2textrec;
 
+        static const map <color, vector<int>> col2selectedrec;
+
     public:
 
         PieceSprite(const Texture & t, int id, color c);

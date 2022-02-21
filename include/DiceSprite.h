@@ -18,6 +18,7 @@ class DiceSprite: public ClickableSprite{
 
         //Definiciones para los dados
         static const map <int, vector<int>> num2textrec;
+        static const map <int, vector<int>> num2selectedrec;
 
         static const map <color, Color> color2Color;
 
