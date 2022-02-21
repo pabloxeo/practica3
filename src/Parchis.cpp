@@ -26,6 +26,11 @@ const Board & Parchis::getBoard() const{
 
 bool Parchis::isLegalMove(color player, const Box & box, int dice_number){
     // Controlar si barreras, si está en la casa el movimiento solo sería legal si dice_number == 5, ...
+    if (box.type == home && dice_number != 5){
+        return false;
+    }else if(box.type == goal){
+        return false;
+    }
     return true;
 }
 
@@ -47,7 +52,63 @@ void Parchis::movePiece(color player, int piece, int dice_number){
     // Switch por colores
     Box piece_box = board.getPiece(player, piece);
     if(isLegalMove(player, piece_box, dice_number)){
-        Box final_box = Box(1 + (piece_box.num+ dice_number - 1) % 68, box_type::normal, color::none);
+        Box final_box;
+        cout << piece_box.num + dice_number << endl;
+
+        if(dice_number == 6){
+            bool pieces_out = true;
+            for (int i = 0; i < board.getPieces(player).size() && pieces_out; i++){
+                if (board.getPieces(player).at(i).type == home){
+                    pieces_out = false;
+                }
+            }
+
+            if (pieces_out){
+                dice_number = 7;
+            }
+        }
+
+        if (piece_box.type == home){
+            switch (player){
+                case red:
+                    final_box = Box(38, normal, none);
+                    break;
+                case blue:
+                    final_box = Box(21, normal, none);
+                    break;
+                case yellow:
+                    final_box = Box(4, normal, none);
+                    break;
+                case green:
+                    final_box = Box(55, normal, none);
+                    break;
+            }
+               
+        }else if(piece_box.num <= 17 && piece_box.num + dice_number > 17 && player == blue && piece_box.type == normal){
+            final_box = Box(piece_box.num + dice_number-17, final_queue, blue);
+
+        }else if(piece_box.num <= 34 && piece_box.num + dice_number > 34 && player == red && piece_box.type == normal){
+            final_box = Box(piece_box.num + dice_number-34, final_queue, red);
+
+        }else if(piece_box.num <= 51 && piece_box.num + dice_number > 51 && player == green && piece_box.type == normal){
+            final_box = Box(piece_box.num + dice_number-51, final_queue, green);
+
+        }else if(piece_box.num <= 68 && piece_box.num + dice_number > 68 && player == yellow && piece_box.type == normal){
+            final_box = Box(piece_box.num + dice_number-68, final_queue, yellow);
+
+        }else if(piece_box.type == final_queue){
+            if (piece_box.num + dice_number <= 7){
+                final_box = Box(piece_box.num + dice_number, final_queue, player);
+            }else if (piece_box.num + dice_number == 8){
+                final_box = Box(0, goal, player);
+            }else{
+                final_box = Box(16 - (piece_box.num + dice_number), final_queue, player);
+            }
+        }
+        else{
+            final_box = Box(1 + (piece_box.num+ dice_number - 1) % 68, box_type::normal, color::none);
+        }
+
         board.movePiece(player, piece, final_box);
 
         this->last_dice = dice_number;

@@ -20,14 +20,14 @@ const map<Box, vector<Vector2i>> ParchisGUI::box2position{
     {{15, box_type::normal, color::none}, {Vector2i(462, 63), Vector2i(443, 63), Vector2i(477, 63)}},
     {{16, box_type::normal, color::none}, {Vector2i(462, 25), Vector2i(443, 25), Vector2i(477, 25)}},
     {{17, box_type::normal, color::none}, {Vector2i(384, 25), Vector2i(403, 25), Vector2i(366, 25)}},
-    {{18, box_type::normal, color::none}, {Vector2i(310, 25), Vector2i(328, 25), Vector2i(394, 25)}},
-    {{19, box_type::normal, color::none}, {Vector2i(310, 63), Vector2i(328, 63), Vector2i(394, 63)}},
-    {{20, box_type::normal, color::none}, {Vector2i(310, 100), Vector2i(328, 100), Vector2i(394, 100)}},
-    {{21, box_type::normal, color::none}, {Vector2i(310, 139), Vector2i(328, 139), Vector2i(394, 139)}},
-    {{22, box_type::normal, color::none}, {Vector2i(310, 177), Vector2i(328, 177), Vector2i(394, 177)}},
-    {{23, box_type::normal, color::none}, {Vector2i(310, 215), Vector2i(328, 215), Vector2i(394, 215)}},
-    {{24, box_type::normal, color::none}, {Vector2i(310, 253), Vector2i(328, 253), Vector2i(394, 253)}},
-    {{25, box_type::normal, color::none}, {Vector2i(310, 289), Vector2i(328, 289), Vector2i(394, 289)}},
+    {{18, box_type::normal, color::none}, {Vector2i(310, 25), Vector2i(328, 25), Vector2i(294, 25)}},
+    {{19, box_type::normal, color::none}, {Vector2i(310, 63), Vector2i(328, 63), Vector2i(294, 63)}},
+    {{20, box_type::normal, color::none}, {Vector2i(310, 100), Vector2i(328, 100), Vector2i(294, 100)}},
+    {{21, box_type::normal, color::none}, {Vector2i(310, 139), Vector2i(328, 139), Vector2i(294, 139)}},
+    {{22, box_type::normal, color::none}, {Vector2i(310, 177), Vector2i(328, 177), Vector2i(294, 177)}},
+    {{23, box_type::normal, color::none}, {Vector2i(310, 215), Vector2i(328, 215), Vector2i(294, 215)}},
+    {{24, box_type::normal, color::none}, {Vector2i(310, 253), Vector2i(328, 253), Vector2i(294, 253)}},
+    {{25, box_type::normal, color::none}, {Vector2i(310, 289), Vector2i(328, 289), Vector2i(294, 289)}},
     {{26, box_type::normal, color::none}, {Vector2i(288, 310), Vector2i(288, 325), Vector2i(288, 290)}},
     {{27, box_type::normal, color::none}, {Vector2i(253, 310), Vector2i(253, 325), Vector2i(253, 290)}},
     {{28, box_type::normal, color::none}, {Vector2i(216, 310), Vector2i(216, 325), Vector2i(216, 290)}},
@@ -45,14 +45,14 @@ const map<Box, vector<Vector2i>> ParchisGUI::box2position{
     {{40, box_type::normal, color::none}, {Vector2i(216, 462), Vector2i(216, 444), Vector2i(216, 478)}},
     {{41, box_type::normal, color::none}, {Vector2i(253, 462), Vector2i(253, 444), Vector2i(253, 478)}},
     {{42, box_type::normal, color::none}, {Vector2i(288, 462), Vector2i(288, 444), Vector2i(288, 478)}},
-    {{43, box_type::normal, color::none}, {Vector2i(310, 480), Vector2i(328, 555), Vector2i(394, 555)}},
-    {{44, box_type::normal, color::none}, {Vector2i(310, 517), Vector2i(328, 517), Vector2i(394, 517)}},
-    {{45, box_type::normal, color::none}, {Vector2i(310, 555), Vector2i(328, 555), Vector2i(394, 555)}},
-    {{46, box_type::normal, color::none}, {Vector2i(310, 593), Vector2i(328, 593), Vector2i(394, 593)}},
-    {{47, box_type::normal, color::none}, {Vector2i(310, 632), Vector2i(328, 632), Vector2i(394, 632)}},
-    {{48, box_type::normal, color::none}, {Vector2i(310, 669), Vector2i(328, 669), Vector2i(394, 669)}},
-    {{49, box_type::normal, color::none}, {Vector2i(310, 707), Vector2i(328, 707), Vector2i(394, 707)}},
-    {{50, box_type::normal, color::none}, {Vector2i(310, 746), Vector2i(328, 746), Vector2i(394, 746)}},
+    {{43, box_type::normal, color::none}, {Vector2i(310, 480), Vector2i(328, 555), Vector2i(294, 555)}},
+    {{44, box_type::normal, color::none}, {Vector2i(310, 517), Vector2i(328, 517), Vector2i(294, 517)}},
+    {{45, box_type::normal, color::none}, {Vector2i(310, 555), Vector2i(328, 555), Vector2i(294, 555)}},
+    {{46, box_type::normal, color::none}, {Vector2i(310, 593), Vector2i(328, 593), Vector2i(294, 593)}},
+    {{47, box_type::normal, color::none}, {Vector2i(310, 632), Vector2i(328, 632), Vector2i(294, 632)}},
+    {{48, box_type::normal, color::none}, {Vector2i(310, 669), Vector2i(328, 669), Vector2i(294, 669)}},
+    {{49, box_type::normal, color::none}, {Vector2i(310, 707), Vector2i(328, 707), Vector2i(294, 707)}},
+    {{50, box_type::normal, color::none}, {Vector2i(310, 746), Vector2i(328, 746), Vector2i(294, 746)}},
     {{51, box_type::normal, color::none}, {Vector2i(384, 746), Vector2i(366, 746), Vector2i(403, 746)}},
     {{52, box_type::normal, color::none}, {Vector2i(462, 746), Vector2i(443, 746), Vector2i(477, 746)}},
     {{53, box_type::normal, color::none}, {Vector2i(462, 707), Vector2i(443, 707), Vector2i(477, 707)}},
@@ -140,6 +140,8 @@ ParchisGUI::ParchisGUI(Parchis &model)
     this->model = &model;
 
     this->clicked = false;
+
+    this->last_dice = -1;
 
     //Cargamos las texturas
     this->tPieces.loadFromFile("data/textures/fichas_parchis_extended.png");
@@ -273,14 +275,27 @@ void ParchisGUI::processEvents(){
             if(event.mouseButton.button == Mouse::Left){
                 //clicked = true;
                 Vector2i pos = Mouse::getPosition(*this);
-                
+                Vector2f world_pos;
+
                 cout << pos.x << " " << pos.y << endl;
                 //world_pos = window.mapPixelToCoords(pos);
                 vector<color> colors = {red, blue, green, yellow};
 
                 // Eventos en la vista del tablero.
+                this->setView(board_view);
+                world_pos = this->mapPixelToCoords(pos);
+
+                for(int i = board_clickable_sprites.size() - 1; i >= 0; i--){
+                    ClickableSprite *current_sprite = board_clickable_sprites[i];
+                    if(current_sprite->getGlobalBounds().contains(world_pos)){
+                        current_sprite->setClicked(true, *this);
+                    }
+                }
+
+
+                // Eventos en la vista de los dados.
                 this->setView(dice_view);
-                Vector2f world_pos = this->mapPixelToCoords(pos);
+                world_pos = this->mapPixelToCoords(pos);
 
                 for(int i = dice_clickable_sprites.size() - 1; i >= 0; i--){
                     ClickableSprite *current_sprite = dice_clickable_sprites[i];
@@ -288,6 +303,8 @@ void ParchisGUI::processEvents(){
                         current_sprite->setClicked(true, *this);
                     }
                 }
+
+  
 
                 /*
                 for (int i = 0; i < colors.size(); i++){

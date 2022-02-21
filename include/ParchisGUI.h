@@ -64,6 +64,9 @@ private:
     //List of animations.
     list<SpriteAnimator> animations;
 
+    //Last dice number
+    int last_dice;
+
     /**
      * @brief Función que procesa las colisiones del ratón con fichas, dados, etc.
      * 
