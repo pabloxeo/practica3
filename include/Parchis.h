@@ -15,6 +15,19 @@ class Parchis{
         vector<tuple <color, int, Box>> last_moves;
         int last_dice;
 
+        static const int final_red_box = 34;
+        static const int final_blue_box = 17;
+        static const int final_green_box = 51;
+        static const int final_yellow_box = 68;
+
+
+        static const int init_red_box = 38;
+        static const int init_blue_box = 21;
+        static const int init_green_box = 55;
+        static const int init_yellow_box = 4;
+
+        static const vector<int> safe_boxes;
+
     public:
         /**
          * @brief Default construct a new Parchis object
@@ -54,7 +67,7 @@ class Parchis{
          * @param dice_number 
          * @return const vector<int>& 
          */
-        const vector<int> & getAvailablePieces (color player, int dice_number);
+        const vector<int> getAvailablePieces (color player, int dice_number);
 
         /**
          * @brief Mover la pieza número "piece" del jugador "player" "dice_number" posiciones.
@@ -90,6 +103,43 @@ class Parchis{
          * @return int 
          */
         int getLastDice();
+
+        /**
+         * @brief Obtener la ocupación de un box
+         * 
+         * @param box 
+         * @return vector<pair <color, int>> 
+         */
+        const vector<pair <color, int>> boxState(const Box & box) const;
+
+        /**
+         * @brief Función que devuelve el color del muro (en caso de haberlo) en la casilla "box"
+         * 
+         * @param b 
+         * @return const color 
+         */
+        const color isWall(const Box & b) const;
+
+        /**
+         * @brief Función que devuelve el vector de colores de los muros (en caso de haberlos) del
+         * camino entre b1 y b2.
+         * 
+         * @param b1 
+         * @param b2 
+         * @return const vector<color> 
+         */
+        const vector<color> anyWall(const Box & b1, const Box & b2) const;
+
+        /**
+         * @brief Función auxiliar que calcula la casilla destino tras aplicar el movimiento.
+         * 
+         * @param player 
+         * @param box 
+         * @param dice_number 
+         * @return const Box 
+         */
+        const Box computeMove(color player, const Box & box, int dice_number) const;
+
 
 };
 
