@@ -77,7 +77,7 @@ bool Parchis::isLegalMove(color player, const Box & box, int dice_number){
     }else if(box.type == goal){
         return false;
     
-    }else if(boxState(final_box).size() == 2){
+    }else if(final_box.type != goal && final_box.type != home &&  boxState(final_box).size() == 2){
     //Controlar los muros
         return false;
     }else{

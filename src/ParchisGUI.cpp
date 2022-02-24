@@ -160,7 +160,8 @@ ParchisGUI::ParchisGUI(Parchis &model)
         vector<PieceSprite> col_pieces_sprites;
         for(int j = 0; j < model.getBoard().getPieces(color::red).size(); j++){
             col_pieces_sprites.push_back(PieceSprite(tPieces, j, col));
-            col_pieces_sprites[j].setPosition((Vector2f)box2position.at(model.getBoard().getPiece(col, j))[j]);
+            //col_pieces_sprites[j].setPosition((Vector2f)box2position.at(model.getBoard().getPiece(col, j))[j]);
+            col_pieces_sprites[j].setPosition(box3position(col, j, 0));
         }
         pieces.insert({col, col_pieces_sprites});
     }
@@ -437,8 +438,10 @@ void ParchisGUI::run(){
 Vector2f ParchisGUI::box3position(color c, int id, int pos){
     Box piece = model->getBoard().getPiece(c, id);
     if (piece.type == home || piece.type == goal) {
+        cout << "AAAAAAAAAAA" << piece.type << " " << piece.num << " " << piece.col << " " << c << " " << id << endl;
         return (Vector2f)box2position.at(piece)[id];
     }else{
+        cout << "EEEEEEEEEE" << endl;
         return (Vector2f)box2position.at(piece)[pos];
     }
 }
