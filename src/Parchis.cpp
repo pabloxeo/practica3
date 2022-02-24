@@ -109,6 +109,7 @@ const vector<int> Parchis::getAvailablePieces(color player, int dice_number){
 const Box Parchis::computeMove(color player, const Box & piece_box, int dice_number) const{
     Box final_box;
 
+    //Si sale un 6, comprobar si se da condición para avanzar 7 o 6
     if(dice_number == 6){
         bool pieces_out = true;
         for (int i = 0; i < board.getPieces(player).size() && pieces_out; i++){
@@ -122,6 +123,7 @@ const Box Parchis::computeMove(color player, const Box & piece_box, int dice_num
         }
     }
 
+    //Si sale de la casilla de home
     if (piece_box.type == home){
         switch (player){
             case red:
@@ -138,6 +140,7 @@ const Box Parchis::computeMove(color player, const Box & piece_box, int dice_num
                 break;
         }
             
+    //Condiciones para empezar a avanzar por pasillo de meta
     }else if(piece_box.num <= 17 && piece_box.num + dice_number > 17 && player == blue && piece_box.type == normal){
         final_box = Box(piece_box.num + dice_number-17, final_queue, blue);
 
@@ -150,6 +153,7 @@ const Box Parchis::computeMove(color player, const Box & piece_box, int dice_num
     }else if(piece_box.num <= 68 && piece_box.num + dice_number > 68 && player == yellow && piece_box.type == normal){
         final_box = Box(piece_box.num + dice_number-68, final_queue, yellow);
 
+    //Si ya está en pasillo de meta
     }else if(piece_box.type == final_queue){
         if (piece_box.num + dice_number <= 7){
             final_box = Box(piece_box.num + dice_number, final_queue, player);
@@ -159,6 +163,7 @@ const Box Parchis::computeMove(color player, const Box & piece_box, int dice_num
             final_box = Box(16 - (piece_box.num + dice_number), final_queue, player);
         }
     }
+    //Por defecto
     else{
         final_box = Box(1 + (piece_box.num+ dice_number - 1) % 68, box_type::normal, color::none);
     }
@@ -171,13 +176,34 @@ void Parchis::movePiece(color player, int piece, int dice_number){
     Box piece_box = board.getPiece(player, piece);
     if(isLegalMove(player, piece_box, dice_number)){
         Box final_box = computeMove(player, piece_box, dice_number);
+
+        /* Gestión de las "comidas"*/
+        //Comprobar si hay una ficha en la casilla destino
+        vector<pair <color, int>> box_states = boxState(final_box);
+        bool hay_comida_xd = false;
+        if (!box_states.empty() && box_states[0].first != player){
+            //Comprobar que la casilla no es segura
+            vector<int>::const_iterator ci; 
+            if (final_box.type == normal && count(safe_boxes.begin(), safe_boxes.end(), final_box.num) == 0){
+                //Movemos la ficha
+                hay_comida_xd = true;
+
+            }
+        }
+
+
         board.movePiece(player, piece, final_box);
 
         this->last_dice = dice_number;
         this->last_moves.clear();
         this->last_moves.push_back(tuple<color, int, Box>(player, piece, final_box));
+
         // Controlar si se come alguna ficha. En ese caso se actualiza también la ficha comida.
         // La ficha comida se añadiría también al vector last_moves.
+        if(hay_comida_xd){
+            board.movePiece(box_states[0].first, box_states[0].second, Box(0, home, box_states[0].first));
+            this->last_moves.push_back(tuple<color, int, Box>(box_states[0].first, box_states[0].second, Box(0, home, box_states[0].first)));
+        }
     }
 }
 

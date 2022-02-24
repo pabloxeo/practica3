@@ -103,6 +103,15 @@ private:
      */
     void collectSprites();
 
+    /**
+     * @brief Método privado que implementa el box2position evitando colisiones.
+     * 
+     * @param c 
+     * @param id 
+     * @return Vector2f 
+     */
+    Vector2f box3position(color c, int id, int pos);
+
 public:
     ParchisGUI(Parchis & model);
     

@@ -36,19 +36,21 @@ void PieceSprite::onClickAction(Window & container){
             const vector<pair <color, int>> occupation = gui->model->boxState(get<2>(last_moves[i]));
 
             if (occupation.size() == 1){
-                Vector2f animate_pos= Vector2f(gui->box2position.at(get<2>(last_moves[i]))[0].x, gui->box2position.at(get<2>(last_moves[i]))[0].y);
+                Vector2f animate_pos= Vector2f(gui->box3position(get<0>(last_moves[i]), get<1>(last_moves[i]), 0));
+
+                //box2position.at(get<2>(last_moves[i]))[0].x, gui->box2position.at(get<2>(last_moves[i]))[0].y);
                 
                 Sprite *animate_sprite = &gui->pieces[get<0>(last_moves[i])][get<1>(last_moves[i])];
                 SpriteAnimator animator = SpriteAnimator(*animate_sprite, animate_pos, 1000);
                 gui->animations.push_back(animator);
 
             }else{
-                Vector2f animate_pos= Vector2f(gui->box2position.at(get<2>(last_moves[i]))[1].x, gui->box2position.at(get<2>(last_moves[i]))[1].y);
+                Vector2f animate_pos= Vector2f(gui->box3position(get<0>(last_moves[i]), get<1>(last_moves[i]), 1));
                 Sprite *animate_sprite = &gui->pieces[occupation.at(0).first][occupation.at(0).second];
                 SpriteAnimator animator = SpriteAnimator(*animate_sprite, animate_pos, 1000);
                 gui->animations.push_back(animator);
 
-                Vector2f animate_2_pos = Vector2f(gui->box2position.at(get<2>(last_moves[i]))[2].x, gui->box2position.at(get<2>(last_moves[i]))[2].y);
+                Vector2f animate_2_pos= Vector2f(gui->box3position(get<0>(last_moves[i]), get<1>(last_moves[i]), 2));
                 Sprite *animate_2_sprite = &gui->pieces[occupation.at(1).first][occupation.at(1).second];
                 SpriteAnimator animator_2 = SpriteAnimator(*animate_2_sprite, animate_2_pos, 1000);
                 gui->animations.push_back(animator_2);
@@ -57,7 +59,8 @@ void PieceSprite::onClickAction(Window & container){
             const vector<pair <color, int>> origin_occupation = gui->model->boxState(origin);
 
             if (origin_occupation.size() == 1){
-                Vector2f animate_pos= Vector2f(gui->box2position.at(origin)[0].x, gui->box2position.at(origin)[0].y);
+                Vector2f animate_pos = Vector2f(gui->box3position(origin_occupation.at(0).first, origin_occupation.at(0).second, 0));
+                //Vector2f animate_pos= Vector2f(gui->box2position.at(origin)[0].x, gui->box2position.at(origin)[0].y);
                 Sprite *animate_sprite = &gui->pieces[origin_occupation.at(0).first][origin_occupation.at(0).second];
                 SpriteAnimator animator = SpriteAnimator(*animate_sprite, animate_pos, 1000);
                 gui->animations.push_back(animator);

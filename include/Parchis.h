@@ -5,6 +5,8 @@
 # include "Dice.h"
 # include "Board.h"
 #include <iostream>
+#include <algorithm>
+
 
 using namespace std;
 
@@ -19,7 +21,6 @@ class Parchis{
         static const int final_blue_box = 17;
         static const int final_green_box = 51;
         static const int final_yellow_box = 68;
-
 
         static const int init_red_box = 38;
         static const int init_blue_box = 21;
@@ -139,8 +140,6 @@ class Parchis{
          * @return const Box 
          */
         const Box computeMove(color player, const Box & box, int dice_number) const;
-
-
 };
 
 

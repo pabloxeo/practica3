@@ -430,3 +430,15 @@ void ParchisGUI::run(){
         mainLoop();
     }
 }
+
+//col_pieces_sprites[j].setPosition((Vector2f)box2position.at(model.getBoard().getPiece(col, j))[j]);
+
+
+Vector2f ParchisGUI::box3position(color c, int id, int pos){
+    Box piece = model->getBoard().getPiece(c, id);
+    if (piece.type == home || piece.type == goal) {
+        return (Vector2f)box2position.at(piece)[id];
+    }else{
+        return (Vector2f)box2position.at(piece)[pos];
+    }
+}
