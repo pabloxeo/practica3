@@ -45,7 +45,7 @@ const map<Box, vector<Vector2i>> ParchisGUI::box2position{
     {{40, box_type::normal, color::none}, {Vector2i(216, 462), Vector2i(216, 444), Vector2i(216, 478)}},
     {{41, box_type::normal, color::none}, {Vector2i(253, 462), Vector2i(253, 444), Vector2i(253, 478)}},
     {{42, box_type::normal, color::none}, {Vector2i(288, 462), Vector2i(288, 444), Vector2i(288, 478)}},
-    {{43, box_type::normal, color::none}, {Vector2i(310, 480), Vector2i(328, 555), Vector2i(294, 555)}},
+    {{43, box_type::normal, color::none}, {Vector2i(310, 480), Vector2i(328, 480), Vector2i(294, 480)}},
     {{44, box_type::normal, color::none}, {Vector2i(310, 517), Vector2i(328, 517), Vector2i(294, 517)}},
     {{45, box_type::normal, color::none}, {Vector2i(310, 555), Vector2i(328, 555), Vector2i(294, 555)}},
     {{46, box_type::normal, color::none}, {Vector2i(310, 593), Vector2i(328, 593), Vector2i(294, 593)}},
