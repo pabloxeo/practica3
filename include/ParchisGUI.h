@@ -14,6 +14,7 @@
 #include "ClickableSprite.h"
 #include "SpriteAnimator.h"
 #include <list>
+#include <queue>
 
 using namespace sf;
 using namespace std;
@@ -29,12 +30,14 @@ private:
     //RenderWindow game_window;
     Parchis *model;
     
-    //Textures' definitions  
+    //Textures' definitions
+    Texture tBackground;
     Texture tBoard;
     Texture tPieces;
     Texture tDices;
     
     //Sprites' definitions
+    Sprite background;
     map <color, vector<PieceSprite>> pieces;
     map <color, vector<DiceSprite>> dices;
     Sprite board;
@@ -44,6 +47,8 @@ private:
     vector<ClickableSprite*> all_clickable_sprites;
 
     //Sprites lists separated by views.
+    vector<Sprite*> general_drawable_sprites;
+
     vector<Sprite*> board_drawable_sprites;
     vector<Sprite*> dice_drawable_sprites;
 
@@ -51,6 +56,7 @@ private:
     vector<ClickableSprite*> dice_clickable_sprites;
 
     // Views
+    View general_view;
     View board_view;
     View dice_view;
 
@@ -62,7 +68,11 @@ private:
     bool clicked;
 
     //List of animations.
-    list<SpriteAnimator> animations;
+    //list<SpriteAnimator> animations;
+    // Several channels for animations, so that several animations can be run in parallel but also animations can be chained.
+    queue<SpriteAnimator> animations_ch1; // Normal piece animations.
+    queue<SpriteAnimator> animations_ch2; // Piece animations with collisions.
+    queue<SpriteAnimator> animations_ch3; // Piece animations with anti-collisions.
 
     //Last dice number
     int last_dice;
@@ -111,6 +121,7 @@ private:
      * @return Vector2f 
      */
     Vector2f box3position(color c, int id, int pos);
+    Vector2f box3position(Box b, int id, int pos);
 
 public:
     ParchisGUI(Parchis & model);

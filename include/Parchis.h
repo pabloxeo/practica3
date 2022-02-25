@@ -139,7 +139,7 @@ class Parchis{
          * @param dice_number 
          * @return const Box 
          */
-        const Box computeMove(color player, const Box & box, int dice_number) const;
+        const Box computeMove(color player, const Box & box, int dice_number, bool * goal_bounce = NULL) const;
 };
 
 

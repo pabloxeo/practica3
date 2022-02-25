@@ -45,3 +45,12 @@ void SpriteAnimator::update(){
 bool SpriteAnimator::hasEnded(){
     return this->animation_clock.getElapsedTime().asMilliseconds() >= animation_time;
 }
+
+void SpriteAnimator::setStartPosition(const Vector2f & start_pos){
+    this->start_pos = start_pos;
+}
+
+void SpriteAnimator::setStartPosition()
+{
+    this->start_pos = sprite->getPosition();
+}

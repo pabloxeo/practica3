@@ -115,7 +115,7 @@ const map<Box, vector<Vector2i>> ParchisGUI::box2position{
     // Verdes
     {{0, box_type::goal, color::green}, {Vector2i(384, 440), Vector2i(384, 408), Vector2i(415, 440), Vector2i(350, 440)}},
     // Azules
-    {{0, box_type::goal, color::blue}, {Vector2i(384, 408), Vector2i(384, 354), Vector2i(415, 326), Vector2i(350, 326)}},
+    {{0, box_type::goal, color::blue}, {Vector2i(384, 326), Vector2i(384, 354), Vector2i(415, 326), Vector2i(350, 326)}},
     // Rojas
     {{0, box_type::goal, color::red}, {Vector2i(329, 385), Vector2i(360, 385), Vector2i(329, 350), Vector2i(329, 420)}},
     // Amarillas
@@ -134,7 +134,7 @@ const map<Box, vector<Vector2i>> ParchisGUI::box2position{
 };
 
 ParchisGUI::ParchisGUI(Parchis &model)
-    : RenderWindow(VideoMode(1600, 800), L"Parchís", Style::Titlebar | Style::Close)
+    : RenderWindow(VideoMode(1600, 1000), L"Parchís", Style::Titlebar | Style::Close)
     // L"string" parece que permite representar caraceteres unicode. Útil para acentos y demás.
 {
     this->model = &model;
@@ -144,11 +144,14 @@ ParchisGUI::ParchisGUI(Parchis &model)
     this->last_dice = -1;
 
     //Cargamos las texturas
+    this->tBackground.loadFromFile("data/textures/background.png");
     this->tPieces.loadFromFile("data/textures/fichas_parchis_extended.png");
     this->tBoard.loadFromFile("data/textures/parchis_board_resized.png");
     this->tDices.loadFromFile("data/textures/dice_extended.png");
 
     //Definimos los sprites
+    this->background = Sprite(tBackground);
+    this->background.setPosition(1000, 1000);
     this->board = Sprite(tBoard);
 
     // Vector de colores (ver cómo se podría obtener directamente del enumerado)
@@ -179,6 +182,9 @@ ParchisGUI::ParchisGUI(Parchis &model)
     }
 
     //Creación de las vistas
+    general_view = View(FloatRect(1000, 1000, 1581, 1133));
+    general_view.setViewport(FloatRect(0.f, 0.f, 1.f, 1.f));
+
     board_view = View(FloatRect(0.f, 0.f, 800.f, 800.f));
     board_view.setViewport(FloatRect(0.f, 0.f, 0.5f, 1.0f));
 
@@ -191,6 +197,9 @@ ParchisGUI::ParchisGUI(Parchis &model)
 
 void ParchisGUI::collectSprites(){
     // Tablero como sprite dibujable (IMPORTANTE: Añadir a all_drawable_sprites en el orden en que se dibujan)
+    all_drawable_sprites.push_back(&background);
+    general_drawable_sprites.push_back(&background);
+
     all_drawable_sprites.push_back(&board);
     board_drawable_sprites.push_back(&board);
 
@@ -270,62 +279,51 @@ void ParchisGUI::processEvents(){
             this->close();
         }
 
-        if(event.type == Event::MouseButtonPressed){ // Eventos de ratón.
+        if(event.type == Event::MouseButtonPressed || event.type == Event::MouseButtonReleased){ // Eventos de ratón.
             //cout << pos.x << " " << pos.y << " " << world_pos.x << " " << world_pos.y << endl;
             //cout << board.getGlobalBounds().top << " " << board.getGlobalBounds().left << endl;
-            if(event.mouseButton.button == Mouse::Left){
-                //clicked = true;
-                Vector2i pos = Mouse::getPosition(*this);
-                Vector2f world_pos;
+            bool clicked;
+            if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left)
+                clicked = true;
+            else
+                clicked =false;
 
-                cout << pos.x << " " << pos.y << endl;
-                //world_pos = window.mapPixelToCoords(pos);
-                vector<color> colors = {red, blue, green, yellow};
+            //clicked = true;
+            Vector2i pos = Mouse::getPosition(*this);
+            Vector2f world_pos;
 
-                // Eventos en la vista del tablero.
-                this->setView(board_view);
-                world_pos = this->mapPixelToCoords(pos);
+            cout << pos.x << " " << pos.y << endl;
+            //world_pos = window.mapPixelToCoords(pos);
+            vector<color> colors = {red, blue, green, yellow};
 
-                for(int i = board_clickable_sprites.size() - 1; i >= 0; i--){
-                    ClickableSprite *current_sprite = board_clickable_sprites[i];
-                    if(current_sprite->getGlobalBounds().contains(world_pos)){
-                        current_sprite->setClicked(true, *this);
-                    }
+            // Eventos en la vista del tablero.
+            this->setView(board_view);
+            world_pos = this->mapPixelToCoords(pos);
+
+            for(int i = board_clickable_sprites.size() - 1; i >= 0; i--){
+                ClickableSprite *current_sprite = board_clickable_sprites[i];
+                if(clicked && current_sprite->getGlobalBounds().contains(world_pos)){
+                    current_sprite->setClicked(true, *this);
                 }
-
-
-                // Eventos en la vista de los dados.
-                this->setView(dice_view);
-                world_pos = this->mapPixelToCoords(pos);
-
-                for(int i = dice_clickable_sprites.size() - 1; i >= 0; i--){
-                    ClickableSprite *current_sprite = dice_clickable_sprites[i];
-                    if(current_sprite->getGlobalBounds().contains(world_pos)){
-                        current_sprite->setClicked(true, *this);
-                    }
+                else{
+                    current_sprite->setClicked(false, *this);
                 }
-
-  
-
-                /*
-                for (int i = 0; i < colors.size(); i++){
-                    for (int j = 0; j < dices[colors[i]].size(); j++){
-                        DiceSprite *current_dice = &dices[colors[i]][j];
-                        if(current_dice->getGlobalBounds().contains(world_pos)){ 
-                            cout << "Animacion " << i << " " << j << endl;
-                            model->movePiece(current_dice->getModelColor(), 0, current_dice->getNumber());
-                            vector<tuple<color, int, Box>> last_moves = model->getLastMoves();
-                            for (int i = 0; i < last_moves.size(); i++){
-                                Sprite *animate_sprite = &pieces[get<0>(last_moves[i])][get<1>(last_moves[i])];
-                                Vector2f animate_pos = Vector2f(box2position.at(get<2>(last_moves[i]))[0].x, box2position.at(get<2>(last_moves[i]))[0].y);
-                                SpriteAnimator animator = SpriteAnimator(*animate_sprite, animate_pos, 1000);
-                                animations.push_back(animator);
-                            }
-                        }
-                    }
-                }
-                */
                 
+            }
+
+
+            // Eventos en la vista de los dados.
+            this->setView(dice_view);
+            world_pos = this->mapPixelToCoords(pos);
+
+            for(int i = dice_clickable_sprites.size() - 1; i >= 0; i--){
+                ClickableSprite *current_sprite = dice_clickable_sprites[i];
+                if (clicked && current_sprite->getGlobalBounds().contains(world_pos)){
+                    current_sprite->setClicked(true, *this);
+                }
+                else{
+                    current_sprite->setClicked(false, *this);
+                }
             }
         }
     }
@@ -333,6 +331,7 @@ void ParchisGUI::processEvents(){
 
 void ParchisGUI::processAnimations()
 {
+    /*
     list<SpriteAnimator>::iterator it;
     for (it = animations.begin(); it != animations.end();)
     {
@@ -344,15 +343,59 @@ void ParchisGUI::processAnimations()
             ++it;
         }
     }
+    */
+
+    // Channel 1
+    if(!animations_ch1.empty()){
+        SpriteAnimator sa_1 = animations_ch1.front();
+        sa_1.update();
+        if(sa_1.hasEnded()){
+            animations_ch1.pop();
+            if(!animations_ch1.empty()){
+                animations_ch1.front().setStartPosition();
+                animations_ch1.front().restart();
+            }
+        }
+    }
+
+    // Channel 2
+    if (!animations_ch2.empty()){
+        SpriteAnimator sa_2 = animations_ch2.front();
+        sa_2.update();
+        if (sa_2.hasEnded()){
+            animations_ch2.pop();
+            if (!animations_ch2.empty()){
+                animations_ch2.front().setStartPosition();
+                animations_ch2.front().restart();
+            }
+        }
+    }
+
+    // Channel 3
+    if (!animations_ch3.empty()){
+        SpriteAnimator sa_3 = animations_ch3.front();
+        sa_3.update();
+        if (sa_3.hasEnded()){
+            animations_ch3.pop();
+            if (!animations_ch3.empty()){
+                animations_ch3.front().setStartPosition();
+                animations_ch3.front().restart();
+            }
+        }
+    }
 }
 
-void ParchisGUI::processSettings()
-{
+void ParchisGUI::processSettings(){
 }
 
 void ParchisGUI::paint(){
     this->clear(Color::White);
 
+    //Dibujamos elementos generales (sin vistas)
+    this->setView(general_view);
+    for(int i = 0; i < general_drawable_sprites.size(); i++){
+        this->draw(*general_drawable_sprites[i]);
+    }
     //Dibujamos elementos de la vista del tablero.
     this->setView(board_view);
     for(int i = 0; i < board_drawable_sprites.size(); i++){
@@ -368,62 +411,6 @@ void ParchisGUI::paint(){
 
     this->display();
 
-    /*
-    // Vista del tablero (crear view más adelante)
-
-    // Dibujar tablero
-    this->draw(this->board);
-
-    // Dibujar fichas
-    // Rojas
-    for(int i = 0; i < pieces.at(color::red).size(); i++)
-    {
-        this->draw(pieces.at(color::red).at(i));
-    }
-    // Azules
-    for (int i = 0; i < pieces.at(color::blue).size(); i++)
-    {
-        this->draw(pieces.at(color::blue).at(i));
-    }
-
-    // Verdes
-    for (int i = 0; i < pieces.at(color::green).size(); i++)
-    {
-        this->draw(pieces.at(color::green).at(i));
-    }
-
-    // Amarillas
-    for (int i = 0; i < pieces.at(color::yellow).size(); i++)
-    {
-        this->draw(pieces.at(color::yellow).at(i));
-    }
-
-    //Dibujar dados
-    // Rojas
-    for(int i = 0; i < dices.at(color::red).size(); i++)
-    {
-        this->draw(dices.at(color::red).at(i));
-    }
-    // Azules
-    for (int i = 0; i < dices.at(color::blue).size(); i++)
-    {
-        this->draw(dices.at(color::blue).at(i));
-    }
-
-    // Verdes
-    for (int i = 0; i < dices.at(color::green).size(); i++)
-    {
-        this->draw(dices.at(color::green).at(i));
-    }
-
-    // Amarillas
-    for (int i = 0; i < dices.at(color::yellow).size(); i++)
-    {
-        this->draw(dices.at(color::yellow).at(i));
-    }
-
-    this->display();
-    */
 }
 
 void ParchisGUI::run(){
@@ -438,10 +425,16 @@ void ParchisGUI::run(){
 Vector2f ParchisGUI::box3position(color c, int id, int pos){
     Box piece = model->getBoard().getPiece(c, id);
     if (piece.type == home || piece.type == goal) {
-        cout << "AAAAAAAAAAA" << piece.type << " " << piece.num << " " << piece.col << " " << c << " " << id << endl;
         return (Vector2f)box2position.at(piece)[id];
     }else{
-        cout << "EEEEEEEEEE" << endl;
+        return (Vector2f)box2position.at(piece)[pos];
+    }
+}
+
+Vector2f ParchisGUI::box3position(Box piece, int id, int pos){
+    if (piece.type == home || piece.type == goal){
+        return (Vector2f)box2position.at(piece)[id];
+    }else{
         return (Vector2f)box2position.at(piece)[pos];
     }
 }

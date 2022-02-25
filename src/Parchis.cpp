@@ -106,8 +106,10 @@ const vector<int> Parchis::getAvailablePieces(color player, int dice_number){
 
 }
 
-const Box Parchis::computeMove(color player, const Box & piece_box, int dice_number) const{
+const Box Parchis::computeMove(color player, const Box & piece_box, int dice_number, bool * goal_bounce) const{
     Box final_box;
+
+    if(goal_bounce != NULL) *goal_bounce = false;
 
     //Si sale un 6, comprobar si se da condición para avanzar 7 o 6
     if(dice_number == 6){
@@ -161,6 +163,7 @@ const Box Parchis::computeMove(color player, const Box & piece_box, int dice_num
             final_box = Box(0, goal, player);
         }else{
             final_box = Box(16 - (piece_box.num + dice_number), final_queue, player);
+            if(goal_bounce != NULL) *goal_bounce = true;
         }
     }
     //Por defecto
@@ -175,7 +178,8 @@ void Parchis::movePiece(color player, int piece, int dice_number){
     // Switch por colores
     Box piece_box = board.getPiece(player, piece);
     if(isLegalMove(player, piece_box, dice_number)){
-        Box final_box = computeMove(player, piece_box, dice_number);
+        bool goal_bounce = false;
+        Box final_box = computeMove(player, piece_box, dice_number, &goal_bounce);
 
         /* Gestión de las "comidas"*/
         //Comprobar si hay una ficha en la casilla destino
@@ -196,7 +200,13 @@ void Parchis::movePiece(color player, int piece, int dice_number){
 
         this->last_dice = dice_number;
         this->last_moves.clear();
-        this->last_moves.push_back(tuple<color, int, Box>(player, piece, final_box));
+
+        if(!goal_bounce)
+            this->last_moves.push_back(tuple<color, int, Box>(player, piece, final_box));
+        else{
+            this->last_moves.push_back(tuple<color, int, Box>(player, piece, Box(0, goal, player)));
+            this->last_moves.push_back(tuple<color, int, Box>(player, piece, final_box));
+        }
 
         // Controlar si se come alguna ficha. En ese caso se actualiza también la ficha comida.
         // La ficha comida se añadiría también al vector last_moves.
