@@ -134,7 +134,7 @@ const map<Box, vector<Vector2i>> ParchisGUI::box2position{
 };
 
 ParchisGUI::ParchisGUI(Parchis &model)
-    : RenderWindow(VideoMode(1600, 1000), L"Parchís", Style::Titlebar | Style::Close)
+    : RenderWindow(VideoMode(1600, 800), L"Parchís", Style::Titlebar | Style::Close)
     // L"string" parece que permite representar caraceteres unicode. Útil para acentos y demás.
 {
     this->model = &model;
@@ -182,14 +182,14 @@ ParchisGUI::ParchisGUI(Parchis &model)
     }
 
     //Creación de las vistas
-    general_view = View(FloatRect(1000, 1000, 1581, 1133));
+    general_view = View(FloatRect(1000, 1000, 1600, 800));
     general_view.setViewport(FloatRect(0.f, 0.f, 1.f, 1.f));
 
     board_view = View(FloatRect(0.f, 0.f, 800.f, 800.f));
-    board_view.setViewport(FloatRect(0.f, 0.f, 0.5f, 1.0f));
+    board_view.setViewport(FloatRect(0.f, 0.f, 0.5f, 1.f));
 
     dice_view = View(FloatRect(850.f, 50.f, 420.f, 320.f));
-    dice_view.setViewport(FloatRect(0.55f, 0.05f, 0.3f, 0.4f));
+    dice_view.setViewport(FloatRect(0.555f, 0.055f, 0.3f, 0.4f));
 
 
     collectSprites();
