@@ -91,6 +91,19 @@ public :
      * @return false 
      */
     bool hasEnded();
+
+    /**
+     * @brief Set the Start Position object
+     * 
+     */
+    void setStartPosition();
+
+    /**
+     * @brief Set the Start Position object
+     * 
+     * @param start_pos 
+     */
+    void setStartPosition(const Vector2f & start_pos);
 };
 
 #endif
