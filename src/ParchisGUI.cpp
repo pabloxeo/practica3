@@ -134,7 +134,7 @@ const map<Box, vector<Vector2i>> ParchisGUI::box2position{
 };
 
 ParchisGUI::ParchisGUI(Parchis &model)
-    : RenderWindow(VideoMode(1600, 800), L"Parchís", Style::Titlebar | Style::Close)
+    : RenderWindow(VideoMode(1600, 800, VideoMode::getDesktopMode().bitsPerPixel), L"Parchís", Style::Titlebar | Style::Close)
     // L"string" parece que permite representar caraceteres unicode. Útil para acentos y demás.
 {
     this->model = &model;
