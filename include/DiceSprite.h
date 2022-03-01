@@ -32,6 +32,7 @@ class DiceSprite: public ClickableSprite{
         void onEnableAction(Window & container);
         void onSelectionAction(Window & container);
         void onHoverAction(Window & container);
+        void onLockAction(Window & container);
 };
 
 #endif

@@ -25,7 +25,7 @@ void PieceSprite::onClickAction(Window & container){
 
     ParchisGUI * gui = dynamic_cast<ParchisGUI*>(&container);
 
-    if(clicked == true){
+    if(enabled && !locked && clicked){
         Box origin = gui->model->getBoard().getPiece(this->getModelColor(), this->id);
 
         gui->model->movePiece(this->getModelColor(), this->id,  gui->last_dice);
@@ -73,15 +73,29 @@ void PieceSprite::onClickAction(Window & container){
 
         }
     }
+
+    gui->updateEnabledSprites();
 }
 
-void PieceSprite::onEnableAction(Window & container){}
+void PieceSprite::onEnableAction(Window & container){
+    if(enabled)
+        this->setColor(Color::White); // Color completo si enabled
+    else
+        this->setColor(Color(128, 128, 128));  // Oscurecido si disabled.
+}
 
 void PieceSprite::onSelectionAction(Window & container){}
 
+void PieceSprite::onLockAction(Window & container){}
+
 void PieceSprite::onHoverAction(Window & container){
     if(hovered){
-        this->setTextureRect(IntRect(col2selectedrec.at(c).at(0), col2selectedrec.at(c).at(1), col2selectedrec.at(c).at(2), col2selectedrec.at(c).at(3)));
+        if (locked || !enabled){
+            ParchisGUI *gui = dynamic_cast<ParchisGUI *>(&container);
+            gui->setForbiddenCursor();
+        }
+        else
+            this->setTextureRect(IntRect(col2selectedrec.at(c).at(0), col2selectedrec.at(c).at(1), col2selectedrec.at(c).at(2), col2selectedrec.at(c).at(3)));
     }
     else{
         this->setTextureRect(IntRect(col2textrec.at(c).at(0), col2textrec.at(c).at(1), col2textrec.at(c).at(2), col2textrec.at(c).at(3)));

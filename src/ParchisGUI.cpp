@@ -193,6 +193,8 @@ ParchisGUI::ParchisGUI(Parchis &model)
 
 
     collectSprites();
+
+    this->updateEnabledSprites();
 }
 
 void ParchisGUI::collectSprites(){
@@ -242,10 +244,13 @@ void ParchisGUI::processMouse(){
     this->setView(board_view);
     world_pos = this->mapPixelToCoords(pos);
 
+    bool already_hovered = false;
+
     for(int i = board_clickable_sprites.size() - 1; i >= 0; i--){
         ClickableSprite *current_sprite = board_clickable_sprites[i];
-        if(current_sprite->getGlobalBounds().contains(world_pos)){
+        if(current_sprite->getGlobalBounds().contains(world_pos) && !already_hovered){
             current_sprite->setHovered(true, *this);
+            already_hovered = true;
         }
         else{
             current_sprite->setHovered(false, *this);
@@ -258,15 +263,24 @@ void ParchisGUI::processMouse(){
     for (int i = dice_clickable_sprites.size() - 1; i >= 0; i--)
     {
         ClickableSprite *current_sprite = dice_clickable_sprites[i];
-        if (current_sprite->getGlobalBounds().contains(world_pos))
+        if (current_sprite->getGlobalBounds().contains(world_pos) && !already_hovered)
         {
             current_sprite->setHovered(true, *this);
+            already_hovered = true;
         }
         else
         {
             current_sprite->setHovered(false, *this);
         }
     }
+
+    if(!already_hovered){
+        this->defaultHover();
+    }
+}
+
+void ParchisGUI::defaultHover(){
+    this->setDefaultCursor();
 }
 
 void ParchisGUI::processEvents(){
@@ -413,6 +427,22 @@ void ParchisGUI::paint(){
 
 }
 
+void ParchisGUI::updateEnabledSprites(){
+    vector<color> colors = {red, blue, green, yellow};
+    for(int i = 0; i < colors.size(); i++){
+        color c = colors[i];
+        vector<Box> player_pieces = model->getBoard().getPieces(c);
+        for(int j = 0; j < player_pieces.size(); j++){
+            if (model->isLegalMove(c, player_pieces[j], this->last_dice)){
+                this->pieces[c][j].setEnabled(true, *this);
+            }
+            else{
+                this->pieces[c][j].setEnabled(false, *this);
+            }
+        }
+    }
+}
+
 void ParchisGUI::run(){
     while(this->isOpen()){
         mainLoop();
@@ -437,4 +467,24 @@ Vector2f ParchisGUI::box3position(Box piece, int id, int pos){
     }else{
         return (Vector2f)box2position.at(piece)[pos];
     }
+}
+
+
+//Cursores
+void ParchisGUI::setDefaultCursor()
+{
+    if(cursor.loadFromSystem(Cursor::Arrow))
+        this->setMouseCursor(cursor);
+}
+
+void ParchisGUI::setForbiddenCursor()
+{
+    if (cursor.loadFromSystem(Cursor::NotAllowed))
+        this->setMouseCursor(cursor);
+}
+
+void ParchisGUI::setHandCursor()
+{
+    if (cursor.loadFromSystem(Cursor::Hand))
+        this->setMouseCursor(cursor);
 }

@@ -22,3 +22,8 @@ void ClickableSprite::setHovered(bool b, Window & container)
     this->hovered = b;
     onHoverAction(container);
 }
+
+void ClickableSprite::setLocked(bool b, Window & container){
+    this->locked = b;
+    onLockAction(container);
+}

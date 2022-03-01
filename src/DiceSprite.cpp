@@ -37,8 +37,9 @@ DiceSprite::DiceSprite(const Texture & t, int n, color c) : ClickableSprite(t){
 void DiceSprite::onClickAction(Window & container) {
     ParchisGUI * gui = dynamic_cast<ParchisGUI*>(&container);
 
-    if(clicked == true){
+    if(!locked && enabled && clicked){
         gui->last_dice = this->number;
+        gui->updateEnabledSprites();
     }
 }
 
@@ -46,10 +47,17 @@ void DiceSprite::onEnableAction(Window & container) {}
 
 void DiceSprite::onSelectionAction(Window & container) {}
 
+void DiceSprite::onLockAction(Window & container) {}
+
 void DiceSprite::onHoverAction(Window &container) {
     if (hovered)
     {
-        this->setTextureRect(IntRect(num2selectedrec.at(number).at(0), num2selectedrec.at(number).at(1), num2selectedrec.at(number).at(2), num2selectedrec.at(number).at(3)));
+        if(locked || !enabled){
+            ParchisGUI *gui = dynamic_cast<ParchisGUI *>(&container);
+            gui->setForbiddenCursor();
+        }
+        else
+            this->setTextureRect(IntRect(num2selectedrec.at(number).at(0), num2selectedrec.at(number).at(1), num2selectedrec.at(number).at(2), num2selectedrec.at(number).at(3)));
     }
     else
     {

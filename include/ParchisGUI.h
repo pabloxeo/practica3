@@ -67,6 +67,9 @@ private:
     //Click booleans
     bool clicked;
 
+    //Cursor
+    Cursor cursor;
+
     //List of animations.
     //list<SpriteAnimator> animations;
     // Several channels for animations, so that several animations can be run in parallel but also animations can be chained.
@@ -112,6 +115,26 @@ private:
      * 
      */
     void collectSprites();
+
+    /**
+     * @brief Acción a ejecutar por defecto cuando el ratón no está colocado sobre ningún otro elemento de la ventana.
+     * 
+     */
+    void defaultHover();
+
+    /**
+     * @brief Actualiza los sprites que están habilitados.
+     * 
+     */
+    void updateEnabledSprites();
+
+    // Funciones para activar distintos cursores en el juego.
+    void setDefaultCursor();
+    void setForbiddenCursor();
+    void setThinkingCursor();
+    void setHandCursor();
+    void setSpecialHandCursor();
+    void setConnectingCursor();
 
     /**
      * @brief Método privado que implementa el box2position evitando colisiones.

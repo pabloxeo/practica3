@@ -11,6 +11,7 @@ class ClickableSprite: public Sprite{
         bool selected;
         bool clicked;
         bool hovered;
+        bool locked;
 
     public:
 
@@ -22,6 +23,10 @@ class ClickableSprite: public Sprite{
 
         inline const bool isClicked() const{return clicked;}
 
+        inline const bool isLocked() const{return locked;}
+
+        inline const bool isHovered() const{return hovered;}
+
         void setEnabled(bool b, Window & container);
 
         void setSelected(bool b, Window & container);
@@ -30,6 +35,8 @@ class ClickableSprite: public Sprite{
 
         void setHovered(bool b, Window & container);
 
+        void setLocked(bool b, Window & container);
+
         virtual void onEnableAction(Window & container) = 0;
 
         virtual void onSelectionAction(Window & container) = 0;
@@ -37,6 +44,8 @@ class ClickableSprite: public Sprite{
         virtual void onClickAction(Window & container) = 0;
 
         virtual void onHoverAction(Window & container) = 0;
+
+        virtual void onLockAction(Window & container) = 0;
 
 };
 
