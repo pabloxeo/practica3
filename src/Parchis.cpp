@@ -7,6 +7,10 @@ Parchis::Parchis(){
     this->dice = Dice();
 
     this->last_dice = -1;
+
+    this->current_player = 0;
+    this->current_color = yellow;
+    players = {GUIPlayer("Player 1"), GUIPlayer("Player 2")};
     // last_moves vacío por defecto.
 }
 
@@ -15,6 +19,20 @@ Parchis::Parchis(const Board & b, const Dice & d){
     this->dice = dice;
 
     this->last_dice = -1;
+    this->current_player = 0;
+    this->current_color = yellow;
+    players = {GUIPlayer("Player 1"), GUIPlayer("Player 2")};
+    // last_moves vacío por defecto.
+}
+
+Parchis::Parchis(const Board & b, const Dice & d, const Player & p1, const Player & p2){
+    this->board = board;
+    this->dice = dice;
+
+    this->last_dice = -1;
+    this->current_player = 0;
+    this->current_color = yellow;
+    players = {p1, p2};
     // last_moves vacío por defecto.
 }
 
@@ -57,8 +75,10 @@ const vector<color> Parchis::anyWall(const Box & b1, const Box & b2) const{
     }
 
     vector<color> walls;
-    if (b1.type != home){
-        for (int i = b1.num+1; i <= final_box.num; i++){
+    bool reached_final_box = false;
+    if (b1.type == normal){
+        for (int i = b1.num+1; !reached_final_box; i = i%68 + 1){
+            reached_final_box = (b2.num == i);
             color c = isWall(Box(i, normal, none));
             if(c != none){
                 walls.push_back(c);
@@ -239,4 +259,47 @@ const vector<pair <color, int>> Parchis::boxState(const Box & box) const{
     }
 
     return occupation;
+}
+
+
+void Parchis::nextTurn(){
+    if (last_dice != 6){
+        this->current_player = (current_player+1)%2;
+        switch(this->current_color){
+            case yellow:
+                this->current_color = blue;
+                break;
+            case blue:
+                this->current_color = red;
+                break;
+            case red:
+                this->current_color = green;
+                break;
+            case green:
+                this->current_color = yellow;
+                break;
+        }
+    }
+}
+
+void Parchis::gameLoop(){
+    while (gameStep()){
+     // :)
+    }
+}
+
+bool Parchis::gameStep(){
+    int id_piece;
+    color c_piece;
+    int dice;
+
+    bool move = players.at(current_player).move(c_piece, id_piece, dice);
+
+    if(move){
+        movePiece(c_piece, id_piece, dice);
+        //Actualizar interfaz
+        nextTurn();
+    }
+
+    return move;
 }

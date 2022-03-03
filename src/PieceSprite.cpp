@@ -29,6 +29,8 @@ void PieceSprite::onClickAction(Window & container){
         Box origin = gui->model->getBoard().getPiece(this->getModelColor(), this->id);
 
         gui->model->movePiece(this->getModelColor(), this->id,  gui->last_dice);
+        gui->model->nextTurn();
+
         vector<tuple<color, int, Box>> last_moves = gui->model->getLastMoves();
 
 
@@ -75,6 +77,7 @@ void PieceSprite::onClickAction(Window & container){
     }
 
     gui->updateEnabledSprites();
+    gui->model->gameStep();
 }
 
 void PieceSprite::onEnableAction(Window & container){
