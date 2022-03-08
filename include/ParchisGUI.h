@@ -15,6 +15,7 @@
 #include "SpriteAnimator.h"
 #include <list>
 #include <queue>
+#include <thread>
 
 using namespace sf;
 using namespace std;
@@ -76,6 +77,9 @@ private:
     queue<SpriteAnimator> animations_ch1; // Normal piece animations.
     queue<SpriteAnimator> animations_ch2; // Piece animations with collisions.
     queue<SpriteAnimator> animations_ch3; // Piece animations with anti-collisions.
+
+    // Hebra del juego (no puede desarrollarse en la misma hebra que la GUI porque entonces cada acción en el juego bloquearía la GUI)
+    thread game_thread;
 
     //Last dice number
     int last_dice;
