@@ -141,6 +141,12 @@ private:
     void setConnectingCursor();
 
     /**
+     * @brief Encola un movimiento de ficha.
+     * 
+     */
+    void queueMove(color col, int id, Box start, Box end);
+
+    /**
      * @brief Método privado que implementa el box2position evitando colisiones.
      * 
      * @param c 
@@ -166,11 +172,11 @@ public:
      */
     void run();
 
-    void moveFichas(float t, int i, box_type bt, color c, Sprite &);
-    void moveFichas(float t, int i_orig, box_type bt_orig, color c_orig, int i_end, box_type bt_end, color c_end, Sprite &);
-    void set_color(color my_color, Sprite &);
-    void load_player(color my_color, Sprite &ficha1, Sprite &ficha2, Sprite &ficha3, Sprite &ficha4);
-    int num_box(int pos_x, int pos_y);
+    //void moveFichas(float t, int i, box_type bt, color c, Sprite &);
+    //void moveFichas(float t, int i_orig, box_type bt_orig, color c_orig, int i_end, box_type bt_end, color c_end, Sprite &);
+    //void set_color(color my_color, Sprite &);
+    //void load_player(color my_color, Sprite &ficha1, Sprite &ficha2, Sprite &ficha3, Sprite &ficha4);
+    //int num_box(int pos_x, int pos_y);
 
 
     friend class PieceSprite;

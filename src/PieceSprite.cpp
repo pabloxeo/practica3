@@ -31,16 +31,23 @@ void PieceSprite::onClickAction(Window & container){
         gui->model->movePiece(this->getModelColor(), this->id,  gui->last_dice);
         gui->model->nextTurn();
 
-        vector<tuple<color, int, Box>> last_moves = gui->model->getLastMoves();
+        vector<tuple<color, int, Box, Box>> last_moves = gui->model->getLastMoves();
 
 
         for (int i = 0; i < last_moves.size(); i++){
-            Box dest = get<2>(last_moves[i]);
+            color col = get<0>(last_moves[i]);
+            int id = get<1>(last_moves[i]);
+            Box origin = get<2>(last_moves[i]);
+            Box dest = get<3>(last_moves[i]);
+
+            gui->queueMove(col, id, origin, dest);
+            /*
+            Box dest = get<3>(last_moves[i]);
             vector<pair<color, int>> occupation = gui->model->boxState(dest);
             // Si en la casilla de destino solo hay una ficha (la que se está moviendo)
             if (occupation.size() == 1 || dest.type == home || dest.type == goal)
             {
-                Vector2f animate_pos= Vector2f(gui->box3position(get<2>(last_moves[i]), get<1>(last_moves[i]), 0));
+                Vector2f animate_pos= Vector2f(gui->box3position(get<3>(last_moves[i]), get<1>(last_moves[i]), 0));
 
                 //box2position.at(get<2>(last_moves[i]))[0].x, gui->box2position.at(get<2>(last_moves[i]))[0].y);
                 
@@ -72,12 +79,14 @@ void PieceSprite::onClickAction(Window & container){
                 SpriteAnimator animator = SpriteAnimator(*animate_sprite, animate_pos, 1000);
                 gui->animations_ch3.push(animator);
             }
+            */
 
         }
+        gui->model->gameStep();
+        gui->updateEnabledSprites();
     }
-
-    gui->updateEnabledSprites();
-    gui->model->gameStep();
+    
+    
 }
 
 void PieceSprite::onEnableAction(Window & container){

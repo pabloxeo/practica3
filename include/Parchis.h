@@ -4,8 +4,8 @@
 # include <tuple>
 # include "Dice.h"
 # include "Board.h"
-# include "Player.h"
 # include "GUIPlayer.h"
+# include "Player.h"
 #include <iostream>
 #include <algorithm>
 
@@ -16,13 +16,13 @@ class Parchis{
     private:
         Board board;
         Dice dice;
-        vector<tuple <color, int, Box>> last_moves;
+        vector<tuple <color, int, Box, Box>> last_moves;
         int last_dice;
         
         //0: yellow & red, 1: blue and green.
         int current_player;
         color current_color;
-        vector <Player> players;
+        vector <Player*> players;
 
         static const int final_red_box = 34;
         static const int final_blue_box = 17;
@@ -59,7 +59,7 @@ class Parchis{
          * @param p1 
          * @param p2 
          */
-        Parchis(const Board & b, const Dice & d, const Player & p1, const Player & p2);
+        Parchis(const Board & b, const Dice & d, Player & p1, Player & p2);
 
         /**
          * @brief Get the Dice object
@@ -112,7 +112,7 @@ class Parchis{
          * 
          * @return const vector<tuple <color, int, Box>>& 
          */
-        const vector<tuple <color, int, Box>> & getLastMoves();
+        const vector<tuple <color, int, Box, Box>> & getLastMoves();
 
 
         /**

@@ -10,7 +10,9 @@ Parchis::Parchis(){
 
     this->current_player = 0;
     this->current_color = yellow;
-    players = {GUIPlayer("Player 1"), GUIPlayer("Player 2")};
+    GUIPlayer *p1 = new GUIPlayer("Player 1"), *p2 = new GUIPlayer("Player 2");
+    players.push_back(p1);
+    players.push_back(p2);
     // last_moves vacío por defecto.
 }
 
@@ -21,18 +23,23 @@ Parchis::Parchis(const Board & b, const Dice & d){
     this->last_dice = -1;
     this->current_player = 0;
     this->current_color = yellow;
-    players = {GUIPlayer("Player 1"), GUIPlayer("Player 2")};
+    GUIPlayer p1("Player 1"), p2("Player 2");
+    players.push_back(&p1);
+    players.push_back(&p2);
+    //players = {&p1, &p2};
     // last_moves vacío por defecto.
 }
 
-Parchis::Parchis(const Board & b, const Dice & d, const Player & p1, const Player & p2){
+
+Parchis::Parchis(const Board & b, const Dice & d, Player & p1, Player & p2){
     this->board = board;
     this->dice = dice;
 
     this->last_dice = -1;
     this->current_player = 0;
     this->current_color = yellow;
-    players = {p1, p2};
+    players.push_back(&p1);
+    players.push_back(&p2);// = {&p1, &p2};
     // last_moves vacío por defecto.
 }
 
@@ -202,7 +209,7 @@ void Parchis::movePiece(color player, int piece, int dice_number){
         Box final_box = computeMove(player, piece_box, dice_number, &goal_bounce);
 
         /* Gestión de las "comidas"*/
-        //Comprobar si hay una ficha en la casilla destino
+        //Comprobar si hay una ficha de otro color en la casilla destino
         vector<pair <color, int>> box_states = boxState(final_box);
         bool hay_comida_xd = false;
         if (!box_states.empty() && box_states[0].first != player){
@@ -222,22 +229,23 @@ void Parchis::movePiece(color player, int piece, int dice_number){
         this->last_moves.clear();
 
         if(!goal_bounce)
-            this->last_moves.push_back(tuple<color, int, Box>(player, piece, final_box));
+            this->last_moves.push_back(tuple<color, int, Box, Box>(player, piece, piece_box, final_box));
         else{
-            this->last_moves.push_back(tuple<color, int, Box>(player, piece, Box(0, goal, player)));
-            this->last_moves.push_back(tuple<color, int, Box>(player, piece, final_box));
+            this->last_moves.push_back(tuple<color, int, Box, Box>(player, piece, piece_box, Box(0, goal, player)));
+            this->last_moves.push_back(tuple<color, int, Box, Box>(player, piece, Box(0, goal, player), final_box));
         }
 
         // Controlar si se come alguna ficha. En ese caso se actualiza también la ficha comida.
         // La ficha comida se añadiría también al vector last_moves.
         if(hay_comida_xd){
+            Box origen_comida = board.getPiece(box_states[0].first, box_states[0].second);
             board.movePiece(box_states[0].first, box_states[0].second, Box(0, home, box_states[0].first));
-            this->last_moves.push_back(tuple<color, int, Box>(box_states[0].first, box_states[0].second, Box(0, home, box_states[0].first)));
+            this->last_moves.push_back(tuple<color, int, Box, Box>(box_states[0].first, box_states[0].second, origen_comida, Box(0, home, box_states[0].first)));
         }
     }
 }
 
-const vector<tuple<color, int, Box>> & Parchis::getLastMoves(){
+const vector<tuple<color, int, Box, Box>> & Parchis::getLastMoves(){
     return this->last_moves;
 }
 
@@ -293,7 +301,14 @@ bool Parchis::gameStep(){
     color c_piece;
     int dice;
 
-    bool move = players.at(current_player).move(c_piece, id_piece, dice);
+
+
+    cout << current_player << endl;
+    cout << players.size() << endl;
+    cout << players.at(current_player) << endl;
+    bool move = players.at(current_player)->move(c_piece, id_piece, dice);
+
+    cout << move << endl;
 
     if(move){
         movePiece(c_piece, id_piece, dice);

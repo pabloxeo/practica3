@@ -488,3 +488,55 @@ void ParchisGUI::setHandCursor()
     if (cursor.loadFromSystem(Cursor::Hand))
         this->setMouseCursor(cursor);
 }
+
+void ParchisGUI::queueMove(color col, int id, Box origin, Box dest){
+    if(dest.type == home || dest.type == goal){
+        // Si el destino es casa o meta cada ficha va a su puesto preasignado por id.
+        Vector2f animate_pos = (Vector2f)box2position.at(dest)[id];
+
+        Sprite *animate_sprite = &pieces[col][id];
+        SpriteAnimator animator = SpriteAnimator(*animate_sprite, animate_pos, 1000);
+        animations_ch1.push(animator);
+    }
+    else{
+        // Buscamos colisiones.
+        vector<pair<color, int>> occupation = this->model->boxState(dest);
+        if(occupation.size() == 1){
+            // Si no había fichas en destino se mueve la ficha al sitio central.
+            Vector2f animate_pos = (Vector2f)box2position.at(dest)[0];
+
+            Sprite *animate_sprite = &pieces[col][id];
+            SpriteAnimator animator = SpriteAnimator(*animate_sprite, animate_pos, 1000);
+            animations_ch1.push(animator);
+        }
+        else{
+            // Si hay dos fichas en destino mandamos cada una a un lateral.
+            int main_move = (occupation[0].first == col && occupation[0].second == id)?0:1;
+            int collateral_move = (main_move == 0)?1:0;
+
+            // Ficha principal (la que realmente se mueve) por el canal 1 por si hay que encadenar animaciones.
+            Vector2f animate_pos = (Vector2f)box2position.at(dest)[1];
+            Sprite *animate_sprite = &pieces[occupation[main_move].first][occupation[main_move].second];
+            SpriteAnimator animator = SpriteAnimator(*animate_sprite, animate_pos, 1000);
+            animations_ch1.push(animator);
+
+            // Ficha desplazada por el canal 2.
+            Vector2f animate_pos2 = (Vector2f)box2position.at(dest)[2];
+            Sprite *animate_sprite2 = &pieces[occupation[collateral_move].first][occupation[collateral_move].second];
+            SpriteAnimator animator2 = SpriteAnimator(*animate_sprite2, animate_pos2, 1000);
+            animations_ch2.push(animator2);
+        }
+    }
+
+    if(origin.type != goal && origin.type != home){
+        vector<pair<color, int>> origin_occupation = this->model->boxState(origin);
+        if(origin_occupation.size() == 1){
+            // Si queda una ficha en el origen del movimiento tras haber hecho el movimiento, la devolvemos al centro (canal 3).
+            // (Siempre que el origen no sea ni casa ni meta).
+            Vector2f animate_pos = (Vector2f)box2position.at(origin)[0];
+            Sprite *animate_sprite = &pieces[origin_occupation.at(0).first][origin_occupation.at(0).second];
+            SpriteAnimator animator = SpriteAnimator(*animate_sprite, animate_pos, 1000);
+            animations_ch3.push(animator);
+        }
+    }
+}

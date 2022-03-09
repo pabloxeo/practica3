@@ -15,7 +15,13 @@ class ClickableSprite: public Sprite{
 
     public:
 
-        inline ClickableSprite(const Texture & t): Sprite(t) {};
+        inline ClickableSprite(const Texture & t): Sprite(t) {
+            enabled = true;
+            selected = false;
+            clicked = false;
+            hovered = false;
+            locked = false;
+        };
 
         inline const bool isEnabled() const{return enabled;}
 
