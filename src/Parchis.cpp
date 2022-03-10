@@ -314,6 +314,8 @@ bool Parchis::gameStep(){
         movePiece(c_piece, id_piece, dice);
         //Actualizar interfaz
         nextTurn();
+        cout << "Jugador actual: " << this->current_player << endl;
+        cout << "Color actual: " << this->current_color << endl;        
     }
 
     return move;

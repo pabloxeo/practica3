@@ -177,6 +177,24 @@ class Parchis{
          * 
          */
         bool gameStep();
+
+        /**
+         * @brief Get the Current Player object
+         * 
+         * @return int 
+         */
+        inline int getCurrentPlayer(){
+            return current_player;
+        }
+
+        /**
+         * @brief Get the Current Color object
+         * 
+         * @return color 
+         */
+        inline color getCurrentColor(){
+            return this->current_color;
+        }
         
 };
 

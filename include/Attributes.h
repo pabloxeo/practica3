@@ -9,6 +9,16 @@ using namespace std;
 //Lista con los diferentes tipos de casillas
 enum color {blue, red, green, yellow, none};
 
+inline string str(color c){
+    switch(c){
+        case blue: return "Azul";
+        case red: return "Rojo";
+        case green: return "Verde";
+        case yellow: return "Amarillo";
+        case none: default: return "???";
+    }
+}
+
 //Lista con los diferentes tipos de casillas
 enum box_type {normal, home, final_queue, goal};
 

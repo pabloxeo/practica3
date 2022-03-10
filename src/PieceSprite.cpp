@@ -30,6 +30,8 @@ void PieceSprite::onClickAction(Window & container){
 
         gui->model->movePiece(this->getModelColor(), this->id,  gui->last_dice);
         gui->model->nextTurn();
+        cout << "Jugador actual: " << gui->model->getCurrentPlayer() << endl;
+        cout << "Color actual: " << str(gui->model->getCurrentColor()) << endl;
 
         vector<tuple<color, int, Box, Box>> last_moves = gui->model->getLastMoves();
 
