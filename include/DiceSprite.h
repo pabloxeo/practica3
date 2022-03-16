@@ -12,7 +12,6 @@ using namespace std;
 
 class DiceSprite: public ClickableSprite{
     private:
-        bool enabled;
         int number;
         color c;
 
@@ -21,6 +20,7 @@ class DiceSprite: public ClickableSprite{
         static const map <int, vector<int>> num2selectedrec;
 
         static const map <color, Color> color2Color;
+        static const map <color, Color> color2DisabledColor;
 
     public:
         DiceSprite(const Texture & t, int n, color c);

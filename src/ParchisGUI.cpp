@@ -148,6 +148,7 @@ ParchisGUI::ParchisGUI(Parchis &model)
     this->tPieces.loadFromFile("data/textures/fichas_parchis_extended.png");
     this->tBoard.loadFromFile("data/textures/parchis_board_resized.png");
     this->tDices.loadFromFile("data/textures/dice_extended.png");
+    this->tRectButton.loadFromFile("data/textures/rectangular-buttons.png");
 
     //Definimos los sprites
     this->background = Sprite(tBackground);
@@ -181,6 +182,9 @@ ParchisGUI::ParchisGUI(Parchis &model)
         } 
     }
 
+    // Creación de los botones
+    // this->prueba = RectangularButton(tRectButton);
+
     //Creación de las vistas
     general_view = View(FloatRect(1000, 1000, 1600, 800));
     general_view.setViewport(FloatRect(0.f, 0.f, 1.f, 1.f));
@@ -190,6 +194,9 @@ ParchisGUI::ParchisGUI(Parchis &model)
 
     dice_view = View(FloatRect(850.f, 50.f, 420.f, 320.f));
     dice_view.setViewport(FloatRect(0.555f, 0.055f, 0.3f, 0.4f));
+
+    bt_panel_view = View(FloatRect(850.f, 400.f, 420.f, 320.f));
+    bt_panel_view.setViewport(FloatRect(0.555f, 0.5f, 0.3f, 0.4f));
 
 
     collectSprites();
@@ -226,6 +233,12 @@ void ParchisGUI::collectSprites(){
             dice_drawable_sprites.push_back(&dices[col][j]);
             dice_clickable_sprites.push_back(&dices[col][j]);
         }
+
+        // Añadir botones como dibujables y clickables.
+        //all_drawable_sprites.push_back(&prueba);
+        //all_clickable_sprites.push_back(&prueba);
+        //bt_panel_drawable_sprites.push_back(&prueba);
+        //bt_panel_clickable_sprites.push_back(&prueba);
     }
 }
 
@@ -423,6 +436,13 @@ void ParchisGUI::paint(){
         this->draw(*dice_drawable_sprites[i]);
     }
 
+    // Dibujamos elementos de la vista de los botones
+    this->setView(bt_panel_view);
+    for (int i = 0; i < bt_panel_drawable_sprites.size(); i++)
+    {
+        this->draw(*bt_panel_drawable_sprites[i]);
+    }
+
     this->display();
 
 }
@@ -432,13 +452,25 @@ void ParchisGUI::updateEnabledSprites(){
     for(int i = 0; i < colors.size(); i++){
         color c = colors[i];
         vector<Box> player_pieces = model->getBoard().getPieces(c);
-        for(int j = 0; j < player_pieces.size(); j++){
-            if (model->isLegalMove(c, player_pieces[j], this->last_dice)){
-                this->pieces[c][j].setEnabled(true, *this);
+
+        if(this->model->getCurrentColor() == c){
+            for(int j = 0; j < player_pieces.size(); j++){
+                this->pieces[c][j].setEnabled(model->isLegalMove(c, player_pieces[j], this->last_dice), *this);
+                this->pieces[c][j].setLocked(!model->isLegalMove(c, player_pieces[j], this->last_dice), *this);
             }
-            else{
-                this->pieces[c][j].setEnabled(false, *this);
+        }
+        else{
+            for (int j = 0; j < player_pieces.size(); j++){
+                this->pieces[c][j].setLocked(true, *this);
             }
+        }
+
+        Dice dice = model->getDice();
+        for(int j = 0; j < this->dices[c].size(); j++){
+            DiceSprite* current = &this->dices[c][j];
+            //cout << j << " " << current->getNumber() << " " << dice.isAvailable(c, current->getNumber()) << endl;
+            current->setEnabled(dice.isAvailable(c, current->getNumber()), *this);
+            //cout << current->isEnabled() << endl;
         }
     }
 }

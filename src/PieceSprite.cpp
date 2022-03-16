@@ -29,7 +29,7 @@ void PieceSprite::onClickAction(Window & container){
         Box origin = gui->model->getBoard().getPiece(this->getModelColor(), this->id);
 
         gui->model->movePiece(this->getModelColor(), this->id,  gui->last_dice);
-        gui->model->nextTurn();
+
         cout << "Jugador actual: " << gui->model->getCurrentPlayer() << endl;
         cout << "Color actual: " << str(gui->model->getCurrentColor()) << endl;
 

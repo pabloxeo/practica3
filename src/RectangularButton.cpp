@@ -5,23 +5,7 @@ RectangularButton::RectangularButton(const Texture & t):Button(t){
     this->setTextureRect(IntRect(0, 0, 100, 100));
 }
 
-void RectangularButton::onEnableAction(Window & container){
-    updateColor();
-}
-
-void RectangularButton::onSelectionAction(Window & container){
-    updateColor();
-}
-
-void RectangularButton::onHoverAction(Window & container){
-    updateColor();
-}
-
-void RectangularButton::onLockAction(Window & container){
-    updateColor();
-}
-
-void RectangularButton::updateColor(){
+void RectangularButton::refreshButton(){
     if(enabled){
         this->setColor(Color(this->background_color.r / 2, this->background_color.g / 2, this->background_color.b / 2));
     }

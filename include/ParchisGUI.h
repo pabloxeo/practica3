@@ -11,6 +11,7 @@
 #include "Parchis.h"
 #include "DiceSprite.h"
 #include "PieceSprite.h"
+//#include "RectangularButton.h"
 #include "ClickableSprite.h"
 #include "SpriteAnimator.h"
 #include <list>
@@ -36,12 +37,14 @@ private:
     Texture tBoard;
     Texture tPieces;
     Texture tDices;
+    Texture tRectButton;
     
     //Sprites' definitions
     Sprite background;
     map <color, vector<PieceSprite>> pieces;
     map <color, vector<DiceSprite>> dices;
     Sprite board;
+    //RectangularButton prueba;
 
     //Sprites utilities to reduce the code.
     vector<Sprite*> all_drawable_sprites;
@@ -52,14 +55,17 @@ private:
 
     vector<Sprite*> board_drawable_sprites;
     vector<Sprite*> dice_drawable_sprites;
+    vector<Sprite*> bt_panel_drawable_sprites;
 
     vector<ClickableSprite*> board_clickable_sprites;
     vector<ClickableSprite*> dice_clickable_sprites;
+    vector<ClickableSprite*> bt_panel_clickable_sprites;
 
     // Views
     View general_view;
     View board_view;
     View dice_view;
+    View bt_panel_view;
 
     //Music booleans
     bool music_enabled;

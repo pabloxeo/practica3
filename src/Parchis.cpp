@@ -43,8 +43,8 @@ Parchis::Parchis(const Board & b, const Dice & d, Player & p1, Player & p2){
     // last_moves vacío por defecto.
 }
 
-const vector<int> & Parchis::getDice(color player){
-    return dice.getDice(player);
+const Dice & Parchis::getDice(){
+    return this->dice;
 }
 
 const Board & Parchis::getBoard() const{
@@ -110,7 +110,7 @@ bool Parchis::isLegalMove(color player, const Box & box, int dice_number){
     }else{
         vector<color> walls = anyWall(box, final_box);
         for (int i = 0; i < walls.size(); i++){
-            cout << walls.at(i) << endl;
+            //cout << walls.at(i) << endl;
             if (walls.at(i) != player){
                 return false;
             }
@@ -242,6 +242,10 @@ void Parchis::movePiece(color player, int piece, int dice_number){
             board.movePiece(box_states[0].first, box_states[0].second, Box(0, home, box_states[0].first));
             this->last_moves.push_back(tuple<color, int, Box, Box>(box_states[0].first, box_states[0].second, origen_comida, Box(0, home, box_states[0].first)));
         }
+
+
+        this->dice.removeNumber(player, dice_number);
+        nextTurn();
     }
 }
 
@@ -313,7 +317,7 @@ bool Parchis::gameStep(){
     if(move){
         movePiece(c_piece, id_piece, dice);
         //Actualizar interfaz
-        nextTurn();
+        
         cout << "Jugador actual: " << this->current_player << endl;
         cout << "Color actual: " << this->current_color << endl;        
     }

@@ -6,14 +6,63 @@ Button::Button(const Texture & t):ClickableSprite(t){
 }
 
 void Button::onClickAction(Window & container){
-    this->click_action(container);
+    refreshButton();
+    this->click_action(container, *this);
 }
 
-void Button::setClickAction(void (*action)(Window &)){
+void Button::setClickAction(void (*action)(Window &, Button &)){
     this->click_action = action;
 }
 
-void Button::setText(String txt){
+void Button::onEnableAction(Window &container)
+{
+    refreshButton();
+    this->enable_action(container, *this);
+}
+
+void Button::setEnableAction(void (*action)(Window &, Button &))
+{
+    refreshButton();
+    this->enable_action = action;
+}
+
+void Button::onSelectionAction(Window &container)
+{
+    refreshButton();
+    this->selection_action(container, *this);
+}
+
+void Button::setSelectionAction(void (*action)(Window &, Button &))
+{
+    refreshButton();
+    this->selection_action = action;
+}
+
+void Button::onHoverAction(Window &container)
+{
+    refreshButton();
+    this->hover_action(container, *this);
+}
+
+void Button::setHoverAction(void (*action)(Window &, Button &))
+{
+    refreshButton();
+    this->hover_action = action;
+}
+
+void Button::onLockAction(Window &container)
+{
+    refreshButton();
+    this->lock_action(container, *this);
+}
+
+void Button::setLockAction(void (*action)(Window &, Button &))
+{
+    refreshButton();
+    this->lock_action = action;
+}
+
+void Button::setText(const String & txt){
 
 }
 
@@ -23,7 +72,7 @@ void Button::setTextColor(Color col){
 
 void Button::setBackgroundColor(Color col){
     this->background_color = col;
-    updateColor();
+    refreshButton();
 }
 
 void Button::setButtonSize(Vector2f size){

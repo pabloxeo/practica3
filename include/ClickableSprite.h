@@ -1,6 +1,7 @@
 #ifndef __CLICKABLESPRITE_H__
 #define __CLICKABLESPRITE_H__
 
+#include <iostream>
 #include "IncludesSFML.h"
 
 using namespace std;
@@ -14,6 +15,7 @@ class ClickableSprite: public Sprite{
         bool locked;
 
     public:
+        inline ClickableSprite(): Sprite(){}
 
         inline ClickableSprite(const Texture & t): Sprite(t) {
             enabled = true;

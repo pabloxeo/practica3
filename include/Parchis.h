@@ -36,6 +36,12 @@ class Parchis{
 
         static const vector<int> safe_boxes;
 
+        /**
+         * @brief
+         *
+         */
+        void nextTurn();
+
     public:
         /**
          * @brief Default construct a new Parchis object
@@ -67,7 +73,7 @@ class Parchis{
          * @param player 
          * @return const vector<int>& 
          */
-        const vector<int> & getDice (color player);
+        const Dice & getDice ();
 
 
          /**
@@ -158,11 +164,7 @@ class Parchis{
          */
         const Box computeMove(color player, const Box & box, int dice_number, bool * goal_bounce = NULL) const;
 
-        /**
-         * @brief 
-         * 
-         */
-        void nextTurn();
+        
 
 
         /**

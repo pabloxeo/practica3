@@ -11,15 +11,11 @@ class RectangularButton: public Button{
         //static const Texture button_texture;
 
     public:
+        inline RectangularButton(): Button(){}
 
         RectangularButton(const Texture & t);
 
-        void onEnableAction(Window & container);
-        void onSelectionAction(Window & container);
-        void onHoverAction(Window & container);
-        void onLockAction(Window & container);
-
-        void updateColor();
+        void refreshButton();
 
 
 
