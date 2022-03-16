@@ -470,6 +470,8 @@ void ParchisGUI::updateEnabledSprites(){
             DiceSprite* current = &this->dices[c][j];
             //cout << j << " " << current->getNumber() << " " << dice.isAvailable(c, current->getNumber()) << endl;
             current->setEnabled(dice.isAvailable(c, current->getNumber()), *this);
+            current->setLocked(this->model->getCurrentColor() != c, *this);
+            current->setSelected(this->model->getCurrentColor() == c and this->last_dice == current->getNumber(), *this);
             //cout << current->isEnabled() << endl;
         }
     }

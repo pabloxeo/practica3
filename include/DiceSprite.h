@@ -21,6 +21,7 @@ class DiceSprite: public ClickableSprite{
 
         static const map <color, Color> color2Color;
         static const map <color, Color> color2DisabledColor;
+        static const map <color, Color> color2SelectedColor;
 
     public:
         DiceSprite(const Texture & t, int n, color c);

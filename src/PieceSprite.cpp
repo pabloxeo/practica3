@@ -82,9 +82,9 @@ void PieceSprite::onClickAction(Window & container){
                 gui->animations_ch3.push(animator);
             }
             */
-
         }
-        gui->model->gameStep();
+        gui->last_dice = -1;  // Se anula el último valor del dado (ya usado). Así se fuerza también a seleccionar un dado antes de mover.
+        gui->model->gameStep();  // CAMBIAR: tendrá que ir a una hebra y ser gameLoop
         gui->updateEnabledSprites();
     }
     
@@ -104,12 +104,14 @@ void PieceSprite::onLockAction(Window & container){}
 
 void PieceSprite::onHoverAction(Window & container){
     if(hovered){
+        ParchisGUI *gui = dynamic_cast<ParchisGUI *>(&container);
         if (locked || !enabled){
-            ParchisGUI *gui = dynamic_cast<ParchisGUI *>(&container);
             gui->setForbiddenCursor();
         }
-        else
+        else{
             this->setTextureRect(IntRect(col2selectedrec.at(c).at(0), col2selectedrec.at(c).at(1), col2selectedrec.at(c).at(2), col2selectedrec.at(c).at(3)));
+            gui->setHandCursor();
+        }
     }
     else{
         this->setTextureRect(IntRect(col2textrec.at(c).at(0), col2textrec.at(c).at(1), col2textrec.at(c).at(2), col2textrec.at(c).at(3)));

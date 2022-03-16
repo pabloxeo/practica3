@@ -30,6 +30,14 @@ const map<color, Color> DiceSprite::color2DisabledColor = {
     {blue, Color(102 / 2, 102 / 2, 204 / 2)},
     {green, Color(102 / 2, 204 / 2, 102 / 2)},
     {yellow, Color(255 / 2, 255 / 2, 127 / 2)},
+    {none, Color::White}
+};
+
+const map<color, Color> DiceSprite::color2SelectedColor = {
+    {red, Color(255, 0, 0)},
+    {blue, Color(0, 255, 255)},
+    {green, Color(192, 255, 0)},
+    {yellow, Color(255, 192, 0)},
     {none, Color::White}};
 
 DiceSprite::DiceSprite(const Texture & t, int n, color c) : ClickableSprite(t){
@@ -58,7 +66,17 @@ void DiceSprite::onEnableAction(Window & container) {
     }
 }
 
-void DiceSprite::onSelectionAction(Window & container) {}
+void DiceSprite::onSelectionAction(Window & container){
+    if(this->selected){
+        this->setColor(color2SelectedColor.at(c));
+    }
+    else if(!this->enabled){
+        this->setColor(color2DisabledColor.at(c));
+    }
+    else{
+        this->setColor(color2Color.at(c));
+    }
+}
 
 void DiceSprite::onLockAction(Window & container) {}
 
@@ -67,12 +85,14 @@ void DiceSprite::onHoverAction(Window &container) {
     {
         //cout << enabled << endl;
         //cout << ClickableSprite::enabled << endl;
+        ParchisGUI *gui = dynamic_cast<ParchisGUI *>(&container);
         if(locked || !enabled){
-            ParchisGUI *gui = dynamic_cast<ParchisGUI *>(&container);
             gui->setForbiddenCursor();
         }
-        else
+        else{
             this->setTextureRect(IntRect(num2selectedrec.at(number).at(0), num2selectedrec.at(number).at(1), num2selectedrec.at(number).at(2), num2selectedrec.at(number).at(3)));
+            gui->setHandCursor();
+        }
     }
     else
     {

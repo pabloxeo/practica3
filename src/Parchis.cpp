@@ -96,6 +96,13 @@ const vector<color> Parchis::anyWall(const Box & b1, const Box & b2) const{
 }
 
 bool Parchis::isLegalMove(color player, const Box & box, int dice_number){
+    // Controlar si intento mover una ficha que no es del color del jugador actual.
+    if(player != current_color)
+        return false;
+    // Controlar si intento mover un número que no está disponible en mis dados.
+    if(!dice.isAvailable(player, dice_number))
+        return false;
+    // Control de movimientos
     Box final_box = computeMove(player, box, dice_number);
     // Controlar si barreras, si está en la casa el movimiento solo sería legal si dice_number == 5, ...
     if (box.type == home && dice_number != 5){
@@ -115,7 +122,7 @@ bool Parchis::isLegalMove(color player, const Box & box, int dice_number){
                 return false;
             }
         }
-    }
+    } // TODO: falta (al menos) un caso: que salga un 6, haya alguna barrera de ese color y se elija una ficha fuera de la barrera.
     return true;
 }
 
