@@ -133,6 +133,8 @@ const map<Box, vector<Vector2i>> ParchisGUI::box2position{
     {{0, box_type::home, color::yellow}, {Vector2i(632, 101), Vector2i(594, 139), Vector2i(632, 177), Vector2i(670, 139)}},
 };
 
+const string ParchisGUI::background_theme_file = "data/music/background_theme";
+
 ParchisGUI::ParchisGUI(Parchis &model)
     : RenderWindow(VideoMode(1600, 800, VideoMode::getDesktopMode().bitsPerPixel), L"Parchís", Style::Titlebar | Style::Close)
     // L"string" parece que permite representar caraceteres unicode. Útil para acentos y demás.
@@ -153,10 +155,11 @@ ParchisGUI::ParchisGUI(Parchis &model)
     //Definimos los sprites
     this->background = Sprite(tBackground);
     this->background.setPosition(1000, 1000);
-    this->board = Sprite(tBoard);
+    this->boards.push_back(BoardSprite(tBoard));
+    this->board = &boards[0];
 
     // Vector de colores (ver cómo se podría obtener directamente del enumerado)
-    vector<color> colors = {red, blue, green, yellow};
+    vector<color> colors = {yellow, blue, red, green};
 
     // Creación de las fichas
     for(int i = 0; i < colors.size(); i++){
@@ -198,10 +201,15 @@ ParchisGUI::ParchisGUI(Parchis &model)
     bt_panel_view = View(FloatRect(850.f, 400.f, 420.f, 320.f));
     bt_panel_view.setViewport(FloatRect(0.555f, 0.5f, 0.3f, 0.4f));
 
+    rotate_board = false;
+    rotate_angle0 = 0.0;
 
     collectSprites();
 
     this->updateEnabledSprites();
+
+    this->initializeBackgroundMusic();
+    this->setBackgroundMusic(true);
 }
 
 void ParchisGUI::collectSprites(){
@@ -209,8 +217,10 @@ void ParchisGUI::collectSprites(){
     all_drawable_sprites.push_back(&background);
     general_drawable_sprites.push_back(&background);
 
-    all_drawable_sprites.push_back(&board);
-    board_drawable_sprites.push_back(&board);
+    all_drawable_sprites.push_back(board);
+    board_drawable_sprites.push_back(board);
+    all_clickable_sprites.push_back(board);
+    board_clickable_sprites.push_back(board);
 
     // Vector de colores (ver cómo se podría obtener directamente del enumerado)
     vector<color> colors = {red, blue, green, yellow};
@@ -413,6 +423,16 @@ void ParchisGUI::processAnimations()
 }
 
 void ParchisGUI::processSettings(){
+    if(rotate_board){
+        Vector2i pos = Mouse::getPosition(*this);
+        FloatRect board_box = board->getGlobalBounds();
+        Vector2f board_center(board_box.left + board_box.width / 2, board_box.top + board_box.height / 2);
+
+        float angle = atan2(pos.x - board_center.x, pos.y - board_center.y) * 180.f / PI;
+
+        board_view.rotate(angle - rotate_angle0);
+        rotate_angle0 = angle;
+    }
 }
 
 void ParchisGUI::paint(){
@@ -572,5 +592,35 @@ void ParchisGUI::queueMove(color col, int id, Box origin, Box dest){
             SpriteAnimator animator = SpriteAnimator(*animate_sprite, animate_pos, 1000);
             animations_ch3.push(animator);
         }
+    }
+}
+
+void ParchisGUI::setBackgroundMusic(bool on){
+    if(on){
+        background_theme.play();
+    }
+    else{
+        background_theme.stop();
+    }
+}
+
+void ParchisGUI::initializeBackgroundMusic(){
+    if (background_theme.openFromFile(background_theme_file + ".wav"))
+    {
+        background_theme.setLoop(true); // Para reproducir en bucle.
+
+        ifstream loop_file((background_theme_file + ".loop").c_str());
+        if (loop_file.good())
+        {
+            float loop_start, loop_end;
+            loop_file >> loop_start;
+            loop_file >> loop_end;
+            background_theme.setLoopPoints(Music::TimeSpan(seconds(loop_start), seconds(loop_end - loop_start))); // Se puede elegir los puntos exactos en los que cicle la música de fondo.
+            cout << "Added loop points for background theme: " << loop_start << " " << loop_end << endl;
+        }
+        else
+            cout << "No loop points found for background theme." << endl;
+
+        background_theme.setVolume(100.f);
     }
 }

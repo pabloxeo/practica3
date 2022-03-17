@@ -18,6 +18,9 @@ obj/Dice.o: src/Dice.cpp
 obj/ClickableSprite.o: src/ClickableSprite.cpp
 	g++ -g -c src/ClickableSprite.cpp -o obj/ClickableSprite.o -I include/ -std=c++14
 
+obj/BoardSprite.o: src/BoardSprite.cpp
+	g++ -g -c src/BoardSprite.cpp -o obj/BoardSprite.o -I include/ -std=c++14
+
 obj/DiceSprite.o: src/DiceSprite.cpp
 	g++ -g -c src/DiceSprite.cpp -o obj/DiceSprite.o -I include/ -std=c++14
 
@@ -42,8 +45,8 @@ obj/Button.o: src/Button.cpp
 obj/RectangularButton.o: src/RectangularButton.cpp
 	g++ -g -c src/RectangularButton.cpp -o obj/RectangularButton.o -I include/ -std=c++14
 
-bin/Parchis: obj/main.o obj/ParchisGUI.o obj/Parchis.o obj/Board.o obj/Dice.o obj/SpriteAnimator.o obj/DiceSprite.o obj/PieceSprite.o obj/ClickableSprite.o obj/GUIPlayer.o obj/AIPlayer.o obj/Player.o
-	g++ -g obj/main.o obj/ParchisGUI.o obj/Parchis.o obj/Board.o obj/Dice.o obj/DiceSprite.o obj/SpriteAnimator.o obj/PieceSprite.o obj/ClickableSprite.o obj/GUIPlayer.o obj/AIPlayer.o obj/Player.o -o bin/Parchis -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
+bin/Parchis: obj/main.o obj/ParchisGUI.o obj/Parchis.o obj/Board.o obj/Dice.o obj/SpriteAnimator.o obj/DiceSprite.o obj/PieceSprite.o obj/BoardSprite.o obj/ClickableSprite.o obj/GUIPlayer.o obj/AIPlayer.o obj/Player.o
+	g++ -g obj/main.o obj/ParchisGUI.o obj/Parchis.o obj/Board.o obj/Dice.o obj/DiceSprite.o obj/SpriteAnimator.o obj/PieceSprite.o obj/BoardSprite.o obj/ClickableSprite.o obj/GUIPlayer.o obj/AIPlayer.o obj/Player.o -o bin/Parchis -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
 clean:
 	rm -rf ./obj/*.o ./bin/*

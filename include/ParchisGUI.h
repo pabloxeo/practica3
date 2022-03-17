@@ -11,6 +11,7 @@
 #include "Parchis.h"
 #include "DiceSprite.h"
 #include "PieceSprite.h"
+#include "BoardSprite.h"
 //#include "RectangularButton.h"
 #include "ClickableSprite.h"
 #include "SpriteAnimator.h"
@@ -23,6 +24,7 @@ using namespace std;
 
 class DiceSprite;
 class PieceSprite;
+class BoardSprite;
 
 class ParchisGUI: public RenderWindow
 {
@@ -43,7 +45,8 @@ private:
     Sprite background;
     map <color, vector<PieceSprite>> pieces;
     map <color, vector<DiceSprite>> dices;
-    Sprite board;
+    vector<BoardSprite> boards;
+    BoardSprite *board;
     //RectangularButton prueba;
 
     //Sprites utilities to reduce the code.
@@ -89,6 +92,14 @@ private:
 
     //Last dice number
     int last_dice;
+
+    // Bool to activate board rotations.
+    bool rotate_board;
+    float rotate_angle0;
+
+    // Music-related variables
+    Music background_theme;
+    static const string background_theme_file;
 
     /**
      * @brief Función que procesa las colisiones del ratón con fichas, dados, etc.
@@ -153,6 +164,19 @@ private:
     void queueMove(color col, int id, Box start, Box end);
 
     /**
+     * @brief Activa o desactiva la música de fondo.
+     * 
+     * @param on 
+     */
+    void setBackgroundMusic(bool on);
+
+    /**
+     * @brief 
+     * 
+     */
+    void initializeBackgroundMusic();
+
+    /**
      * @brief Método privado que implementa el box2position evitando colisiones.
      * 
      * @param c 
@@ -187,6 +211,7 @@ public:
 
     friend class PieceSprite;
     friend class DiceSprite;
+    friend class BoardSprite;
 };
 
 #endif
