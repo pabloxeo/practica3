@@ -150,7 +150,9 @@ ParchisGUI::ParchisGUI(Parchis &model)
     //Cargamos las texturas
     this->tBackground.loadFromFile("data/textures/background.png");
     this->tPieces.loadFromFile("data/textures/fichas_parchis_extended.png");
+    this->tPieces.setSmooth(true);
     this->tBoard.loadFromFile("data/textures/parchis_board_resized.png");
+    this->tBoard.setSmooth(true);
     this->tDices.loadFromFile("data/textures/dice_extended.png");
     this->tRectButton.loadFromFile("data/textures/rectangular-buttons.png");
 
@@ -188,7 +190,9 @@ ParchisGUI::ParchisGUI(Parchis &model)
     }
 
     // Creación de los botones
-    // this->prueba = RectangularButton(tRectButton);
+    this->prueba = RectangularButton(tRectButton);
+    prueba.setPosition(850, 400);
+    prueba.setText("PRUEBA");
 
     //Creación de las vistas
     general_view = View(FloatRect(1000, 1000, 1600, 800));
@@ -255,10 +259,10 @@ void ParchisGUI::collectSprites(){
         }
 
         // Añadir botones como dibujables y clickables.
-        //all_drawable_sprites.push_back(&prueba);
-        //all_clickable_sprites.push_back(&prueba);
-        //bt_panel_drawable_sprites.push_back(&prueba);
-        //bt_panel_clickable_sprites.push_back(&prueba);
+        all_drawable_sprites.push_back(&prueba);
+        all_clickable_sprites.push_back(&prueba);
+        bt_panel_drawable_sprites.push_back(&prueba);
+        bt_panel_clickable_sprites.push_back(&prueba);
     }
 }
 

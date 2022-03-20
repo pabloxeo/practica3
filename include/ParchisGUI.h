@@ -12,7 +12,7 @@
 #include "DiceSprite.h"
 #include "PieceSprite.h"
 #include "BoardSprite.h"
-//#include "RectangularButton.h"
+#include "RectangularButton.h"
 #include "ClickableSprite.h"
 #include "SpriteAnimator.h"
 #include <list>
@@ -47,7 +47,7 @@ private:
     map <color, vector<DiceSprite>> dices;
     // vector<BoardSprite> boards;
     BoardSprite board;
-    //RectangularButton prueba;
+    RectangularButton prueba;
 
     //Sprites utilities to reduce the code.
     vector<Sprite*> all_drawable_sprites;
@@ -216,6 +216,7 @@ public:
     friend class PieceSprite;
     friend class DiceSprite;
     friend class BoardSprite;
+    friend class Button;
 };
 
 #endif
