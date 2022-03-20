@@ -1,4 +1,5 @@
 # include "PieceSprite.h"
+# include "ParchisGUI.h"
 
 const map<color, vector<int>> PieceSprite::col2textrec = {
     {red, {30, 30, 30, 30}},

@@ -4,7 +4,7 @@
 #include "ClickableSprite.h"
 #include "IncludesSFML.h"
 #include "Attributes.h"
-#include "ParchisGUI.h"
+//#include "ParchisGUI.h"
 
 #define PI 3.14159265
 

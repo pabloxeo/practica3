@@ -135,6 +135,8 @@ const map<Box, vector<Vector2i>> ParchisGUI::box2position{
 
 const string ParchisGUI::background_theme_file = "data/music/background_theme";
 
+const string ParchisGUI::icon_file = "data/textures/icon_parchis.png";
+
 ParchisGUI::ParchisGUI(Parchis &model)
     : RenderWindow(VideoMode(1600, 800, VideoMode::getDesktopMode().bitsPerPixel), L"Parchís", Style::Titlebar | Style::Close)
     // L"string" parece que permite representar caraceteres unicode. Útil para acentos y demás.
@@ -155,8 +157,8 @@ ParchisGUI::ParchisGUI(Parchis &model)
     //Definimos los sprites
     this->background = Sprite(tBackground);
     this->background.setPosition(1000, 1000);
-    this->boards.push_back(BoardSprite(tBoard));
-    this->board = &boards[0];
+    //this->boards.push_back(BoardSprite(tBoard));
+    this->board = BoardSprite(tBoard);
 
     // Vector de colores (ver cómo se podría obtener directamente del enumerado)
     vector<color> colors = {yellow, blue, red, green};
@@ -208,8 +210,16 @@ ParchisGUI::ParchisGUI(Parchis &model)
 
     this->updateEnabledSprites();
 
+    //Música
     this->initializeBackgroundMusic();
     this->setBackgroundMusic(true);
+
+    //Icono de la ventana.
+    if(icon.loadFromFile(icon_file)){
+        this->setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
+    }else{
+        cout << "Icon could not be loaded" << endl;
+    }
 }
 
 void ParchisGUI::collectSprites(){
@@ -217,10 +227,10 @@ void ParchisGUI::collectSprites(){
     all_drawable_sprites.push_back(&background);
     general_drawable_sprites.push_back(&background);
 
-    all_drawable_sprites.push_back(board);
-    board_drawable_sprites.push_back(board);
-    all_clickable_sprites.push_back(board);
-    board_clickable_sprites.push_back(board);
+    all_drawable_sprites.push_back(&board);
+    board_drawable_sprites.push_back(&board);
+    all_clickable_sprites.push_back(&board);
+    board_clickable_sprites.push_back(&board);
 
     // Vector de colores (ver cómo se podría obtener directamente del enumerado)
     vector<color> colors = {red, blue, green, yellow};
@@ -425,7 +435,7 @@ void ParchisGUI::processAnimations()
 void ParchisGUI::processSettings(){
     if(rotate_board){
         Vector2i pos = Mouse::getPosition(*this);
-        FloatRect board_box = board->getGlobalBounds();
+        FloatRect board_box = board.getGlobalBounds();
         Vector2f board_center(board_box.left + board_box.width / 2, board_box.top + board_box.height / 2);
 
         float angle = atan2(pos.x - board_center.x, pos.y - board_center.y) * 180.f / PI;

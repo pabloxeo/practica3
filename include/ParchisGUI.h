@@ -22,9 +22,9 @@
 using namespace sf;
 using namespace std;
 
-class DiceSprite;
-class PieceSprite;
-class BoardSprite;
+//class DiceSprite;
+//class PieceSprite;
+//class BoardSprite;
 
 class ParchisGUI: public RenderWindow
 {
@@ -45,8 +45,8 @@ private:
     Sprite background;
     map <color, vector<PieceSprite>> pieces;
     map <color, vector<DiceSprite>> dices;
-    vector<BoardSprite> boards;
-    BoardSprite *board;
+    // vector<BoardSprite> boards;
+    BoardSprite board;
     //RectangularButton prueba;
 
     //Sprites utilities to reduce the code.
@@ -100,6 +100,10 @@ private:
     // Music-related variables
     Music background_theme;
     static const string background_theme_file;
+
+    // Window icon
+    Image icon;
+    static const string icon_file;
 
     /**
      * @brief Función que procesa las colisiones del ratón con fichas, dados, etc.
