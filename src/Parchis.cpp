@@ -118,20 +118,26 @@ bool Parchis::isLegalMove(color player, const Box & box, int dice_number){
     // Controlar si barreras, si está en la casa el movimiento solo sería legal si dice_number == 5, ...
     if (box.type == home && dice_number != 5){
         return false;
-    //Controlar que ya estés en el objetivo
+    //Controlar que ya estés en la meta
     }else if(box.type == goal){
         return false;
-    
+    // Comprobar que no haya ya dos fichas en la casilla.
     }else if(final_box.type != goal && final_box.type != home &&  boxState(final_box).size() == 2){
-    //Controlar los muros
         return false;
-    }else{
+    //Controlar los muros
+    }
+    else{
+        // Comprobar que en el camino del movimiento no hay barreras
         vector<color> walls = anyWall(box, final_box);
         for (int i = 0; i < walls.size(); i++){
             //cout << walls.at(i) << endl;
             if (walls.at(i) != player){
                 return false;
             }
+        }
+        // Comprobar que si he sacado un 6 y tengo barreras de mi color he elegido una de las fichas en la barrera.
+        if(dice_number == 6){
+            
         }
     } // TODO: falta (al menos) un caso: que salga un 6, haya alguna barrera de ese color y se elija una ficha fuera de la barrera.
     return true;
