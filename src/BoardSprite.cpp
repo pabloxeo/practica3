@@ -1,4 +1,5 @@
 # include "BoardSprite.h"
+# include "ParchisGUI.h"
 
 BoardSprite::BoardSprite(const Texture & t): ClickableSprite(t){}
 

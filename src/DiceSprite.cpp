@@ -1,4 +1,5 @@
 #include "DiceSprite.h"
+#include "ParchisGUI.h"
 
 const map<int, vector<int>> DiceSprite::num2textrec = {
     {1, {6, 118, 116, 116}},//{1, {2, 120, 120, 120}},
