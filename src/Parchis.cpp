@@ -61,6 +61,8 @@ const Board & Parchis::getBoard() const{
 }
 
 const color Parchis::isWall(const Box & b) const{
+    if(b.type == home || b.type == goal) return none;
+
     const vector<pair <color, int>> occupation = boxState(b);
     if (occupation.size() == 2 && occupation.at(0).first == occupation.at(1).first){
         return  occupation.at(0).first;
@@ -137,7 +139,16 @@ bool Parchis::isLegalMove(color player, const Box & box, int dice_number){
         }
         // Comprobar que si he sacado un 6 y tengo barreras de mi color he elegido una de las fichas en la barrera.
         if(dice_number == 6){
-            
+            bool hay_walls = false;
+            for(int i = 0; i < board.getPieces(player).size() && !hay_walls; i++){
+                cout << "HOLAA" << endl;
+                cout << player << " " << isWall(board.getPiece(player, i)) << endl;
+                hay_walls = (isWall(board.getPiece(player, i)) == player);
+            }
+
+            if(hay_walls && isWall(box) != player){
+                return false;
+            }
         }
     } // TODO: falta (al menos) un caso: que salga un 6, haya alguna barrera de ese color y se elija una ficha fuera de la barrera.
     return true;
@@ -359,6 +370,9 @@ bool Parchis::gameOver(){
 }
 
 int Parchis::getWinner(){
+    if(illegal_move_player != -1){
+        return (illegal_move_player == 0)?1:0;
+    }
     color col = getColorWinner();
     switch(col){
         case yellow:
@@ -373,7 +387,6 @@ int Parchis::getWinner(){
 
         break;
     }
-
 }
 
 color Parchis::getColorWinner(){
@@ -387,4 +400,8 @@ color Parchis::getColorWinner(){
         }
     }
     return none;
+}
+
+bool Parchis::illegalMove(){
+    return this->illegal_move_player != -1;
 }
