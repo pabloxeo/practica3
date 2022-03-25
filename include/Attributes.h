@@ -19,6 +19,7 @@ inline string str(color c){
     }
 }
 
+
 //Lista con los diferentes tipos de casillas
 enum box_type {normal, home, final_queue, goal};
 

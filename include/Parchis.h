@@ -24,6 +24,8 @@ class Parchis{
         color current_color;
         vector <Player*> players;
 
+        int illegal_move_player;
+
         static const int final_red_box = 34;
         static const int final_blue_box = 17;
         static const int final_green_box = 51;
@@ -43,6 +45,8 @@ class Parchis{
         void nextTurn();
 
     public:
+        static const vector<color> game_colors;
+        
         /**
          * @brief Default construct a new Parchis object
          * 
@@ -197,7 +201,37 @@ class Parchis{
         inline color getCurrentColor(){
             return this->current_color;
         }
+
+        /**
+         * @brief Indica si la partida ha terminado.
+         * 
+         * @return true 
+         * @return false 
+         */
+        bool gameOver();
         
+        /**
+         * @brief Si la partida ha terminado, devuelve el índice del jugador ganador (0 o 1).
+         * 
+         * @return int 
+         */
+        int getWinner();
+
+        /**
+         * @brief Si la partida ha terminado, devuelve el color del jugador ganador.
+         * 
+         * @return color 
+         */
+        color getColorWinner();
+
+        /**
+         * @brief Devuelve true si y solo si uno de los jugadores ha hecho un movimiento ilegal.
+         * El jugador que ha hecho dicho movimiento pierde automáticamente.
+         * 
+         * @return true 
+         * @return false 
+         */
+        bool illegalMove();
 };
 
 
