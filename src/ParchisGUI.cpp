@@ -224,6 +224,10 @@ ParchisGUI::ParchisGUI(Parchis &model)
     }else{
         cout << "Icon could not be loaded" << endl;
     }
+
+    this->avg_fps = 0.0;
+    this->total_frames = 0;
+    this->setFramerateLimit(60);
 }
 
 void ParchisGUI::collectSprites(){
@@ -272,6 +276,13 @@ void ParchisGUI::mainLoop(){
     processEvents();
     processAnimations();
     paint();
+
+    current_time = game_clock.restart().asSeconds();
+    fps = 1.f / (current_time);
+    avg_fps = (avg_fps * total_frames + fps) / (total_frames + 1);
+    total_frames++;
+    //last_time = current_time;
+    cout << "Current FPS: " << fps << "\tAverage FPS: " << avg_fps << endl; //"\tTotal frames: " << total_frames << endl;
 }
 
 void ParchisGUI::processMouse(){

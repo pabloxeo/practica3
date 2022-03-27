@@ -190,6 +190,12 @@ private:
     Vector2f box3position(color c, int id, int pos);
     Vector2f box3position(Box b, int id, int pos);
 
+    // FPS
+    float fps, avg_fps;
+    float current_time;
+    long total_frames;
+    Clock game_clock;
+
 public:
     ParchisGUI(Parchis & model);
     

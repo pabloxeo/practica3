@@ -7,6 +7,17 @@
 
 using namespace std;
 
+/**
+ * @brief Enumerado para definir distintas configuraciones de tableros.
+ * 
+ */
+enum BoardConfig{
+    ALL_AT_HOME, // Todas las fichas comienzan en su casa.
+    GROUPED,     // Una ficha comienza en la casa, las otras tres ocupan los tres primeros seguros de su color.
+    ALTERNED,    // Una ficha de cada color comienza en la casa, el resto se van colocando en los seguros alternando los colores. 
+    ALMOST_GOAL, // Todas las fichas comienzan en el pasillo de la meta (sin utilidad real, solo para facilitar depuración).
+};
+
 
 class Board{
     private:
@@ -26,6 +37,11 @@ class Board{
          */
         Board (const map <color, vector <Box> > & b);
 
+        /**
+         * @brief Construye un nuevo tablero a partir de la configuración indicada.
+         * 
+         */
+        Board(const BoardConfig & config);
 
         /**
          * @brief Función que devuelve el Box correspondiente a la ficha en la posición "idx" del vector de fichas de color "c".
@@ -52,6 +68,13 @@ class Board{
          * @param final_box 
          */
         void movePiece(const color c, const int idx, const Box & final_box);
+
+        /**
+         * @brief Actualiza el tablero según la configuración especificada.
+         * 
+         * @param config 
+         */
+        void setFromConfig(const BoardConfig & config);
 };
 
 

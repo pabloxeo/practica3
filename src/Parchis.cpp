@@ -21,6 +21,22 @@ Parchis::Parchis()
     this->illegal_move_player = -1;
 }
 
+Parchis::Parchis(const BoardConfig & b){
+    this->board = Board(b);
+    this->dice = Dice();
+
+    this->last_dice = -1;
+
+    this->current_player = 0;
+    this->current_color = yellow;
+    GUIPlayer *p1 = new GUIPlayer("Player 1"), *p2 = new GUIPlayer("Player 2");
+    players.push_back(p1);
+    players.push_back(p2);
+    // last_moves vacío por defecto.
+
+    this->illegal_move_player = -1;
+}
+
 Parchis::Parchis(const Board & b, const Dice & d){
     this->board = board;
     this->dice = dice;
@@ -37,6 +53,22 @@ Parchis::Parchis(const Board & b, const Dice & d){
     this->illegal_move_player = -1;
 }
 
+Parchis::Parchis(const BoardConfig &b, const Dice &d)
+{
+    this->board = Board(b);
+    this->dice = dice;
+
+    this->last_dice = -1;
+    this->current_player = 0;
+    this->current_color = yellow;
+    GUIPlayer p1("Player 1"), p2("Player 2");
+    players.push_back(&p1);
+    players.push_back(&p2);
+    // players = {&p1, &p2};
+    //  last_moves vacío por defecto.
+
+    this->illegal_move_player = -1;
+}
 
 Parchis::Parchis(const Board & b, const Dice & d, Player & p1, Player & p2){
     this->board = board;
@@ -47,6 +79,21 @@ Parchis::Parchis(const Board & b, const Dice & d, Player & p1, Player & p2){
     this->current_color = yellow;
     players.push_back(&p1);
     players.push_back(&p2);// = {&p1, &p2};
+    // last_moves vacío por defecto.
+
+    this->illegal_move_player = -1;
+}
+
+Parchis::Parchis(const BoardConfig &b, const Dice &d, Player &p1, Player &p2)
+{
+    this->board = Board(b);
+    this->dice = dice;
+
+    this->last_dice = -1;
+    this->current_player = 0;
+    this->current_color = yellow;
+    players.push_back(&p1);
+    players.push_back(&p2); // = {&p1, &p2};
     // last_moves vacío por defecto.
 
     this->illegal_move_player = -1;

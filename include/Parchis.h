@@ -57,9 +57,24 @@ class Parchis{
          * @brief Construct a new Parchis object
          * 
          * @param b 
+         */
+        Parchis(const BoardConfig &b);
+
+        /**
+         * @brief Construct a new Parchis object
+         * 
+         * @param b 
          * @param d 
          */
         Parchis(const Board & b, const Dice & d);
+
+        /**
+         * @brief Construct a new Parchis object
+         * 
+         * @param b 
+         * @param d 
+         */
+        Parchis(const BoardConfig & b, const Dice & d);
 
         /**
          * @brief Construct a new Parchis object
@@ -70,6 +85,16 @@ class Parchis{
          * @param p2 
          */
         Parchis(const Board & b, const Dice & d, Player & p1, Player & p2);
+
+        /**
+         * @brief Construct a new Parchis object
+         * 
+         * @param b 
+         * @param d 
+         * @param p1 
+         * @param p2 
+         */
+        Parchis(const BoardConfig &b, const Dice &d, Player &p1, Player &p2);
 
         /**
          * @brief Get the Dice object
