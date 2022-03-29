@@ -8,7 +8,7 @@ int main(int argc, char const *argv[]){
     //ParchisGUI parchis;
     //parchis.display();
     //parchis.moveFichas();
-    Parchis parchis(GROUPED);
+    Parchis parchis(ALMOST_GOAL);
     ParchisGUI parchis_gui(parchis);
     parchis_gui.run();
 

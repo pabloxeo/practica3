@@ -58,6 +58,12 @@ class Dice{
          * @return false 
          */
         bool isAvailable(color player, int n);
+
+        /**
+         * @brief Función que añade un valor al dado del jugador "player".
+         * 
+         */
+        void addNumber(color player, int n);
 };
 
 #endif

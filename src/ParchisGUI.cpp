@@ -282,7 +282,7 @@ void ParchisGUI::mainLoop(){
     avg_fps = (avg_fps * total_frames + fps) / (total_frames + 1);
     total_frames++;
     //last_time = current_time;
-    cout << "Current FPS: " << fps << "\tAverage FPS: " << avg_fps << endl; //"\tTotal frames: " << total_frames << endl;
+    //cout << "Current FPS: " << fps << "\tAverage FPS: " << avg_fps << endl; //"\tTotal frames: " << total_frames << endl;
 }
 
 void ParchisGUI::processMouse(){
@@ -493,7 +493,13 @@ void ParchisGUI::paint(){
 }
 
 void ParchisGUI::updateEnabledSprites(){
-    vector<color> colors = {red, blue, green, yellow};
+    vector<color> colors = Parchis::game_colors;
+    if(model->isEatingMove()){
+        this->last_dice = 20;
+    }
+    if(model->isGoalMove()){
+        this->last_dice = 10;
+    }
     for(int i = 0; i < colors.size(); i++){
         color c = colors[i];
         vector<Box> player_pieces = model->getBoard().getPieces(c);
@@ -512,14 +518,22 @@ void ParchisGUI::updateEnabledSprites(){
 
         Dice dice = model->getDice();
         for(int j = 0; j < this->dices[c].size(); j++){
-            DiceSprite* current = &this->dices[c][j];
-            //cout << j << " " << current->getNumber() << " " << dice.isAvailable(c, current->getNumber()) << endl;
-            current->setEnabled(dice.isAvailable(c, current->getNumber()), *this);
-            current->setLocked(this->model->getCurrentColor() != c, *this);
-            current->setSelected(this->model->getCurrentColor() == c and this->last_dice == current->getNumber(), *this);
-            //cout << current->isEnabled() << endl;
+            if(this->last_dice == 10 || this->last_dice == 20){
+                this->dices[c][j].setEnabled(false, *this);
+                cout << "TOCA CONTARSE " << this->last_dice << endl;
+            }
+            else{
+                DiceSprite* current = &this->dices[c][j];
+                //cout << j << " " << current->getNumber() << " " << dice.isAvailable(c, current->getNumber()) << endl;
+                current->setEnabled(dice.isAvailable(c, current->getNumber()), *this);
+                current->setLocked(this->model->getCurrentColor() != c, *this);
+                current->setSelected(this->model->getCurrentColor() == c and this->last_dice == current->getNumber(), *this);
+                //cout << current->isEnabled() << endl;
+            }
         }
     }
+
+
 }
 
 void ParchisGUI::run(){

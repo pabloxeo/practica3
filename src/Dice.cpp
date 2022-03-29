@@ -40,3 +40,7 @@ bool Dice::isAvailable(color player, int n){
     //for(int i =0; i < player_dice.size(); i++) cout << player_dice[i] << endl;
     return (find(player_dice.begin(), player_dice.end(), n) != player_dice.end());
 }
+
+void Dice::addNumber(color player, int n){
+    dice[player].push_back(n);
+}

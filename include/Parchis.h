@@ -26,6 +26,9 @@ class Parchis{
 
         int illegal_move_player;
 
+        bool eating_move;
+        bool goal_move;
+
         static const int final_red_box = 34;
         static const int final_blue_box = 17;
         static const int final_green_box = 51;
@@ -37,6 +40,9 @@ class Parchis{
         static const int init_yellow_box = 4;
 
         static const vector<int> safe_boxes;
+
+        static const map<color, int> final_boxes;
+        static const map<color, int> init_boxes;
 
         /**
          * @brief
@@ -193,7 +199,25 @@ class Parchis{
          */
         const Box computeMove(color player, const Box & box, int dice_number, bool * goal_bounce = NULL) const;
 
-        
+        /**
+         * @brief Get the eating_move object
+         *
+         * 
+         */
+
+        inline const bool isEatingMove() const {
+            return eating_move;
+        }
+
+        /**
+         * @brief Get the goal_move object
+         *
+         * 
+         */
+
+        inline const bool isGoalMove() const {
+            return goal_move;
+        }
 
 
         /**
