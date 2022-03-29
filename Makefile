@@ -46,7 +46,7 @@ obj/RectangularButton.o: src/RectangularButton.cpp
 	g++ -g -c src/RectangularButton.cpp -o obj/RectangularButton.o -I include/ -std=c++14
 
 bin/Parchis: obj/main.o obj/ParchisGUI.o obj/Parchis.o obj/Board.o obj/Dice.o obj/SpriteAnimator.o obj/DiceSprite.o obj/PieceSprite.o obj/BoardSprite.o obj/RectangularButton.o obj/Button.o obj/ClickableSprite.o obj/GUIPlayer.o obj/AIPlayer.o obj/Player.o
-	g++ -g obj/main.o obj/ParchisGUI.o obj/Parchis.o obj/Board.o obj/Dice.o obj/DiceSprite.o obj/SpriteAnimator.o obj/PieceSprite.o obj/BoardSprite.o obj/RectangularButton.o obj/Button.o obj/ClickableSprite.o obj/GUIPlayer.o obj/AIPlayer.o obj/Player.o -o bin/Parchis -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
+	g++ -g obj/main.o obj/ParchisGUI.o obj/Parchis.o obj/Board.o obj/Dice.o obj/DiceSprite.o obj/SpriteAnimator.o obj/PieceSprite.o obj/BoardSprite.o obj/RectangularButton.o obj/Button.o obj/ClickableSprite.o obj/GUIPlayer.o obj/AIPlayer.o obj/Player.o -o bin/Parchis -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -lpthread
 
 clean:
 	rm -rf ./obj/*.o ./bin/*

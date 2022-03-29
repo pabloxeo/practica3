@@ -3,10 +3,18 @@
 
 # include "Attributes.h"
 
+class Parchis;
+
 class Player{
-    private:
+    protected:
         string name;
+        int jugador;
+        vector<color> colors;
+
+        Parchis *actual;
     public:
+        void perceive(Parchis & p);
+
         inline Player(string name){this->name = name;}
 
         /**
@@ -18,7 +26,7 @@ class Player{
          * @return true 
          * @return false 
          */
-        virtual bool move(color & c_piece,  int & id_piece, int & dice) = 0;
+        virtual bool move() = 0;
 
 };
 #endif

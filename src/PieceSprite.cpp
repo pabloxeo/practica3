@@ -84,9 +84,10 @@ void PieceSprite::onClickAction(Window & container){
             }
             */
         }
-        gui->last_dice = -1;  // Se anula el último valor del dado (ya usado). Así se fuerza también a seleccionar un dado antes de mover.
-        gui->model->gameStep();  // CAMBIAR: tendrá que ir a una hebra y ser gameLoop
-        gui->updateEnabledSprites();
+        //gui->last_dice = -1;  // Se anula el último valor del dado (ya usado). Así se fuerza también a seleccionar un dado antes de mover.
+        //gui->model->gameStep();  // CAMBIAR: tendrá que ir a una hebra y ser gameLoop
+        //gui->updateEnabledSprites();
+        gui->startGameLoop();
     }
     
     

@@ -4,8 +4,9 @@
 # include "Attributes.h"
 # include "Player.h"
 
-
 class AIPlayer: public Player{
+    private:
+        
     public:
         inline AIPlayer(string name):Player(name){};
         /**
@@ -17,7 +18,11 @@ class AIPlayer: public Player{
          * @return true 
          * @return false 
          */
-        virtual bool move(color & c_piece,  int & id_piece, int & dice) = 0;
+        virtual bool move();
+        
+        void think(color & c_piece,  int & id_piece, int & dice) const;
+
+
 
 };
 #endif

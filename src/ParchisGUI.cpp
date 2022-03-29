@@ -138,7 +138,8 @@ const string ParchisGUI::background_theme_file = "data/music/background_theme";
 const string ParchisGUI::icon_file = "data/textures/icon_parchis.png";
 
 ParchisGUI::ParchisGUI(Parchis &model)
-    : RenderWindow(VideoMode(1600, 800, VideoMode::getDesktopMode().bitsPerPixel), L"Parchís", Style::Titlebar | Style::Close)
+    : RenderWindow(VideoMode(1600, 800, VideoMode::getDesktopMode().bitsPerPixel), L"Parchís", Style::Titlebar | Style::Close),
+    game_thread(&ParchisGUI::gameLoop, this)
     // L"string" parece que permite representar caraceteres unicode. Útil para acentos y demás.
 {
     this->model = &model;
@@ -228,6 +229,9 @@ ParchisGUI::ParchisGUI(Parchis &model)
     this->avg_fps = 0.0;
     this->total_frames = 0;
     this->setFramerateLimit(60);
+
+    // Inicialización de la hebra. 
+    this->call_thread_start = false;
 }
 
 void ParchisGUI::collectSprites(){
@@ -277,12 +281,51 @@ void ParchisGUI::mainLoop(){
     processAnimations();
     paint();
 
+    //if(this->call_thread_start){
+    //    this->startGameLoop();
+    //}
+
     current_time = game_clock.restart().asSeconds();
     fps = 1.f / (current_time);
     avg_fps = (avg_fps * total_frames + fps) / (total_frames + 1);
     total_frames++;
     //last_time = current_time;
     //cout << "Current FPS: " << fps << "\tAverage FPS: " << avg_fps << endl; //"\tTotal frames: " << total_frames << endl;
+}
+
+void ParchisGUI::gameLoop(){
+    while(model->gameStep()){
+        cout << "----ParchisGUI----" << endl;
+        cout << "Moved from agent: queuing moves" << endl;
+        cout << "Jugador actual: " << model->getCurrentPlayer() << endl;
+        cout << "Color actual: " << str(model->getCurrentColor()) << endl;
+
+        vector<tuple<color, int, Box, Box>> last_moves = model->getLastMoves();
+
+        
+        for (int i = 0; i < last_moves.size(); i++){
+            color col = get<0>(last_moves[i]);
+            int id = get<1>(last_moves[i]);
+            Box origin = get<2>(last_moves[i]);
+            Box dest = get<3>(last_moves[i]);
+
+            queueMove(col, id, origin, dest);
+            //cout << "HOLAAA" << endl;
+        }
+
+        last_dice = -1;
+        updateEnabledSprites();
+    }
+}
+
+void ParchisGUI::startGameLoop(){
+    this->game_thread.launch();
+    //this->call_thread_start = true;
+    //if(this->game_thread.joinable()){
+    //this->game_thread = thread(&ParchisGUI::gameLoop, this);
+    //this->call_thread_start = false;
+    //}
+    
 }
 
 void ParchisGUI::processMouse(){
@@ -520,7 +563,7 @@ void ParchisGUI::updateEnabledSprites(){
         for(int j = 0; j < this->dices[c].size(); j++){
             if(this->last_dice == 10 || this->last_dice == 20){
                 this->dices[c][j].setEnabled(false, *this);
-                cout << "TOCA CONTARSE " << this->last_dice << endl;
+                //cout << "TOCA CONTARSE " << this->last_dice << endl;
             }
             else{
                 DiceSprite* current = &this->dices[c][j];

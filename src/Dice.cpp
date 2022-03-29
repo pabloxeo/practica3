@@ -22,7 +22,7 @@ const vector<int> & Dice::getDice (color player){
 }
 
 void Dice::removeNumber (color player, int n){
-    for(int i = 0; i < dice[player].size(); i++) cout << dice[player][i] << endl;
+    //for(int i = 0; i < dice[player].size(); i++) cout << dice[player][i] << endl;
     //vector<int>::iterator aux = remove(dice[player].begin(), dice[player].end(), n);
     dice[player].erase(remove(dice[player].begin(), dice[player].end(), n), dice[player].end()); 
     if (dice[player].empty())

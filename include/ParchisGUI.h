@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
+#include <SFML/System.hpp>
 #include <iostream>
 #include <math.h>
 #include <fstream>
@@ -17,14 +18,10 @@
 #include "SpriteAnimator.h"
 #include <list>
 #include <queue>
-#include <thread>
+//#include <thread>
 
 using namespace sf;
 using namespace std;
-
-//class DiceSprite;
-//class PieceSprite;
-//class BoardSprite;
 
 class ParchisGUI: public RenderWindow
 {
@@ -88,7 +85,9 @@ private:
     queue<SpriteAnimator> animations_ch3; // Piece animations with anti-collisions.
 
     // Hebra del juego (no puede desarrollarse en la misma hebra que la GUI porque entonces cada acción en el juego bloquearía la GUI)
-    thread game_thread;
+    Thread game_thread;
+    // Bool para indicar si hay que llamar a la hebra del juego en el bucle principal.
+    bool call_thread_start;
 
     //Last dice number
     int last_dice;
@@ -104,6 +103,18 @@ private:
     // Window icon
     Image icon;
     static const string icon_file;
+
+    /**
+     * @brief Función que ejecuta el código interno del ciclo de juego del parchís.
+     * 
+     */
+    void gameLoop();
+
+    /**
+     * @brief Función que inicia el código interno del parchís.
+     * 
+     */
+    void startGameLoop();
 
     /**
      * @brief Función que procesa las colisiones del ratón con fichas, dados, etc.

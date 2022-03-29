@@ -5,6 +5,7 @@
 # include "AIPlayer.h"
 
 
+
 class GUIPlayer: public AIPlayer{        
     public:
         inline GUIPlayer(string name):AIPlayer(name){};
@@ -18,7 +19,7 @@ class GUIPlayer: public AIPlayer{
          * @return true 
          * @return false 
          */
-        inline bool move(color & c_piece,  int & id_piece, int & dice){return false;}
+        inline bool move(){return false;}
 
 };
 #endif

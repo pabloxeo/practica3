@@ -6,11 +6,14 @@
 # include "Board.h"
 # include "GUIPlayer.h"
 # include "Player.h"
+# include "AIPlayer.h"
 #include <iostream>
 #include <algorithm>
 
 
 using namespace std;
+
+class Player;
 
 class Parchis{
     private:
@@ -127,6 +130,17 @@ class Parchis{
          * @return const vector<int>& 
          */
         const vector<int> getAvailablePieces (color player, int dice_number);
+
+        /**
+         * @brief Get the Available Dices object
+         * 
+         * @param player 
+         * @param dice_number 
+         * @return const vector<int>& 
+         */
+        inline const vector<int> getAvailableDices (color player){
+            return dice.getDice(player);
+        }
 
         /**
          * @brief Mover la pieza número "piece" del jugador "player" "dice_number" posiciones.

@@ -33,6 +33,8 @@ Parchis::Parchis()
     // last_moves vacío por defecto.
 
     this->illegal_move_player = -1;
+    this->goal_move = false;
+    this->eating_move = false;
 }
 
 Parchis::Parchis(const BoardConfig & b){
@@ -43,12 +45,16 @@ Parchis::Parchis(const BoardConfig & b){
 
     this->current_player = 0;
     this->current_color = yellow;
-    GUIPlayer *p1 = new GUIPlayer("Player 1"), *p2 = new GUIPlayer("Player 2");
+    //GUIPlayer *p1 = new GUIPlayer("Player 1"), *p2 = new GUIPlayer("Player 2");
+    GUIPlayer *p1 = new GUIPlayer("Player 1");
+    AIPlayer *p2 = new AIPlayer("Player 2");
     players.push_back(p1);
     players.push_back(p2);
     // last_moves vacío por defecto.
 
     this->illegal_move_player = -1;
+    this->goal_move = false;
+    this->eating_move = false;
 }
 
 Parchis::Parchis(const Board & b, const Dice & d){
@@ -65,6 +71,8 @@ Parchis::Parchis(const Board & b, const Dice & d){
     // last_moves vacío por defecto.
 
     this->illegal_move_player = -1;
+    this->goal_move = false;
+    this->eating_move = false;
 }
 
 Parchis::Parchis(const BoardConfig &b, const Dice &d)
@@ -82,6 +90,8 @@ Parchis::Parchis(const BoardConfig &b, const Dice &d)
     //  last_moves vacío por defecto.
 
     this->illegal_move_player = -1;
+    this->goal_move = false;
+    this->eating_move = false;
 }
 
 Parchis::Parchis(const Board & b, const Dice & d, Player & p1, Player & p2){
@@ -96,6 +106,8 @@ Parchis::Parchis(const Board & b, const Dice & d, Player & p1, Player & p2){
     // last_moves vacío por defecto.
 
     this->illegal_move_player = -1;
+    this->goal_move = false;
+    this->eating_move = false;
 }
 
 Parchis::Parchis(const BoardConfig &b, const Dice &d, Player &p1, Player &p2)
@@ -111,6 +123,8 @@ Parchis::Parchis(const BoardConfig &b, const Dice &d, Player &p1, Player &p2)
     // last_moves vacío por defecto.
 
     this->illegal_move_player = -1;
+    this->goal_move = false;
+    this->eating_move = false;
 }
 
 const Dice & Parchis::getDice(){
@@ -209,8 +223,8 @@ bool Parchis::isLegalMove(color player, const Box & box, int dice_number){
         if(dice_number == 6){
             bool hay_walls = false;
             for(int i = 0; i < board.getPieces(player).size() && !hay_walls; i++){
-                cout << "HOLAA" << endl;
-                cout << player << " " << isWall(board.getPiece(player, i)) << endl;
+                //cout << "HOLAA" << endl;
+                //cout << player << " " << isWall(board.getPiece(player, i)) << endl;
                 hay_walls = (isWall(board.getPiece(player, i)) == player);
             }
 
@@ -419,6 +433,7 @@ const vector<pair <color, int>> Parchis::boxState(const Box & box) const{
 
 
 void Parchis::nextTurn(){
+    cout << "--------- CAMBIO DE TURNO ---------" << endl;
     if (last_dice != 6 && !eating_move && !goal_move){
         this->current_player = (current_player+1)%2;
         switch(this->current_color){
@@ -445,23 +460,25 @@ void Parchis::gameLoop(){
 }
 
 bool Parchis::gameStep(){
-    int id_piece;
-    color c_piece;
-    int dice;
+    //int id_piece;
+    //color c_piece;
+    //int dice;
 
 
 
-    cout << current_player << endl;
-    cout << players.size() << endl;
-    cout << players.at(current_player) << endl;
-    bool move = players.at(current_player)->move(c_piece, id_piece, dice);
-
+    //cout << current_player << endl;
+    //cout << players.size() << endl;
+    //cout << players.at(current_player) << endl;
+    players.at(current_player)->perceive(*this);
+    bool move = players.at(current_player)->move();
+    //cout << "HOLAAAA" << endl;
     cout << move << endl;
 
     if(move){
-        movePiece(c_piece, id_piece, dice);
+        // movePiece(c_piece, id_piece, dice);
         //Actualizar interfaz
         
+        cout << "------- Parchis -------" << endl;
         cout << "Jugador actual: " << this->current_player << endl;
         cout << "Color actual: " << this->current_color << endl;        
     }
