@@ -14,15 +14,15 @@ bool AIPlayer::move(){
 void AIPlayer::think(color & c_piece, int & id_piece, int & dice) const{
     c_piece = actual->getCurrentColor();
     vector<int> current_dices;
+    vector<int> current_pieces;
 
     do{
         current_dices = actual->getAvailableDices(c_piece);
-    }while(current_dices.size() == 0);
+        // Siempre debería haber al menos un dado para escoger
+        // Para un dado podría no haber fichas disponibles.
+        // En ese caso se debería poder pasar turno (no implementado aún)
 
-    dice = current_dices[rand() % current_dices.size()];
-    
-    vector<int> current_pieces;
-    do{
+        dice = current_dices[rand() % current_dices.size()];
         current_pieces = actual->getAvailablePieces(c_piece, dice);
     }while(current_pieces.size() == 0);
 

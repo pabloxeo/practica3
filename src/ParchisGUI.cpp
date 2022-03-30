@@ -294,9 +294,10 @@ void ParchisGUI::mainLoop(){
 }
 
 void ParchisGUI::gameLoop(){
+    updateEnabledSprites();
     while(model->gameStep()){
-        cout << "----ParchisGUI----" << endl;
-        cout << "Moved from agent: queuing moves" << endl;
+        // cout << "----ParchisGUI----" << endl;
+        // cout << "Moved from agent: queuing moves" << endl;
         cout << "Jugador actual: " << model->getCurrentPlayer() << endl;
         cout << "Color actual: " << str(model->getCurrentColor()) << endl;
 
@@ -543,6 +544,8 @@ void ParchisGUI::updateEnabledSprites(){
     if(model->isGoalMove()){
         this->last_dice = 10;
     }
+
+    cout << "last_dice: " << last_dice << endl;
     for(int i = 0; i < colors.size(); i++){
         color c = colors[i];
         vector<Box> player_pieces = model->getBoard().getPieces(c);
@@ -563,7 +566,7 @@ void ParchisGUI::updateEnabledSprites(){
         for(int j = 0; j < this->dices[c].size(); j++){
             if(this->last_dice == 10 || this->last_dice == 20){
                 this->dices[c][j].setEnabled(false, *this);
-                //cout << "TOCA CONTARSE " << this->last_dice << endl;
+                cout << "TOCA CONTARSE " << this->last_dice << endl;
             }
             else{
                 DiceSprite* current = &this->dices[c][j];
@@ -573,6 +576,16 @@ void ParchisGUI::updateEnabledSprites(){
                 current->setSelected(this->model->getCurrentColor() == c and this->last_dice == current->getNumber(), *this);
                 //cout << current->isEnabled() << endl;
             }
+        }
+    }
+    if(model->gameOver()){
+        cout << "La partida ha terminado" << endl;
+        int winner = model->getWinner();
+        color winner_color = model->getColorWinner();
+
+        cout << "Ha ganado el jugador " << winner << " (" << winner_color << ")" << endl;
+        if(model->illegalMove()){
+            cout << "El jugador " << (winner==1?0:1) << " ha hecho un movimiento ilegal" << endl;
         }
     }
 
