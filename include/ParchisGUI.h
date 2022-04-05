@@ -38,6 +38,7 @@ private:
     Texture tPieces;
     Texture tDices;
     Texture tSkipBt;
+    Texture tButtons;
         
     //Sprites' definitions
     Sprite background;
@@ -48,6 +49,8 @@ private:
 
     // Buttons' definitions
     SkipTurnButton skip_turn_button;
+    MoveHeuristicButton move_heuristic_button;
+    AutoHeuristicButton auto_heuristic_button;
 
     //Sprites utilities to reduce the code.
     vector<Sprite*> all_drawable_sprites;
@@ -237,6 +240,8 @@ public:
     friend class DiceSprite;
     friend class BoardSprite;
     friend class SkipTurnButton;
+    friend class MoveHeuristicButton;
+    friend class AutoHeuristicButton;
 };
 
 #endif

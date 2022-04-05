@@ -77,7 +77,15 @@ class ParchisButton: public ClickableSprite{
  * 
  */
 class MoveHeuristicButton: public ParchisButton{
+    private:
+        static const Vector2i length;
+        static const Vector2i normal_offset;
+        static const Vector2i hover_offset;
+        static const Vector2i selected_offset;
+
+        void updateButton(); 
     public:
+        inline MoveHeuristicButton(): ParchisButton(){}
         MoveHeuristicButton(const Texture & t);
         
         void onClickAction(Window &container);
@@ -92,7 +100,16 @@ class MoveHeuristicButton: public ParchisButton{
  * 
  */
 class AutoHeuristicButton: public ParchisButton{
+    private:
+        static const Vector2i length;
+        static const Vector2i normal_offset;
+        static const Vector2i hover_offset;
+        static const Vector2i selected_offset;
+
+        void updateButton();
+
     public:
+        inline AutoHeuristicButton(): ParchisButton(){}
         AutoHeuristicButton(const Texture & t);
 
         void onClickAction(Window &container);
@@ -111,6 +128,7 @@ class MusicOnOffButton: public ParchisButton{
         bool music_on;
         
     public:
+        inline MusicOnOffButton(): ParchisButton(){}
         MusicOnOffButton(const Texture & t);
         
         void onClickAction(Window &container);

@@ -158,6 +158,8 @@ ParchisGUI::ParchisGUI(Parchis &model)
     this->tDices.setSmooth(true);
     this->tSkipBt.loadFromFile("data/textures/skip_buttons.png");
     this->tSkipBt.setSmooth(true);
+    this->tButtons.loadFromFile("data/textures/buttons.png");
+    this->tButtons.setSmooth(true);
 
     //Definimos los sprites
     this->background = Sprite(tBackground);
@@ -195,7 +197,13 @@ ParchisGUI::ParchisGUI(Parchis &model)
     // Creación de los botones
     this->skip_turn_button = SkipTurnButton(tSkipBt);
     this->skip_turn_button.setPosition(Vector2f(850, 400));
-    this->skip_turn_button.setScale(Vector2f(0.75, 0.75));
+    this->skip_turn_button.setScale(Vector2f(0.55, 0.55));
+
+    this->move_heuristic_button = MoveHeuristicButton(tButtons);
+    this->move_heuristic_button.setPosition(Vector2f(1050, 400));
+
+    this->auto_heuristic_button = AutoHeuristicButton(tButtons);
+    this->auto_heuristic_button.setPosition(Vector2f(1050, 464));
 
     //Creación de las vistas
     general_view = View(FloatRect(1000, 1000, 1600, 800));
@@ -207,8 +215,8 @@ ParchisGUI::ParchisGUI(Parchis &model)
     dice_view = View(FloatRect(850.f, 50.f, 420.f, 320.f));
     dice_view.setViewport(FloatRect(0.555f, 0.055f, 0.3f, 0.4f));
 
-    bt_panel_view = View(FloatRect(850.f, 400.f, 420.f, 320.f));
-    bt_panel_view.setViewport(FloatRect(850.f / 1600.f, 400.f / 800.f, 420.f / 1600.f, 320.f / 800.f));
+    bt_panel_view = View(FloatRect(850.f, 400.f, 600.f, 600.f));
+    bt_panel_view.setViewport(FloatRect(850.f / 1600.f, 400.f / 800.f, 600.f / 1600.f, 600.f / 800.f));
 
     rotate_board = false;
     rotate_angle0 = 0.0;
@@ -270,10 +278,14 @@ void ParchisGUI::collectSprites(){
     }
 
     // Añadir botones como dibujables y clickables.
-    all_drawable_sprites.push_back(&skip_turn_button);
-    all_clickable_sprites.push_back(&skip_turn_button);
-    bt_panel_drawable_sprites.push_back(&skip_turn_button);
-    bt_panel_clickable_sprites.push_back(&skip_turn_button);
+    vector<ClickableSprite*> buttons = {&skip_turn_button, &move_heuristic_button, &auto_heuristic_button};
+
+    for(int i = 0; i < buttons.size(); i++){
+        all_drawable_sprites.push_back(buttons[i]);
+        all_clickable_sprites.push_back(buttons[i]);
+        bt_panel_drawable_sprites.push_back(buttons[i]);
+        bt_panel_clickable_sprites.push_back(buttons[i]);
+    }
 }
 
 void ParchisGUI::mainLoop(){

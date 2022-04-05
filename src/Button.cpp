@@ -1,6 +1,140 @@
 # include "Button.h"
 # include "ParchisGUI.h"
 
+/* ---------------- HEURISTIC BUTTONS ---------------- */
+const Vector2i MoveHeuristicButton::length = Vector2i(330, 70);
+const Vector2i MoveHeuristicButton::normal_offset = Vector2i(0, 0);
+const Vector2i MoveHeuristicButton::hover_offset = Vector2i(340, 0);
+const Vector2i MoveHeuristicButton::selected_offset = Vector2i(680, 0);
+
+const Vector2i AutoHeuristicButton::length = Vector2i(330, 80);
+const Vector2i AutoHeuristicButton::normal_offset = Vector2i(0, 80);
+const Vector2i AutoHeuristicButton::hover_offset = Vector2i(340, 80);
+const Vector2i AutoHeuristicButton::selected_offset = Vector2i(680, 80);
+
+MoveHeuristicButton::MoveHeuristicButton(const Texture & t): ParchisButton(t){
+    this->updateButton();
+}
+
+AutoHeuristicButton::AutoHeuristicButton(const Texture & t): ParchisButton(t){
+    this->updateButton();
+}
+
+void MoveHeuristicButton::updateButton(){
+    if(selected){
+        this->setTextureRect(IntRect(selected_offset.x, selected_offset.y, length.x, length.y));
+    }
+    else if(hovered && enabled && !locked){
+        this->setTextureRect(IntRect(hover_offset.x, hover_offset.y, length.x, length.y));
+    }
+    else{
+        this->setTextureRect(IntRect(normal_offset.x, normal_offset.y, length.x, length.y));
+    }
+
+    if(enabled){
+        this->setColor(Color::White);
+    }
+    else{
+        this->setColor(Color(128, 128, 128));
+    }
+}
+
+void AutoHeuristicButton::updateButton()
+{
+    if (selected){
+        this->setTextureRect(IntRect(selected_offset.x, selected_offset.y, length.x, length.y));
+    }
+    else if (hovered && enabled && !locked){
+        this->setTextureRect(IntRect(hover_offset.x, hover_offset.y, length.x, length.y));
+    }
+    else{
+        this->setTextureRect(IntRect(normal_offset.x, normal_offset.y, length.x, length.y));
+    }
+
+    if (enabled){
+        this->setColor(Color::White);
+    }
+    else{
+        this->setColor(Color(128, 128, 128));
+    }
+}
+
+void MoveHeuristicButton::onClickAction(Window &container){
+    ParchisGUI *gui = dynamic_cast<ParchisGUI *>(&container);
+
+    if (enabled && !locked && clicked)
+    {
+        /* TODO */
+    }
+}
+
+void AutoHeuristicButton::onClickAction(Window &container){
+    ParchisGUI *gui = dynamic_cast<ParchisGUI *>(&container);
+
+    if (enabled && !locked && clicked)
+    {
+        /* TODO */
+    }
+}
+
+void MoveHeuristicButton::onEnableAction(Window &container){
+    updateButton();
+}
+
+void AutoHeuristicButton::onEnableAction(Window &container){
+    updateButton();
+}
+
+void MoveHeuristicButton::onSelectionAction(Window &container){
+    updateButton();
+}
+
+void AutoHeuristicButton::onSelectionAction(Window &container){
+    updateButton();
+}
+
+void MoveHeuristicButton::onLockAction(Window &container){
+    updateButton();
+}
+
+void AutoHeuristicButton::onLockAction(Window &container){
+    updateButton();
+}
+
+void MoveHeuristicButton::onHoverAction(Window &container){
+    if (hovered)
+    {
+        ParchisGUI *gui = dynamic_cast<ParchisGUI *>(&container);
+        if (locked || !enabled)
+        {
+            gui->setForbiddenCursor();
+        }
+        else
+        {
+            gui->setHandCursor();
+        }
+    }
+    updateButton();
+}
+
+void AutoHeuristicButton::onHoverAction(Window &container)
+{
+    if (hovered)
+    {
+        ParchisGUI *gui = dynamic_cast<ParchisGUI *>(&container);
+        if (locked || !enabled)
+        {
+            gui->setForbiddenCursor();
+        }
+        else
+        {
+            gui->setHandCursor();
+        }
+    }
+    updateButton();
+}
+
+/* -------------------- SKIPTURN BUTTON -------------------- */
 const map<color, vector<int>> SkipTurnButton::col2textrec = {
     {yellow, {0, 0, 255, 255}},
     {green, {0, 256, 255, 255}},
@@ -68,6 +202,11 @@ void SkipTurnButton::onLockAction(Window & container){
 
 void SkipTurnButton::onSelectionAction(Window & container){
     setModelColor(c);
+}
+
+/* ------------------------------- MUSIC BUTTONS ------------------------------- */
+MusicOnOffButton::MusicOnOffButton(const Texture & t): ParchisButton(t){
+    //this->updateButton();
 }
 
 /* ------------------------------- DEPRECATED --------------------------------- */
