@@ -155,7 +155,9 @@ ParchisGUI::ParchisGUI(Parchis &model)
     this->tBoard.loadFromFile("data/textures/parchis_board_resized.png");
     this->tBoard.setSmooth(true);
     this->tDices.loadFromFile("data/textures/dice_extended.png");
-    this->tRectButton.loadFromFile("data/textures/rectangular-buttons.png");
+    this->tDices.setSmooth(true);
+    this->tSkipBt.loadFromFile("data/textures/skip_buttons.png");
+    this->tSkipBt.setSmooth(true);
 
     //Definimos los sprites
     this->background = Sprite(tBackground);
@@ -191,9 +193,9 @@ ParchisGUI::ParchisGUI(Parchis &model)
     }
 
     // Creación de los botones
-    this->prueba = RectangularButton(tRectButton);
-    prueba.setPosition(850, 400);
-    prueba.setText("PRUEBA");
+    this->skip_turn_button = SkipTurnButton(tSkipBt);
+    this->skip_turn_button.setPosition(Vector2f(850, 400));
+    this->skip_turn_button.setScale(Vector2f(0.75, 0.75));
 
     //Creación de las vistas
     general_view = View(FloatRect(1000, 1000, 1600, 800));
@@ -206,7 +208,7 @@ ParchisGUI::ParchisGUI(Parchis &model)
     dice_view.setViewport(FloatRect(0.555f, 0.055f, 0.3f, 0.4f));
 
     bt_panel_view = View(FloatRect(850.f, 400.f, 420.f, 320.f));
-    bt_panel_view.setViewport(FloatRect(0.555f, 0.5f, 0.3f, 0.4f));
+    bt_panel_view.setViewport(FloatRect(850.f / 1600.f, 400.f / 800.f, 420.f / 1600.f, 320.f / 800.f));
 
     rotate_board = false;
     rotate_angle0 = 0.0;
@@ -265,13 +267,13 @@ void ParchisGUI::collectSprites(){
             dice_drawable_sprites.push_back(&dices[col][j]);
             dice_clickable_sprites.push_back(&dices[col][j]);
         }
-
-        // Añadir botones como dibujables y clickables.
-        all_drawable_sprites.push_back(&prueba);
-        all_clickable_sprites.push_back(&prueba);
-        bt_panel_drawable_sprites.push_back(&prueba);
-        bt_panel_clickable_sprites.push_back(&prueba);
     }
+
+    // Añadir botones como dibujables y clickables.
+    all_drawable_sprites.push_back(&skip_turn_button);
+    all_clickable_sprites.push_back(&skip_turn_button);
+    bt_panel_drawable_sprites.push_back(&skip_turn_button);
+    bt_panel_clickable_sprites.push_back(&skip_turn_button);
 }
 
 void ParchisGUI::mainLoop(){
@@ -355,6 +357,23 @@ void ParchisGUI::processMouse(){
     for (int i = dice_clickable_sprites.size() - 1; i >= 0; i--)
     {
         ClickableSprite *current_sprite = dice_clickable_sprites[i];
+        if (current_sprite->getGlobalBounds().contains(world_pos) && !already_hovered)
+        {
+            current_sprite->setHovered(true, *this);
+            already_hovered = true;
+        }
+        else
+        {
+            current_sprite->setHovered(false, *this);
+        }
+    }
+
+    this->setView(bt_panel_view);
+    world_pos = this->mapPixelToCoords(pos);
+
+    for (int i = bt_panel_clickable_sprites.size() - 1; i >= 0; i--)
+    {
+        ClickableSprite *current_sprite = bt_panel_clickable_sprites[i];
         if (current_sprite->getGlobalBounds().contains(world_pos) && !already_hovered)
         {
             current_sprite->setHovered(true, *this);

@@ -13,7 +13,8 @@
 #include "DiceSprite.h"
 #include "PieceSprite.h"
 #include "BoardSprite.h"
-#include "RectangularButton.h"
+//#include "RectangularButton.h"
+#include "Button.h"
 #include "ClickableSprite.h"
 #include "SpriteAnimator.h"
 #include <list>
@@ -36,15 +37,17 @@ private:
     Texture tBoard;
     Texture tPieces;
     Texture tDices;
-    Texture tRectButton;
-    
+    Texture tSkipBt;
+        
     //Sprites' definitions
     Sprite background;
     map <color, vector<PieceSprite>> pieces;
     map <color, vector<DiceSprite>> dices;
     // vector<BoardSprite> boards;
     BoardSprite board;
-    RectangularButton prueba;
+
+    // Buttons' definitions
+    SkipTurnButton skip_turn_button;
 
     //Sprites utilities to reduce the code.
     vector<Sprite*> all_drawable_sprites;
@@ -233,7 +236,7 @@ public:
     friend class PieceSprite;
     friend class DiceSprite;
     friend class BoardSprite;
-    friend class Button;
+    friend class SkipTurnButton;
 };
 
 #endif
