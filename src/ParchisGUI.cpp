@@ -183,7 +183,7 @@ ParchisGUI::ParchisGUI(Parchis &model)
     }
 
     //Creación de los dados
-    Vector2i ini_pos(850, 50);
+    Vector2i ini_pos(900, 50);
     Vector2i offset(70,80);
 
     for (int i = 0; i < colors.size(); i++){
@@ -205,6 +205,12 @@ ParchisGUI::ParchisGUI(Parchis &model)
     this->auto_heuristic_button = AutoHeuristicButton(tButtons);
     this->auto_heuristic_button.setPosition(Vector2f(1050, 464));
 
+    this->music_on_off_button = MusicOnOffButton(tButtons);
+    this->music_on_off_button.setPosition(Vector2f(850, 550));
+
+    this->sound_on_off_button = SoundOnOffButton(tButtons);
+    this->sound_on_off_button.setPosition(Vector2f(960, 550));
+
     //Creación de las vistas
     general_view = View(FloatRect(1000, 1000, 1600, 800));
     general_view.setViewport(FloatRect(0.f, 0.f, 1.f, 1.f));
@@ -212,8 +218,8 @@ ParchisGUI::ParchisGUI(Parchis &model)
     board_view = View(FloatRect(0.f, 0.f, 800.f, 800.f));
     board_view.setViewport(FloatRect(0.f, 0.f, 0.5f, 1.f));
 
-    dice_view = View(FloatRect(850.f, 50.f, 420.f, 320.f));
-    dice_view.setViewport(FloatRect(0.555f, 0.055f, 0.3f, 0.4f));
+    dice_view = View(FloatRect(800.f, 50.f, 520.f, 320.f));
+    dice_view.setViewport(FloatRect(800.f / 1600.f, 50.f / 800.f, 520.f / 1600.f, 320.f / 800.f));
 
     bt_panel_view = View(FloatRect(850.f, 400.f, 600.f, 600.f));
     bt_panel_view.setViewport(FloatRect(850.f / 1600.f, 400.f / 800.f, 600.f / 1600.f, 600.f / 800.f));
@@ -227,7 +233,7 @@ ParchisGUI::ParchisGUI(Parchis &model)
 
     //Música
     this->initializeBackgroundMusic();
-    this->setBackgroundMusic(true);
+    this->setBackgroundMusic(false);
 
     //Icono de la ventana.
     if(icon.loadFromFile(icon_file)){
@@ -278,7 +284,7 @@ void ParchisGUI::collectSprites(){
     }
 
     // Añadir botones como dibujables y clickables.
-    vector<ClickableSprite*> buttons = {&skip_turn_button, &move_heuristic_button, &auto_heuristic_button};
+    vector<ClickableSprite*> buttons = {&skip_turn_button, &move_heuristic_button, &auto_heuristic_button, &music_on_off_button, &sound_on_off_button};
 
     for(int i = 0; i < buttons.size(); i++){
         all_drawable_sprites.push_back(buttons[i]);
@@ -455,6 +461,20 @@ void ParchisGUI::processEvents(){
 
             for(int i = dice_clickable_sprites.size() - 1; i >= 0; i--){
                 ClickableSprite *current_sprite = dice_clickable_sprites[i];
+                if (clicked && current_sprite->getGlobalBounds().contains(world_pos)){
+                    current_sprite->setClicked(true, *this);
+                }
+                else{
+                    current_sprite->setClicked(false, *this);
+                }
+            }
+
+            // Eventos en la vista del panel de botones.
+            this->setView(bt_panel_view);
+            world_pos = this->mapPixelToCoords(pos);
+
+            for(int i = bt_panel_clickable_sprites.size() - 1; i >= 0; i--){
+                ClickableSprite *current_sprite = bt_panel_clickable_sprites[i];
                 if (clicked && current_sprite->getGlobalBounds().contains(world_pos)){
                     current_sprite->setClicked(true, *this);
                 }

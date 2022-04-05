@@ -51,6 +51,8 @@ private:
     SkipTurnButton skip_turn_button;
     MoveHeuristicButton move_heuristic_button;
     AutoHeuristicButton auto_heuristic_button;
+    MusicOnOffButton music_on_off_button;
+    SoundOnOffButton sound_on_off_button;
 
     //Sprites utilities to reduce the code.
     vector<Sprite*> all_drawable_sprites;
@@ -242,6 +244,8 @@ public:
     friend class SkipTurnButton;
     friend class MoveHeuristicButton;
     friend class AutoHeuristicButton;
+    friend class MusicOnOffButton;
+    friend class SoundOnOffButton;
 };
 
 #endif

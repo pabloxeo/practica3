@@ -205,8 +205,123 @@ void SkipTurnButton::onSelectionAction(Window & container){
 }
 
 /* ------------------------------- MUSIC BUTTONS ------------------------------- */
+const Vector2i MusicOnOffButton::length = Vector2i(110, 110);
+const Vector2i MusicOnOffButton::on_offset = Vector2i(0, 160);
+const Vector2i MusicOnOffButton::off_offset = Vector2i(120, 160);
+
+const Vector2i SoundOnOffButton::length = Vector2i(110, 110);
+const Vector2i SoundOnOffButton::on_offset = Vector2i(240, 160);
+const Vector2i SoundOnOffButton::off_offset = Vector2i(360, 160);
+
+
 MusicOnOffButton::MusicOnOffButton(const Texture & t): ParchisButton(t){
-    //this->updateButton();
+    music_on = false;
+    this->updateButton();
+}
+
+SoundOnOffButton::SoundOnOffButton(const Texture & t): ParchisButton(t){
+    sound_on = false;
+    this->updateButton();
+}
+
+void MusicOnOffButton::updateButton(){
+    if(music_on){
+        this->setTextureRect(IntRect(on_offset.x, on_offset.y, length.x, length.y));
+    }
+    else{
+        this->setTextureRect(IntRect(off_offset.x, off_offset.y, length.x, length.y));
+    }
+
+    if(hovered){
+        this->setColor(Color::White);
+    }
+    else{
+        this->setColor(Color(228, 228, 228));
+    }
+}
+
+
+void SoundOnOffButton::updateButton(){
+    if(sound_on){
+        this->setTextureRect(IntRect(on_offset.x, on_offset.y, length.x, length.y));
+    }
+    else{
+        this->setTextureRect(IntRect(off_offset.x, off_offset.y, length.x, length.y));
+    }
+
+    if (hovered){
+        this->setColor(Color::White);
+    }
+    else{
+        this->setColor(Color(228, 228, 228));
+    }
+}
+
+void MusicOnOffButton::onEnableAction(Window & container){}
+
+void MusicOnOffButton::onLockAction(Window & container){}
+
+void MusicOnOffButton::onSelectionAction(Window & container){}
+
+void SoundOnOffButton::onEnableAction(Window & container){}
+
+void SoundOnOffButton::onLockAction(Window & container){}
+
+void SoundOnOffButton::onSelectionAction(Window & container){}
+
+void MusicOnOffButton::onHoverAction(Window & container){
+    if (hovered)
+    {
+        ParchisGUI *gui = dynamic_cast<ParchisGUI *>(&container);
+        if (locked || !enabled)
+        {
+            gui->setForbiddenCursor();
+        }
+        else
+        {
+            gui->setHandCursor();
+        }
+    }
+    updateButton();
+}
+
+void SoundOnOffButton::onHoverAction(Window & container){
+    if (hovered)
+    {
+        ParchisGUI *gui = dynamic_cast<ParchisGUI *>(&container);
+        if (locked || !enabled)
+        {
+            gui->setForbiddenCursor();
+        }
+        else
+        {
+            gui->setHandCursor();
+        }
+    }
+    updateButton();
+}
+
+
+void MusicOnOffButton::onClickAction(Window & container){
+    if(enabled && !locked && clicked){
+        music_on = !music_on;
+        updateButton();
+
+        // Update music in the gui.
+        ParchisGUI * gui = dynamic_cast<ParchisGUI*>(&container);
+        gui->setBackgroundMusic(music_on);
+    }
+}
+
+void SoundOnOffButton::onClickAction(Window & container){
+    if(enabled && !locked && clicked){
+        sound_on = !sound_on;
+        updateButton();
+
+        // Update sound in the gui.
+        //ParchisGUI * gui = dynamic_cast<ParchisGUI*>(&container);
+        //gui->setSound(sound_on);
+    }
 }
 
 /* ------------------------------- DEPRECATED --------------------------------- */

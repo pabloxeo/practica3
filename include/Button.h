@@ -125,10 +125,16 @@ class AutoHeuristicButton: public ParchisButton{
  */
 class MusicOnOffButton: public ParchisButton{
     private:
+        static const Vector2i length;
+        static const Vector2i on_offset;
+        static const Vector2i off_offset;
+
         bool music_on;
+
+        void updateButton();
         
     public:
-        inline MusicOnOffButton(): ParchisButton(){}
+        inline MusicOnOffButton(): ParchisButton(){music_on = false;}
         MusicOnOffButton(const Texture & t);
         
         void onClickAction(Window &container);
@@ -144,8 +150,15 @@ class MusicOnOffButton: public ParchisButton{
  */
 class SoundOnOffButton: public ParchisButton{
     private:
+        static const Vector2i length;
+        static const Vector2i on_offset;
+        static const Vector2i off_offset;
+
         bool sound_on;
+
+        void updateButton();
     public:
+        inline SoundOnOffButton(): ParchisButton(){}
         SoundOnOffButton(const Texture & t);
         
         void onClickAction(Window &container);
