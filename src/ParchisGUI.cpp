@@ -347,7 +347,7 @@ void ParchisGUI::gameLoop(){
 
     // Para evitar que se anime todo de golpe (es un poco chapuza, pensar otra forma de hacerlo).
     while(!animations_ch1.empty()){
-        sleep(milliseconds(100));
+        sleep(milliseconds(10));
     }
     while(model->gameStep()){
         // cout << "----ParchisGUI----" << endl;
@@ -611,10 +611,10 @@ void ParchisGUI::updateSprites(){
     }
 
     cout << "last_dice: " << last_dice << endl;
+    cout << colors.size() << endl;
     for(int i = 0; i < colors.size(); i++){
         color c = colors[i];
         vector<Box> player_pieces = model->getBoard().getPieces(c);
-
         if(this->model->getCurrentColor() == c){
             for(int j = 0; j < player_pieces.size(); j++){
                 this->pieces[c][j].setEnabled(model->isLegalMove(c, player_pieces[j], this->last_dice), *this);
@@ -623,6 +623,7 @@ void ParchisGUI::updateSprites(){
         }
         else{
             for (int j = 0; j < player_pieces.size(); j++){
+                this->pieces[c][j].setEnabled(true, *this);
                 this->pieces[c][j].setLocked(true, *this);
             }
         }

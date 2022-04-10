@@ -148,7 +148,7 @@ const color Parchis::isWall(const Box & b) const{
 
 const vector<color> Parchis::anyWall(const Box & b1, const Box & b2) const{
     Box final_box;
-    if (b2.type == final_queue){
+    if (b2.type == final_queue || b2.type == goal){
         switch (b2.col){
             case blue:
                 final_box = Box(final_blue_box, normal, none);
@@ -166,12 +166,12 @@ const vector<color> Parchis::anyWall(const Box & b1, const Box & b2) const{
     }else{
         final_box = b2;
     }
-
     vector<color> walls;
     bool reached_final_box = false;
     if (b1.type == normal){
         for (int i = b1.num+1; !reached_final_box; i = i%68 + 1){
-            reached_final_box = (b2.num == i);
+            cout << i << endl;
+            reached_final_box = (final_box.num == i);
             color c = isWall(Box(i, normal, none));
             if(c != none){
                 walls.push_back(c);
@@ -358,7 +358,7 @@ void Parchis::movePiece(color player, int piece, int dice_number){
 
             //Comprobar si hay una ficha de otro color en la casilla destino
             vector<pair <color, int>> box_states = boxState(final_box);
-            bool hay_comida_xd = false;
+
             if (!box_states.empty() && box_states[0].first != player){
                 //Comprobar que la casilla no es segura
                 vector<int>::const_iterator ci; 
@@ -469,7 +469,6 @@ bool Parchis::gameStep(){
     //cout << current_player << endl;
     //cout << players.size() << endl;
     //cout << players.at(current_player) << endl;
-    cout << "EYY" << endl;
     players.at(current_player)->perceive(*this);
     bool move = players.at(current_player)->move();
     //cout << "HOLAAAA" << endl;

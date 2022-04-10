@@ -59,6 +59,13 @@ void Board::setFromConfig(const BoardConfig & config){
                 {color::blue, {{17, box_type::normal, color::none}, {1, box_type::final_queue, color::blue}, {2, box_type::final_queue, color::blue}, {3, box_type::final_queue, color::blue}}},
                 {color::yellow, {{68, box_type::normal, color::none}, {1, box_type::final_queue, color::yellow}, {2, box_type::final_queue, color::yellow}, {3, box_type::final_queue, color::yellow}}}};
             break;
+        case DEBUG:
+            this->pieces = map<color, vector<Box>>{
+                {color::green, {{56, box_type::normal, color::none}, {1, box_type::final_queue, color::green}, {2, box_type::final_queue, color::green}, {3, box_type::final_queue, color::green}}},
+                {color::red, {{34, box_type::normal, color::none}, {1, box_type::final_queue, color::red}, {2, box_type::final_queue, color::red}, {3, box_type::final_queue, color::red}}},
+                {color::blue, {{17, box_type::normal, color::none}, {1, box_type::final_queue, color::blue}, {2, box_type::final_queue, color::blue}, {3, box_type::final_queue, color::blue}}},
+                {color::yellow, {{55, box_type::normal, color::none}, {1, box_type::final_queue, color::yellow}, {2, box_type::final_queue, color::yellow}, {3, box_type::final_queue, color::yellow}}}};
+            break;
     }
 }
 

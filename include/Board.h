@@ -16,6 +16,7 @@ enum BoardConfig{
     GROUPED,     // Una ficha comienza en la casa, las otras tres ocupan los tres primeros seguros de su color.
     ALTERNED,    // Una ficha de cada color comienza en la casa, el resto se van colocando en los seguros alternando los colores. 
     ALMOST_GOAL, // Todas las fichas comienzan en el pasillo de la meta (sin utilidad real, solo para facilitar depuración).
+    DEBUG,       // Para depurar determinadas situaciones (ir mofdificando según necesidad)
 };
 
 
