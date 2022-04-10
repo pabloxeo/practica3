@@ -1,6 +1,6 @@
 #include "SpriteAnimator.h"
 
-void SpriteAnimator::initParameters(Sprite & s, const Vector2f &start_pos, const Vector2f &end_pos, int animation_time){
+void SpriteAnimator::initParameters(Transformable & s, const Vector2f &start_pos, const Vector2f &end_pos, int animation_time){
     this->sprite = &s;
     this->start_pos = start_pos;
     this->end_pos = end_pos;
@@ -8,22 +8,23 @@ void SpriteAnimator::initParameters(Sprite & s, const Vector2f &start_pos, const
     this->animation_clock.restart();
 }
 
-SpriteAnimator::SpriteAnimator(Sprite &s, const Vector2f &start_pos, const Vector2f &end_pos, int animation_time){
+SpriteAnimator::SpriteAnimator(Transformable &s, const Vector2f &start_pos, const Vector2f &end_pos, int animation_time)
+{
     initParameters(s, start_pos, end_pos, animation_time);
 }
 
-SpriteAnimator::SpriteAnimator(Sprite &s, const Vector2f &end_pos, int animation_time)
+SpriteAnimator::SpriteAnimator(Transformable &s, const Vector2f &end_pos, int animation_time)
 {
     const Vector2f start_pos = s.getPosition();
     initParameters(s, start_pos, end_pos, animation_time);
 }
 
-SpriteAnimator::SpriteAnimator(Sprite &s, const Vector2i &start_pos, const Vector2i &end_pos, int animation_time)
+SpriteAnimator::SpriteAnimator(Transformable &s, const Vector2i &start_pos, const Vector2i &end_pos, int animation_time)
 {
     initParameters(s, (Vector2f)start_pos, (Vector2f)end_pos, animation_time);
 }
 
-SpriteAnimator::SpriteAnimator(Sprite &s, const Vector2i &end_pos, int animation_time)
+SpriteAnimator::SpriteAnimator(Transformable &s, const Vector2i &end_pos, int animation_time)
 {
     const Vector2f start_pos = s.getPosition();
     initParameters(s, start_pos, (Vector2f)end_pos, animation_time);

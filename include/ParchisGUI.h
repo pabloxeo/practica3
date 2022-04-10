@@ -54,8 +54,14 @@ private:
     MusicOnOffButton music_on_off_button;
     SoundOnOffButton sound_on_off_button;
 
+    // Turns arrow and text
+    Sprite turns_arrow;
+    Text turns_arrow_text;
+    static const IntRect turns_arrow_rect;
+    static const map<color, int> color2turns_arrow_pos;
+
     //Sprites utilities to reduce the code.
-    vector<Sprite*> all_drawable_sprites;
+    vector<Drawable*> all_drawable_sprites;
     vector<ClickableSprite*> all_clickable_sprites;
 
     //Sprites lists separated by views.
@@ -91,6 +97,9 @@ private:
     queue<SpriteAnimator> animations_ch1; // Normal piece animations.
     queue<SpriteAnimator> animations_ch2; // Piece animations with collisions.
     queue<SpriteAnimator> animations_ch3; // Piece animations with anti-collisions.
+    queue<SpriteAnimator> animations_ch4; // Out-board animations (like turns arrow).
+
+    vector<queue<SpriteAnimator>*> all_animators; // All channels.
 
     // Hebra del juego (no puede desarrollarse en la misma hebra que la GUI porque entonces cada acción en el juego bloquearía la GUI)
     Thread game_thread;
@@ -167,10 +176,10 @@ private:
     void defaultHover();
 
     /**
-     * @brief Actualiza los sprites que están habilitados.
+     * @brief Actualiza los sprites (habilitados, botones, posiciones, ...)..
      * 
      */
-    void updateEnabledSprites();
+    void updateSprites();
 
     // Funciones para activar distintos cursores en el juego.
     void setDefaultCursor();

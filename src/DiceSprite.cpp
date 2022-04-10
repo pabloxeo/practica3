@@ -54,7 +54,7 @@ void DiceSprite::onClickAction(Window & container) {
 
     if(!locked && enabled && clicked){
         gui->last_dice = this->number;
-        gui->updateEnabledSprites();
+        gui->updateSprites();
     }
 }
 

@@ -137,6 +137,16 @@ const string ParchisGUI::background_theme_file = "data/music/background_theme";
 
 const string ParchisGUI::icon_file = "data/textures/icon_parchis.png";
 
+const IntRect ParchisGUI::turns_arrow_rect = IntRect(0, 280, 112, 112);
+
+const map<color, int> ParchisGUI::color2turns_arrow_pos = 
+{
+    {yellow, 50},
+    {blue, 130},
+    {red, 210},
+    {green, 290}
+};
+
 ParchisGUI::ParchisGUI(Parchis &model)
     : RenderWindow(VideoMode(1600, 800, VideoMode::getDesktopMode().bitsPerPixel), L"Parchís", Style::Titlebar | Style::Close),
     game_thread(&ParchisGUI::gameLoop, this)
@@ -211,6 +221,19 @@ ParchisGUI::ParchisGUI(Parchis &model)
     this->sound_on_off_button = SoundOnOffButton(tButtons);
     this->sound_on_off_button.setPosition(Vector2f(960, 550));
 
+    // Flecha de turnos.
+    this->turns_arrow = Sprite(tButtons);
+    this->turns_arrow.setTextureRect(turns_arrow_rect);
+    this->turns_arrow.setPosition(Vector2f(850, 50));
+    this->turns_arrow.setScale(Vector2f(0.5, 0.5));
+    this->turns_arrow.setColor(Color::Yellow);
+
+    // Agrupación de los canales de animación.
+    this->all_animators.push_back(&this->animations_ch1);
+    this->all_animators.push_back(&this->animations_ch2);
+    this->all_animators.push_back(&this->animations_ch3);
+    this->all_animators.push_back(&this->animations_ch4);
+
     //Creación de las vistas
     general_view = View(FloatRect(1000, 1000, 1600, 800));
     general_view.setViewport(FloatRect(0.f, 0.f, 1.f, 1.f));
@@ -229,7 +252,7 @@ ParchisGUI::ParchisGUI(Parchis &model)
 
     collectSprites();
 
-    this->updateEnabledSprites();
+    this->updateSprites();
 
     //Música
     this->initializeBackgroundMusic();
@@ -283,6 +306,10 @@ void ParchisGUI::collectSprites(){
         }
     }
 
+    // Añadir flecha de turnos como dibujable.
+    all_drawable_sprites.push_back(&turns_arrow);
+    dice_drawable_sprites.push_back(&turns_arrow);
+
     // Añadir botones como dibujables y clickables.
     vector<ClickableSprite*> buttons = {&skip_turn_button, &move_heuristic_button, &auto_heuristic_button, &music_on_off_button, &sound_on_off_button};
 
@@ -314,7 +341,7 @@ void ParchisGUI::mainLoop(){
 }
 
 void ParchisGUI::gameLoop(){
-    updateEnabledSprites();
+    updateSprites();
     while(model->gameStep()){
         // cout << "----ParchisGUI----" << endl;
         // cout << "Moved from agent: queuing moves" << endl;
@@ -335,7 +362,7 @@ void ParchisGUI::gameLoop(){
         }
 
         last_dice = -1;
-        updateEnabledSprites();
+        updateSprites();
     }
 }
 
@@ -502,41 +529,17 @@ void ParchisGUI::processAnimations()
     }
     */
 
-    // Channel 1
-    if(!animations_ch1.empty()){
-        SpriteAnimator sa_1 = animations_ch1.front();
-        sa_1.update();
-        if(sa_1.hasEnded()){
-            animations_ch1.pop();
-            if(!animations_ch1.empty()){
-                animations_ch1.front().setStartPosition();
-                animations_ch1.front().restart();
-            }
-        }
-    }
-
-    // Channel 2
-    if (!animations_ch2.empty()){
-        SpriteAnimator sa_2 = animations_ch2.front();
-        sa_2.update();
-        if (sa_2.hasEnded()){
-            animations_ch2.pop();
-            if (!animations_ch2.empty()){
-                animations_ch2.front().setStartPosition();
-                animations_ch2.front().restart();
-            }
-        }
-    }
-
-    // Channel 3
-    if (!animations_ch3.empty()){
-        SpriteAnimator sa_3 = animations_ch3.front();
-        sa_3.update();
-        if (sa_3.hasEnded()){
-            animations_ch3.pop();
-            if (!animations_ch3.empty()){
-                animations_ch3.front().setStartPosition();
-                animations_ch3.front().restart();
+   for(int i = 0; i < all_animators.size(); i++){
+        queue<SpriteAnimator>* animations_ch_i = all_animators[i];
+        if(!animations_ch_i->empty()){
+            SpriteAnimator sa_i = animations_ch_i->front();
+            sa_i.update();
+            if(sa_i.hasEnded()){
+                animations_ch_i->pop();
+                if(!animations_ch_i->empty()){
+                    animations_ch_i->front().setStartPosition();
+                    animations_ch_i->front().restart();
+                }
             }
         }
     }
@@ -587,7 +590,7 @@ void ParchisGUI::paint(){
 
 }
 
-void ParchisGUI::updateEnabledSprites(){
+void ParchisGUI::updateSprites(){
     vector<color> colors = Parchis::game_colors;
     if(model->isEatingMove()){
         this->last_dice = 20;
@@ -629,6 +632,17 @@ void ParchisGUI::updateEnabledSprites(){
             }
         }
     }
+    // Actualizar posición y color de la flecha de turnos.
+    int new_turn_pos = color2turns_arrow_pos.at(model->getCurrentColor());
+    if(new_turn_pos != turns_arrow.getPosition().y){
+        SpriteAnimator s(turns_arrow, Vector2f(turns_arrow.getPosition().x, new_turn_pos));
+        animations_ch4.push(s);
+    }
+    Color turns_arrow_color = turns_arrow.getColor();
+    if(turns_arrow_color != DiceSprite::color2Color.at(model->getCurrentColor())){
+        turns_arrow.setColor(DiceSprite::color2Color.at(model->getCurrentColor()));
+    }
+
     if(model->gameOver()){
         cout << "La partida ha terminado" << endl;
         int winner = model->getWinner();

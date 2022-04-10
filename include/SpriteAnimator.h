@@ -9,7 +9,7 @@ using namespace std;
 class SpriteAnimator{
 private:
     // Reference to the sprite to be animated.
-    Sprite *sprite;
+    Transformable *sprite;
 
     // Starting position of the animation.
     Vector2f start_pos;
@@ -31,7 +31,7 @@ private:
      * @param end_pos Ending position of the animation.
      * @param animation_time Total time of the animation.
      */
-    void initParameters(Sprite &s, const Vector2f &start_pos, const Vector2f &end_pos, int animation_time = 1000);
+    void initParameters(Transformable &s, const Vector2f &start_pos, const Vector2f &end_pos, int animation_time = 1000);
 
 public :
     /**
@@ -42,7 +42,7 @@ public :
      * @param end_pos Ending position of the animation.
      * @param animation_time Total time of the animation.
      */
-    SpriteAnimator(Sprite &s, const Vector2f &start_pos, const Vector2f &end_pos, int animation_time = 1000);
+    SpriteAnimator(Transformable &s, const Vector2f &start_pos, const Vector2f &end_pos, int animation_time = 1000);
 
     /**
      * @brief Construct a new Sprite Animator object. The starting position is taken from the sprite.
@@ -51,7 +51,7 @@ public :
      * @param end_pos Ending position of the animation.
      * @param animation_time Total time of the animation.
      */
-    SpriteAnimator(Sprite &s, const Vector2f &end_pos, int animation_time = 1000);
+    SpriteAnimator(Transformable &s, const Vector2f &end_pos, int animation_time = 1000);
 
     /**
      * @brief Construct a new Sprite Animator object
@@ -61,7 +61,7 @@ public :
      * @param end_pos Ending position of the animation.
      * @param animation_time Total time of the animation.
      */
-    SpriteAnimator(Sprite &s, const Vector2i &start_pos, const Vector2i &end_pos, int animation_time = 1000);
+    SpriteAnimator(Transformable &s, const Vector2i &start_pos, const Vector2i &end_pos, int animation_time = 1000);
 
     /**
      * @brief Construct a new Sprite Animator object. The starting position is taken from the sprite.
@@ -70,7 +70,7 @@ public :
      * @param end_pos Ending position of the animation.
      * @param animation_time Total time of the animation.
      */
-    SpriteAnimator(Sprite &s, const Vector2i &end_pos, int animation_time = 1000);
+    SpriteAnimator(Transformable &s, const Vector2i &end_pos, int animation_time = 1000);
 
     /**
      * @brief Restarts the animation.

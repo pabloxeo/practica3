@@ -19,11 +19,12 @@ class DiceSprite: public ClickableSprite{
         static const map <int, vector<int>> num2textrec;
         static const map <int, vector<int>> num2selectedrec;
 
-        static const map <color, Color> color2Color;
         static const map <color, Color> color2DisabledColor;
         static const map <color, Color> color2SelectedColor;
 
     public:
+        static const map <color, Color> color2Color;
+
         DiceSprite(const Texture & t, int n, color c);
 
         inline int getNumber(){return number;}
