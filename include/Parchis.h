@@ -252,8 +252,17 @@ class Parchis{
          * 
          * @return int 
          */
-        inline int getCurrentPlayer(){
+        inline int getCurrentPlayerId(){
             return current_player;
+        }
+
+        /**
+         * @brief Get the Current Player object
+         * 
+         * @return Player& 
+         */
+        inline Player & getCurrentPlayer(){
+            return *players[current_player];
         }
 
         /**

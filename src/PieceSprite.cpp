@@ -31,7 +31,7 @@ void PieceSprite::onClickAction(Window & container){
 
         gui->model->movePiece(this->getModelColor(), this->id,  gui->last_dice);
 
-        cout << "Jugador actual: " << gui->model->getCurrentPlayer() << endl;
+        cout << "Jugador actual: " << gui->model->getCurrentPlayerId() << endl;
         cout << "Color actual: " << str(gui->model->getCurrentColor()) << endl;
 
         vector<tuple<color, int, Box, Box>> last_moves = gui->model->getLastMoves();
@@ -44,49 +44,8 @@ void PieceSprite::onClickAction(Window & container){
             Box dest = get<3>(last_moves[i]);
 
             gui->queueMove(col, id, origin, dest);
-            /*
-            Box dest = get<3>(last_moves[i]);
-            vector<pair<color, int>> occupation = gui->model->boxState(dest);
-            // Si en la casilla de destino solo hay una ficha (la que se está moviendo)
-            if (occupation.size() == 1 || dest.type == home || dest.type == goal)
-            {
-                Vector2f animate_pos= Vector2f(gui->box3position(get<3>(last_moves[i]), get<1>(last_moves[i]), 0));
-
-                //box2position.at(get<2>(last_moves[i]))[0].x, gui->box2position.at(get<2>(last_moves[i]))[0].y);
-                
-                Sprite *animate_sprite = &gui->pieces[get<0>(last_moves[i])][get<1>(last_moves[i])];
-                SpriteAnimator animator = SpriteAnimator(*animate_sprite, animate_pos, 1000);
-                gui->animations_ch1.push(animator);
-            // Si en la casilla de destino hay ahora dos fichas, la que se mueve y una anterior
-            }
-            else
-            {
-                Vector2f animate_pos = Vector2f(gui->box3position(occupation.at(0).first, occupation.at(0).second, 1));
-                Sprite *animate_sprite = &gui->pieces[occupation.at(0).first][occupation.at(0).second];
-                SpriteAnimator animator = SpriteAnimator(*animate_sprite, animate_pos, 1000);
-                gui->animations_ch1.push(animator);
-
-                Vector2f animate_2_pos= Vector2f(gui->box3position(occupation.at(1).first, occupation.at(1).second, 2));
-                Sprite *animate_2_sprite = &gui->pieces[occupation.at(1).first][occupation.at(1).second];
-                SpriteAnimator animator_2 = SpriteAnimator(*animate_2_sprite, animate_2_pos, 1000);
-                gui->animations_ch2.push(animator_2);
-            }
-
-            const vector<pair <color, int>> origin_occupation = gui->model->boxState(origin);
-            cout << occupation.size() << " " << origin_occupation.size() << endl;
-            // Si antes del movimiento había dos fichas en la casilla de origen (ahora solo queda una).
-            if (origin_occupation.size() == 1){
-                Vector2f animate_pos = Vector2f(gui->box3position(origin_occupation.at(0).first, origin_occupation.at(0).second, 0));
-                //Vector2f animate_pos= Vector2f(gui->box2position.at(origin)[0].x, gui->box2position.at(origin)[0].y);
-                Sprite *animate_sprite = &gui->pieces[origin_occupation.at(0).first][origin_occupation.at(0).second];
-                SpriteAnimator animator = SpriteAnimator(*animate_sprite, animate_pos, 1000);
-                gui->animations_ch3.push(animator);
-            }
-            */
         }
-        //gui->last_dice = -1;  // Se anula el último valor del dado (ya usado). Así se fuerza también a seleccionar un dado antes de mover.
-        //gui->model->gameStep();  // CAMBIAR: tendrá que ir a una hebra y ser gameLoop
-        //gui->updateEnabledSprites();
+
         gui->startGameLoop();
     }
     

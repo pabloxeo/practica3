@@ -270,7 +270,9 @@ ParchisGUI::ParchisGUI(Parchis &model)
     this->setFramerateLimit(60);
 
     // Inicialización de la hebra. 
-    this->call_thread_start = false;
+    //this->call_thread_start = false;
+
+    this->startGameLoop();
 }
 
 void ParchisGUI::collectSprites(){
@@ -342,10 +344,15 @@ void ParchisGUI::mainLoop(){
 
 void ParchisGUI::gameLoop(){
     updateSprites();
+
+    // Para evitar que se anime todo de golpe (es un poco chapuza, pensar otra forma de hacerlo).
+    while(!animations_ch1.empty()){
+        sleep(milliseconds(100));
+    }
     while(model->gameStep()){
         // cout << "----ParchisGUI----" << endl;
         // cout << "Moved from agent: queuing moves" << endl;
-        cout << "Jugador actual: " << model->getCurrentPlayer() << endl;
+        cout << "Jugador actual: " << model->getCurrentPlayerId() << endl;
         cout << "Color actual: " << str(model->getCurrentColor()) << endl;
 
         vector<tuple<color, int, Box, Box>> last_moves = model->getLastMoves();
@@ -363,6 +370,10 @@ void ParchisGUI::gameLoop(){
 
         last_dice = -1;
         updateSprites();
+
+        while (!animations_ch1.empty()){
+            sleep(milliseconds(500));
+        }
     }
 }
 

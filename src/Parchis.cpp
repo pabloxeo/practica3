@@ -469,6 +469,7 @@ bool Parchis::gameStep(){
     //cout << current_player << endl;
     //cout << players.size() << endl;
     //cout << players.at(current_player) << endl;
+    cout << "EYY" << endl;
     players.at(current_player)->perceive(*this);
     bool move = players.at(current_player)->move();
     //cout << "HOLAAAA" << endl;

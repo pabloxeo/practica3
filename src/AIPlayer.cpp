@@ -2,6 +2,7 @@
 # include "Parchis.h"
 
 bool AIPlayer::move(){
+    cout << "HOLOO" << endl;
     color c_piece;
     int id_piece;
     int dice;
@@ -12,6 +13,7 @@ bool AIPlayer::move(){
 }
 
 void AIPlayer::think(color & c_piece, int & id_piece, int & dice) const{
+    cout << "HOLAAAAA" << endl;
     c_piece = actual->getCurrentColor();
     vector<int> current_dices;
     vector<int> current_pieces;
