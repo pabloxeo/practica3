@@ -1,5 +1,6 @@
 # include "Button.h"
 # include "ParchisGUI.h"
+# include "Parchis.h"
 
 /* ---------------- HEURISTIC BUTTONS ---------------- */
 const Vector2i MoveHeuristicButton::length = Vector2i(330, 70);
@@ -176,16 +177,16 @@ void AutoHeuristicButton::onHoverAction(Window &container)
 /* -------------------- SKIPTURN BUTTON -------------------- */
 const map<color, vector<int>> SkipTurnButton::col2textrec = {
     {yellow, {0, 0, 255, 255}},
-    {green, {0, 256, 255, 255}},
-    {blue, {256, 0, 255, 255}},
-    {red, {256, 256, 255, 255}}
+    {blue, {0, 256, 255, 255}},
+    {red, {256, 256, 255, 255}},
+    {green, {256, 0, 255, 255}},
 };
 
 const map<color, vector<int>> SkipTurnButton::col2selectedrec = {
     {yellow, {0, 512, 255, 255}},
-    {green, {0, 768, 255, 255}},
-    {blue, {255, 512, 255, 255}},
-    {red, {255, 768, 255, 255}}
+    {blue, {0, 768, 255, 255}},
+    {red, {256, 768, 255, 255}},
+    {green, {256, 512, 255, 255}},
 };
 
 SkipTurnButton::SkipTurnButton(const Texture & t, color c): ParchisButton(t){
@@ -211,7 +212,12 @@ void SkipTurnButton::onClickAction(Window & container){
     ParchisGUI * gui = dynamic_cast<ParchisGUI*>(&container);
 
     if(enabled && !locked && clicked){
-        /* TODO */
+        gui->model->movePiece(this->getModelColor(), SKIP_TURN, gui->last_dice);
+
+        cout << "Jugador actual: " << gui->model->getCurrentPlayerId() << endl;
+        cout << "Color actual: " << str(gui->model->getCurrentColor()) << endl;
+
+        gui->startGameLoop();
     }
 }
 

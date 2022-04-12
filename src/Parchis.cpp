@@ -181,7 +181,7 @@ const vector<color> Parchis::anyWall(const Box & b1, const Box & b2) const{
 }
 
 
-bool Parchis::isLegalMove(color player, const Box & box, int dice_number){
+bool Parchis::isLegalMove(color player, const Box & box, int dice_number) const{
     if(gameOver())
         return false;
     // Controlar si intento mover una ficha que no es del color del jugador actual.
@@ -235,7 +235,11 @@ bool Parchis::isLegalMove(color player, const Box & box, int dice_number){
     return true;
 }
 
-const vector<int> Parchis::getAvailablePieces(color player, int dice_number){
+bool Parchis::canSkipTurn(color player, int dice_number) const{
+    return dice.isAvailable(player, dice_number) and getAvailablePieces(player, dice_number).size() == 0;
+}
+
+const vector<int> Parchis::getAvailablePieces(color player, int dice_number) const{
     vector<Box> player_pieces = board.getPieces(player);
     vector<int> available_pieces;
 
@@ -345,6 +349,24 @@ const Box Parchis::computeMove(color player, const Box & piece_box, int dice_num
 
 void Parchis::movePiece(color player, int piece, int dice_number){
     if(!gameOver()){
+        // Si elijo pasar turno compruebo que efectivamente puedo hacerlo. 
+        // Si sí, pongo el turno en el siguiente jugador. Si no, el jugador ha hecho un movimiento ilegal.
+        if(piece == SKIP_TURN){
+            if(canSkipTurn(player, dice_number)){
+                eating_move = false;
+                goal_move = false;
+                
+                this->last_dice = dice_number;
+                this->last_moves.clear();
+                this->dice.removeNumber(player, dice_number);
+                this->nextTurn();
+                cout << "TURN SKIPPED" << endl;
+            }else{
+                illegal_move_player = current_player;
+                cout << "ILLEGALLY TRIED TO SKIP TURN" << endl;
+            }
+            return;
+        }
         // Switch por colores
         Box piece_box = board.getPiece(player, piece);
         if(isLegalMove(player, piece_box, dice_number)){
@@ -492,11 +514,11 @@ bool Parchis::gameStep(){
     return move;
 }
 
-bool Parchis::gameOver(){
+bool Parchis::gameOver() const{
     return getWinner() != -1;
 }
 
-int Parchis::getWinner(){
+int Parchis::getWinner() const{
     if(illegal_move_player != -1){
         return (illegal_move_player == 0)?1:0;
     }
@@ -516,7 +538,7 @@ int Parchis::getWinner(){
     }
 }
 
-color Parchis::getColorWinner(){
+color Parchis::getColorWinner() const{
     // Recorro todos los colores. En principio da igual el orden, solo debería encontrarse como mucho un ganador.
     for(int i = 0; i < Parchis::game_colors.size(); i++){
         color col = Parchis::game_colors.at(i);
@@ -529,6 +551,6 @@ color Parchis::getColorWinner(){
     return none;
 }
 
-bool Parchis::illegalMove(){
+bool Parchis::illegalMove() const{
     return this->illegal_move_player != -1;
 }

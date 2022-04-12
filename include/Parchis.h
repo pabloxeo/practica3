@@ -10,6 +10,8 @@
 #include <iostream>
 #include <algorithm>
 
+// Macro que define el parámetro para indicar que no se mueve ficha.
+#define SKIP_TURN -1
 
 using namespace std;
 
@@ -129,7 +131,7 @@ class Parchis{
          * @param dice_number 
          * @return const vector<int>& 
          */
-        const vector<int> getAvailablePieces (color player, int dice_number);
+        const vector<int> getAvailablePieces (color player, int dice_number) const;
 
         /**
          * @brief Get the Available Dices object
@@ -160,7 +162,17 @@ class Parchis{
          * @return true 
          * @return false 
          */
-        bool isLegalMove(color player, const Box & box, int dice_number);
+        bool isLegalMove(color player, const Box & box, int dice_number) const;
+
+        /**
+         * @brief Comprobar si el jugador puede pasar turno con el dado seleccionado (si no tiene fichas para mover).
+         * 
+         * @param player 
+         * @param dice_number 
+         * @return true 
+         * @return false 
+         */
+        bool canSkipTurn(color player, int dice_number) const;
 
         /**
          * @brief Get the Last Moves object
@@ -280,21 +292,21 @@ class Parchis{
          * @return true 
          * @return false 
          */
-        bool gameOver();
+        bool gameOver() const;
         
         /**
          * @brief Si la partida ha terminado, devuelve el índice del jugador ganador (0 o 1).
          * 
          * @return int 
          */
-        int getWinner();
+        int getWinner() const;
 
         /**
          * @brief Si la partida ha terminado, devuelve el color del jugador ganador.
          * 
          * @return color 
          */
-        color getColorWinner();
+        color getColorWinner() const;
 
         /**
          * @brief Devuelve true si y solo si uno de los jugadores ha hecho un movimiento ilegal.
@@ -303,7 +315,7 @@ class Parchis{
          * @return true 
          * @return false 
          */
-        bool illegalMove();
+        bool illegalMove() const;
 };
 
 

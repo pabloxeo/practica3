@@ -694,6 +694,11 @@ void ParchisGUI::updateSprites(){
         turns_arrow.setColor(DiceSprite::color2Color.at(model->getCurrentColor()));
     }
 
+    // Actualizar color y disponibilidad del botón de pasar turno.
+    this->skip_turn_button.setModelColor(model->getCurrentColor());
+    this->skip_turn_button.setEnabled(model->canSkipTurn(model->getCurrentColor(), last_dice), *this);
+    this->skip_turn_button.setLocked(!model->canSkipTurn(model->getCurrentColor(), last_dice), *this);
+
     if(model->gameOver()){
         cout << "La partida ha terminado" << endl;
         int winner = model->getWinner();

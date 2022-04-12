@@ -47,8 +47,8 @@ void Dice::resetDice (color player , const vector<int> & new_dice){
     dice[player][dice[player].size() - 1] = new_dice;
 }
 
-bool Dice::isAvailable(color player, int n){
-    vector<int> player_dice = dice[player][dice[player].size()-1];
+bool Dice::isAvailable(color player, int n) const{
+    vector<int> player_dice = dice.at(player).at(dice.at(player).size()-1);
     //for(int i =0; i < player_dice.size(); i++) cout << player_dice[i] << endl;
     return (find(player_dice.begin(), player_dice.end(), n) != player_dice.end());
 }

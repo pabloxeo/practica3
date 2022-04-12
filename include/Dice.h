@@ -79,7 +79,7 @@ class Dice{
          * @return true 
          * @return false 
          */
-        bool isAvailable(color player, int n);
+        bool isAvailable(color player, int n) const;
 
         /**
          * @brief Función que añade un valor al dado del jugador "player".
