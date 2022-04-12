@@ -9,7 +9,13 @@ using namespace std;
 
 class Dice{
     private:
-        map <color, vector <int> > dice;        
+        /**
+         * @brief The dices for each player. The dices are grouped by layers.
+         * First layer contains the classic 1-6 dices.
+         * New layers can be added to force special values, like move 10 or 20.
+         * 
+         */
+        map <color, vector<vector <int>> > dice;        
     
     public:
         /**
@@ -23,7 +29,7 @@ class Dice{
          * 
          * @param d 
          */
-        Dice (const map <color, vector <int> > & d);
+        Dice (const map <color, vector<vector <int> >> & d);
 
         /**
          * @brief Devuelve el dado para un cierto jugador "player".
@@ -31,7 +37,23 @@ class Dice{
          * @param player 
          * @return const vector<int>& 
          */
-        const vector<int> & getDice (color player);
+        const vector<int> & getDice (color player) const;
+
+        /**
+         * @brief Get the All Dice Layers object
+         * 
+         * @param player 
+         * @return const vector<vector<int>>& 
+         */
+        const vector<vector<int>> & getAllDiceLayers(color player) const;
+
+        /**
+         * @brief Get the All Dice Layers object
+         * 
+         * @param player 
+         * @return const vector<vector<int>>& 
+         */
+        const int getLayersSize(color player) const;
 
         /**
          * @brief Elimina el número "n" del dado del jugador "player".
@@ -64,6 +86,14 @@ class Dice{
          * 
          */
         void addNumber(color player, int n);
+
+        /**
+         * @brief Fuerza que el próximo número de dado del jugador "player" sea (únicamente) "n".
+         * 
+         * @param player 
+         * @return int 
+         */
+        void forceNumber(color player, int n);
 };
 
 #endif

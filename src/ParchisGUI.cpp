@@ -202,7 +202,13 @@ ParchisGUI::ParchisGUI(Parchis &model)
             Vector2i pos = ini_pos + Vector2i((j-1)*offset.x, i*offset.y);
             dices[colors[i]][j-1].setPosition(pos.x, pos.y);
         } 
+        //special_10_20_dice[colors[i]].setNumber(20);
+        //special_10_20_dice[colors[i]].setModelColor(colors[i]);
+        special_10_20_dice[colors[i]].push_back(DiceSprite(tDices, -1, colors[i]));
+        special_10_20_dice[colors[i]][0].setPosition(ini_pos.x + offset.x*6, ini_pos.y + offset.y*i);
     }
+
+    
 
     // Creación de los botones
     this->skip_turn_button = SkipTurnButton(tSkipBt);
@@ -241,8 +247,8 @@ ParchisGUI::ParchisGUI(Parchis &model)
     board_view = View(FloatRect(0.f, 0.f, 800.f, 800.f));
     board_view.setViewport(FloatRect(0.f, 0.f, 0.5f, 1.f));
 
-    dice_view = View(FloatRect(800.f, 50.f, 520.f, 320.f));
-    dice_view.setViewport(FloatRect(800.f / 1600.f, 50.f / 800.f, 520.f / 1600.f, 320.f / 800.f));
+    dice_view = View(FloatRect(800.f, 50.f, 720.f, 320.f));
+    dice_view.setViewport(FloatRect(800.f / 1600.f, 50.f / 800.f, 720.f / 1600.f, 320.f / 800.f));
 
     bt_panel_view = View(FloatRect(850.f, 400.f, 600.f, 600.f));
     bt_panel_view.setViewport(FloatRect(850.f / 1600.f, 400.f / 800.f, 600.f / 1600.f, 600.f / 800.f));
@@ -306,6 +312,12 @@ void ParchisGUI::collectSprites(){
             dice_drawable_sprites.push_back(&dices[col][j]);
             dice_clickable_sprites.push_back(&dices[col][j]);
         }
+
+        // Añadir dados especiales como dibujables y clickables.
+        all_drawable_sprites.push_back(&special_10_20_dice[col][0]);
+        all_clickable_sprites.push_back(&special_10_20_dice[col][0]);
+        dice_drawable_sprites.push_back(&special_10_20_dice[col][0]);
+        dice_clickable_sprites.push_back(&special_10_20_dice[col][0]);
     }
 
     // Añadir flecha de turnos como dibujable.
@@ -343,6 +355,7 @@ void ParchisGUI::mainLoop(){
 }
 
 void ParchisGUI::gameLoop(){
+    last_dice = -1;
     updateSprites();
 
     // Para evitar que se anime todo de golpe (es un poco chapuza, pensar otra forma de hacerlo).
@@ -356,7 +369,8 @@ void ParchisGUI::gameLoop(){
         cout << "Color actual: " << str(model->getCurrentColor()) << endl;
 
         vector<tuple<color, int, Box, Box>> last_moves = model->getLastMoves();
-
+        //last_dice = model->getLastDice();
+        //updateSprites();
         
         for (int i = 0; i < last_moves.size(); i++){
             color col = get<0>(last_moves[i]);
@@ -604,21 +618,24 @@ void ParchisGUI::paint(){
 void ParchisGUI::updateSprites(){
     vector<color> colors = Parchis::game_colors;
     if(model->isEatingMove()){
+        cout << "TOCA CONTARSE 20" << endl;
         this->last_dice = 20;
     }
     if(model->isGoalMove()){
+        cout << "TOCA CONTARSE 10" << endl;
         this->last_dice = 10;
     }
 
     cout << "last_dice: " << last_dice << endl;
-    cout << colors.size() << endl;
+    
+
     for(int i = 0; i < colors.size(); i++){
         color c = colors[i];
         vector<Box> player_pieces = model->getBoard().getPieces(c);
         if(this->model->getCurrentColor() == c){
             for(int j = 0; j < player_pieces.size(); j++){
-                this->pieces[c][j].setEnabled(model->isLegalMove(c, player_pieces[j], this->last_dice), *this);
-                this->pieces[c][j].setLocked(!model->isLegalMove(c, player_pieces[j], this->last_dice), *this);
+                this->pieces[c][j].setEnabled(model->isLegalMove(c, player_pieces[j], last_dice), *this);
+                this->pieces[c][j].setLocked(!model->isLegalMove(c, player_pieces[j], last_dice), *this);
             }
         }
         else{
@@ -630,18 +647,40 @@ void ParchisGUI::updateSprites(){
 
         Dice dice = model->getDice();
         for(int j = 0; j < this->dices[c].size(); j++){
+            DiceSprite* current = &this->dices[c][j];
             if(this->last_dice == 10 || this->last_dice == 20){
-                this->dices[c][j].setEnabled(false, *this);
-                cout << "TOCA CONTARSE " << this->last_dice << endl;
+                //cout << "TOCA CONTARSE " << this->last_dice << endl;
+                current->setLocked(true, *this);
+                current->setSelected(false, *this);
+                current->setEnabled(dice.isAvailable(c, current->getNumber()), *this);
             }
             else{
-                DiceSprite* current = &this->dices[c][j];
                 //cout << j << " " << current->getNumber() << " " << dice.isAvailable(c, current->getNumber()) << endl;
                 current->setEnabled(dice.isAvailable(c, current->getNumber()), *this);
                 current->setLocked(this->model->getCurrentColor() != c, *this);
                 current->setSelected(this->model->getCurrentColor() == c and this->last_dice == current->getNumber(), *this);
                 //cout << current->isEnabled() << endl;
             }
+        }
+        
+        // Activar dados especiales para las comidas y las metas.
+        if(model->isEatingMove() && c == model->getCurrentColor()){
+            special_10_20_dice[c][0].setEnabled(true, *this);
+            special_10_20_dice[c][0].setLocked(false, *this);
+            special_10_20_dice[c][0].setSelected(true, *this);
+            special_10_20_dice[c][0].setNumber(20);
+        }
+        else if(model->isGoalMove() && c == model->getCurrentColor()){
+            special_10_20_dice[c][0].setEnabled(true, *this);
+            special_10_20_dice[c][0].setLocked(false, *this);
+            special_10_20_dice[c][0].setSelected(true, *this);
+            special_10_20_dice[c][0].setNumber(10);
+        }
+        else{
+            special_10_20_dice[c][0].setEnabled(false, *this);
+            special_10_20_dice[c][0].setLocked(true, *this);
+            special_10_20_dice[c][0].setSelected(false, *this);
+            special_10_20_dice[c][0].setNumber(-1);
         }
     }
     // Actualizar posición y color de la flecha de turnos.
@@ -660,7 +699,7 @@ void ParchisGUI::updateSprites(){
         int winner = model->getWinner();
         color winner_color = model->getColorWinner();
 
-        cout << "Ha ganado el jugador " << winner << " (" << winner_color << ")" << endl;
+        cout << "Ha ganado el jugador " << winner << " (" << str(winner_color) << ")" << endl;
         if(model->illegalMove()){
             cout << "El jugador " << (winner==1?0:1) << " ha hecho un movimiento ilegal" << endl;
         }

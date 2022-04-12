@@ -170,7 +170,6 @@ const vector<color> Parchis::anyWall(const Box & b1, const Box & b2) const{
     bool reached_final_box = false;
     if (b1.type == normal){
         for (int i = b1.num+1; !reached_final_box; i = i%68 + 1){
-            cout << i << endl;
             reached_final_box = (final_box.num == i);
             color c = isWall(Box(i, normal, none));
             if(c != none){
@@ -365,8 +364,7 @@ void Parchis::movePiece(color player, int piece, int dice_number){
                 if (final_box.type == normal && count(safe_boxes.begin(), safe_boxes.end(), final_box.num) == 0){
                     //Movemos la ficha
                     eating_move = true;
-                    //Añadir al dado de player el valor 20
-                    dice.addNumber(player, 20);
+                    
                 }   
             }
 
@@ -394,11 +392,19 @@ void Parchis::movePiece(color player, int piece, int dice_number){
             // Controlar si la ficha ha llegado a la meta. En ese caso el jugador se cuenta 10 con otra ficha (salvo que sea la última)
             if(final_box.type == goal && !gameOver()){
                 goal_move = true;
-                dice.addNumber(player, 10);
             }
 
 
             this->dice.removeNumber(player, dice_number);
+
+            if(eating_move){
+                // Añadir al dado de player el valor 20
+                dice.forceNumber(player, 20);
+            }
+            if(goal_move){
+                dice.forceNumber(player, 10);
+            }
+
             nextTurn();
         }
         else{
@@ -472,7 +478,7 @@ bool Parchis::gameStep(){
     players.at(current_player)->perceive(*this);
     bool move = players.at(current_player)->move();
     //cout << "HOLAAAA" << endl;
-    cout << move << endl;
+    //cout << move << endl;
 
     if(move){
         // movePiece(c_piece, id_piece, dice);

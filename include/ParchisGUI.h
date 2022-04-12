@@ -44,6 +44,7 @@ private:
     Sprite background;
     map <color, vector<PieceSprite>> pieces;
     map <color, vector<DiceSprite>> dices;
+    map <color, vector<DiceSprite>> special_10_20_dice;
     // vector<BoardSprite> boards;
     BoardSprite board;
 
@@ -107,7 +108,7 @@ private:
     bool call_thread_start;
 
     //Last dice number
-    int last_dice;
+    volatile int last_dice;
 
     // Bool to activate board rotations.
     bool rotate_board;
