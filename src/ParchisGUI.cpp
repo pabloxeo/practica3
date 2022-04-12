@@ -362,7 +362,8 @@ void ParchisGUI::gameLoop(){
     while(!animations_ch1.empty()){
         sleep(milliseconds(10));
     }
-    while(model->gameStep()){
+    while (!model->gameOver() && model->gameStep())
+    {
         // cout << "----ParchisGUI----" << endl;
         // cout << "Moved from agent: queuing moves" << endl;
         cout << "Jugador actual: " << model->getCurrentPlayerId() << endl;
@@ -377,6 +378,8 @@ void ParchisGUI::gameLoop(){
             int id = get<1>(last_moves[i]);
             Box origin = get<2>(last_moves[i]);
             Box dest = get<3>(last_moves[i]);
+
+            cout << col << " " << id << " " << origin.num << " " << dest.num << endl;
 
             queueMove(col, id, origin, dest);
             //cout << "HOLAAA" << endl;
