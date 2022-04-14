@@ -8,7 +8,7 @@ class AIPlayer: public Player{
     private:
         
     public:
-        inline AIPlayer(string name):Player(name){};
+        inline AIPlayer(const string & name):Player(name){};
         /**
          * @brief Función abstracta que define el movimiento devuelto por el jugador.
          * 

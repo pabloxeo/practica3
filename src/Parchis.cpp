@@ -35,6 +35,8 @@ Parchis::Parchis()
     this->illegal_move_player = -1;
     this->goal_move = false;
     this->eating_move = false;
+
+    this->turn = 1;
 }
 
 Parchis::Parchis(const BoardConfig & b){
@@ -55,6 +57,8 @@ Parchis::Parchis(const BoardConfig & b){
     this->illegal_move_player = -1;
     this->goal_move = false;
     this->eating_move = false;
+
+    this->turn = 1;
 }
 
 Parchis::Parchis(const Board & b, const Dice & d){
@@ -73,6 +77,8 @@ Parchis::Parchis(const Board & b, const Dice & d){
     this->illegal_move_player = -1;
     this->goal_move = false;
     this->eating_move = false;
+
+    this->turn = 1;
 }
 
 Parchis::Parchis(const BoardConfig &b, const Dice &d)
@@ -92,6 +98,8 @@ Parchis::Parchis(const BoardConfig &b, const Dice &d)
     this->illegal_move_player = -1;
     this->goal_move = false;
     this->eating_move = false;
+
+    this->turn = 1;
 }
 
 Parchis::Parchis(const Board & b, const Dice & d, Player & p1, Player & p2){
@@ -108,6 +116,8 @@ Parchis::Parchis(const Board & b, const Dice & d, Player & p1, Player & p2){
     this->illegal_move_player = -1;
     this->goal_move = false;
     this->eating_move = false;
+
+    this->turn = 1;
 }
 
 Parchis::Parchis(const BoardConfig &b, const Dice &d, Player &p1, Player &p2)
@@ -125,6 +135,26 @@ Parchis::Parchis(const BoardConfig &b, const Dice &d, Player &p1, Player &p2)
     this->illegal_move_player = -1;
     this->goal_move = false;
     this->eating_move = false;
+
+    this->turn = 1;
+}
+
+Parchis::Parchis(const BoardConfig &b, Player &p1, Player &p2){
+    this->board = Board(b);
+    this->dice = Dice();
+
+    this->last_dice = -1;
+    this->current_player = 0;
+    this->current_color = yellow;
+    players.push_back(&p1);
+    players.push_back(&p2); // = {&p1, &p2};
+    // last_moves vacío por defecto.
+
+    this->illegal_move_player = -1;
+    this->goal_move = false;
+    this->eating_move = false;
+
+    this->turn = 1;
 }
 
 const Dice & Parchis::getDice(){
@@ -361,6 +391,9 @@ void Parchis::movePiece(color player, int piece, int dice_number){
                 this->dice.removeNumber(player, dice_number);
                 this->nextTurn();
                 cout << "TURN SKIPPED" << endl;
+
+                turn++;
+                last_action = tuple<color, int, int>(player, piece, dice_number);
             }else{
                 illegal_move_player = current_player;
                 cout << "ILLEGALLY TRIED TO SKIP TURN" << endl;
@@ -428,14 +461,18 @@ void Parchis::movePiece(color player, int piece, int dice_number){
             }
 
             nextTurn();
+            turn++;
+            last_action = tuple<color, int, int>(player, piece, dice_number);
         }
         else{
             illegal_move_player = current_player;
         }
+
+        
     }
 }
 
-const vector<tuple<color, int, Box, Box>> & Parchis::getLastMoves(){
+const vector<tuple<color, int, Box, Box>> & Parchis::getLastMoves() const{
     return this->last_moves;
 }
 
@@ -497,7 +534,10 @@ bool Parchis::gameStep(){
     //cout << current_player << endl;
     //cout << players.size() << endl;
     //cout << players.at(current_player) << endl;
-    players.at(current_player)->perceive(*this);
+    for(int i = 0; i < players.size(); i++){
+        players.at(i)->perceive(*this);
+    }
+
     bool move = players.at(current_player)->move();
     //cout << "HOLAAAA" << endl;
     //cout << move << endl;
@@ -506,9 +546,13 @@ bool Parchis::gameStep(){
         // movePiece(c_piece, id_piece, dice);
         //Actualizar interfaz
         
-        cout << "------- Parchis -------" << endl;
+        // cout << "------- Parchis -------" << endl;
         cout << "Jugador actual: " << this->current_player << endl;
-        cout << "Color actual: " << this->current_color << endl;        
+        cout << "Color actual: " << str(this->current_color) << endl;        
+    }
+
+    for (int i = 0; i < players.size(); i++){
+        players.at(i)->perceive(*this);
     }
 
     return move;

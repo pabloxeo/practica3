@@ -2,6 +2,8 @@
 # include "Parchis.h"
 
 bool AIPlayer::move(){
+    cout << "Realizo un movimiento automatico" << endl;
+    
     color c_piece;
     int id_piece;
     int dice;

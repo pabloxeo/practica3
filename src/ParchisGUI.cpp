@@ -358,6 +358,7 @@ void ParchisGUI::gameLoop(){
     last_dice = -1;
     updateSprites();
 
+    this->setThinkingCursor();
     // Para evitar que se anime todo de golpe (es un poco chapuza, pensar otra forma de hacerlo).
     while(!animations_ch1.empty()){
         sleep(milliseconds(10));
@@ -366,9 +367,11 @@ void ParchisGUI::gameLoop(){
     {
         // cout << "----ParchisGUI----" << endl;
         // cout << "Moved from agent: queuing moves" << endl;
-        cout << "Jugador actual: " << model->getCurrentPlayerId() << endl;
-        cout << "Color actual: " << str(model->getCurrentColor()) << endl;
+        // cout << "Jugador actual: " << model->getCurrentPlayerId() << endl;
+        // cout << "Color actual: " << str(model->getCurrentColor()) << endl;
 
+        // Esta parte del código pordría realizarla el perceive del GUIPlayer (?)
+        // Así se podría tener solo un gameLoop en Parchis y no tener que cambiar para la versión de GUI o de terminal.
         vector<tuple<color, int, Box, Box>> last_moves = model->getLastMoves();
         //last_dice = model->getLastDice();
         //updateSprites();
@@ -392,6 +395,8 @@ void ParchisGUI::gameLoop(){
             sleep(milliseconds(500));
         }
     }
+
+    this->setDefaultCursor();
 }
 
 void ParchisGUI::startGameLoop(){
@@ -759,6 +764,12 @@ void ParchisGUI::setForbiddenCursor()
 void ParchisGUI::setHandCursor()
 {
     if (cursor.loadFromSystem(Cursor::Hand))
+        this->setMouseCursor(cursor);
+}
+
+void ParchisGUI::setThinkingCursor()
+{
+    if (cursor.loadFromSystem(Cursor::Wait))
         this->setMouseCursor(cursor);
 }
 

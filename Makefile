@@ -36,6 +36,9 @@ obj/AIPlayer.o: src/AIPlayer.cpp
 obj/GUIPlayer.o: src/GUIPlayer.cpp
 	g++ -g -c src/GUIPlayer.cpp -o obj/GUIPlayer.o -I include/ -std=c++14
 
+obj/RemotePlayer.o: src/RemotePlayer.cpp
+	g++ -g -c src/RemotePlayer.cpp -o obj/RemotePlayer.o -I include/ -std=c++14
+
 obj/SpriteAnimator.o: src/SpriteAnimator.cpp
 	g++ -g -c src/SpriteAnimator.cpp -o obj/SpriteAnimator.o -I include/ -std=c++14
 
@@ -45,8 +48,11 @@ obj/Button.o: src/Button.cpp
 obj/RectangularButton.o: src/RectangularButton.cpp
 	g++ -g -c src/RectangularButton.cpp -o obj/RectangularButton.o -I include/ -std=c++14
 
-bin/Parchis: obj/main.o obj/ParchisGUI.o obj/Parchis.o obj/Board.o obj/Dice.o obj/SpriteAnimator.o obj/DiceSprite.o obj/PieceSprite.o obj/BoardSprite.o obj/Button.o obj/ClickableSprite.o obj/GUIPlayer.o obj/AIPlayer.o obj/Player.o
-	g++ -g obj/main.o obj/ParchisGUI.o obj/Parchis.o obj/Board.o obj/Dice.o obj/DiceSprite.o obj/SpriteAnimator.o obj/PieceSprite.o obj/BoardSprite.o obj/Button.o obj/ClickableSprite.o obj/GUIPlayer.o obj/AIPlayer.o obj/Player.o -o bin/Parchis -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -lpthread
+obj/Connection.o: src/Connection.cpp
+	g++ -g -c src/Connection.cpp -o obj/Connection.o -I include/ -std=c++14	
+
+bin/Parchis: obj/main.o obj/ParchisGUI.o obj/Parchis.o obj/Board.o obj/Dice.o obj/SpriteAnimator.o obj/DiceSprite.o obj/PieceSprite.o obj/BoardSprite.o obj/Button.o obj/ClickableSprite.o obj/RemotePlayer.o obj/GUIPlayer.o obj/AIPlayer.o obj/Player.o obj/Connection.o
+	g++ -g obj/main.o obj/ParchisGUI.o obj/Parchis.o obj/Board.o obj/Dice.o obj/DiceSprite.o obj/SpriteAnimator.o obj/PieceSprite.o obj/BoardSprite.o obj/Button.o obj/ClickableSprite.o obj/RemotePlayer.o obj/GUIPlayer.o obj/AIPlayer.o obj/Player.o obj/Connection.o -o bin/Parchis -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -lsfml-network -lpthread
 
 clean:
 	rm -rf ./obj/*.o ./bin/*

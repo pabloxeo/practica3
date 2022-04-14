@@ -10,7 +10,7 @@ class GUIPlayer: public AIPlayer{
     private:
         bool auto_think;        
     public:
-        inline GUIPlayer(string name):AIPlayer(name), auto_think(false){};
+        inline GUIPlayer(const string & name):AIPlayer(name), auto_think(false){};
 
         /**
          * @brief Función abstracta que define el movimiento devuelto por el jugador.

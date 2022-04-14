@@ -6,6 +6,8 @@ bool GUIPlayer::move(){
     if(auto_think){
         return AIPlayer::move();
     }
-    else return false;
-    
+    else{
+        cout << "Elige el próximo movimiento" << endl;
+        return false;
+    }
 }

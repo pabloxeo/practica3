@@ -22,7 +22,10 @@ class Parchis{
         Board board;
         Dice dice;
         vector<tuple <color, int, Box, Box>> last_moves;
+        tuple <color, int, int> last_action;
         int last_dice;
+
+        int turn;
         
         //0: yellow & red, 1: blue and green.
         int current_player;
@@ -108,6 +111,15 @@ class Parchis{
         Parchis(const BoardConfig &b, const Dice &d, Player &p1, Player &p2);
 
         /**
+         * @brief Construct a new Parchis object
+         *
+         * @param b
+         * @param p1
+         * @param p2
+         */
+        Parchis(const BoardConfig &b, Player &p1, Player &p2);
+
+        /**
          * @brief Get the Dice object
          * 
          * @param player 
@@ -179,7 +191,20 @@ class Parchis{
          * 
          * @return const vector<tuple <color, int, Box>>& 
          */
-        const vector<tuple <color, int, Box, Box>> & getLastMoves();
+        const vector<tuple <color, int, Box, Box>> & getLastMoves() const;
+
+        /**
+         * @brief Get the Last Action object
+         * 
+         * @return int 
+         */
+        inline const tuple <color, int, int> & getLastAction() const{
+            return last_action;
+        }
+
+        inline const int getTurn() const{
+            return turn;
+        }
 
 
         /**
@@ -275,6 +300,10 @@ class Parchis{
          */
         inline Player & getCurrentPlayer(){
             return *players[current_player];
+        }
+
+        inline vector<Player*> & getPlayers(){
+            return players;
         }
 
         /**

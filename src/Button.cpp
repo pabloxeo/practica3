@@ -87,14 +87,21 @@ void MoveHeuristicButton::onClickAction(Window &container){
 }
 
 void AutoHeuristicButton::onClickAction(Window &container){
-    ParchisGUI *gui = dynamic_cast<ParchisGUI *>(&container);
+    ParchisGUI *gui = static_cast<ParchisGUI *>(&container);
 
     if (enabled && !locked && clicked)
     {
+        GUIPlayer *current;
         this->setSelected(!this->isSelected(), container);
-        GUIPlayer *current = static_cast<GUIPlayer *>(&gui->model->getCurrentPlayer());
-        current->setAutoThinking(this->isSelected());
-        if(current->isAutoThinking()){
+        for(int i = 0; i < gui->model->getPlayers().size(); i++){
+            current = dynamic_cast<GUIPlayer *>(gui->model->getPlayers()[i]);
+            if(current != NULL){
+                current->setAutoThinking(this->isSelected());
+            }
+        }
+
+        current = dynamic_cast<GUIPlayer*>(&gui->model->getCurrentPlayer());
+        if(current != NULL && current->isAutoThinking()){
             current->AIPlayer::move();
 
             cout << "Jugador actual: " << gui->model->getCurrentPlayerId() << endl;
@@ -144,7 +151,7 @@ void AutoHeuristicButton::onLockAction(Window &container){
 void MoveHeuristicButton::onHoverAction(Window &container){
     if (hovered)
     {
-        ParchisGUI *gui = dynamic_cast<ParchisGUI *>(&container);
+        ParchisGUI *gui = static_cast<ParchisGUI *>(&container);
         if (locked || !enabled)
         {
             gui->setForbiddenCursor();
