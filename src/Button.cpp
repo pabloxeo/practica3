@@ -64,6 +64,11 @@ void MoveHeuristicButton::onClickAction(Window &container){
     ParchisGUI *gui = dynamic_cast<ParchisGUI *>(&container);
     if (enabled && !locked && clicked)
     {
+        GUIPlayer *current = static_cast<GUIPlayer*>(&gui->model->getCurrentPlayer());
+        current->thinkNextMove();
+
+        
+        /*
         AIPlayer *current = static_cast<AIPlayer*>(&gui->model->getCurrentPlayer());
         current->AIPlayer::move();
 
@@ -83,6 +88,7 @@ void MoveHeuristicButton::onClickAction(Window &container){
         }
 
         gui->startGameLoop();
+        */
     }
 }
 
@@ -100,6 +106,7 @@ void AutoHeuristicButton::onClickAction(Window &container){
             }
         }
 
+        /*
         current = dynamic_cast<GUIPlayer*>(&gui->model->getCurrentPlayer());
         if(current != NULL && current->isAutoThinking()){
             current->AIPlayer::move();
@@ -120,7 +127,7 @@ void AutoHeuristicButton::onClickAction(Window &container){
             }
 
             gui->startGameLoop();
-        }
+        }*/
     }
 }
 

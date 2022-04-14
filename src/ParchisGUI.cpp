@@ -1,4 +1,7 @@
 # include "ParchisGUI.h"
+# include "GUIPlayer.h"
+
+#define animation_time 10
 
 const map<Box, vector<Vector2i>> ParchisGUI::box2position{
     // Definición de las casillas normales
@@ -157,6 +160,7 @@ ParchisGUI::ParchisGUI(Parchis &model)
     this->clicked = false;
 
     this->last_dice = -1;
+    this->gui_turn = 1;
 
     //Cargamos las texturas
     this->tBackground.loadFromFile("data/textures/background.png");
@@ -355,6 +359,9 @@ void ParchisGUI::mainLoop(){
 }
 
 void ParchisGUI::gameLoop(){
+    model->gameLoop();
+
+    /*
     last_dice = -1;
     updateSprites();
 
@@ -392,11 +399,12 @@ void ParchisGUI::gameLoop(){
         updateSprites();
 
         while (!animations_ch1.empty()){
-            sleep(milliseconds(500));
+            sleep(milliseconds(10));
         }
     }
 
     this->setDefaultCursor();
+    */
 }
 
 void ParchisGUI::startGameLoop(){
@@ -694,7 +702,7 @@ void ParchisGUI::updateSprites(){
     // Actualizar posición y color de la flecha de turnos.
     int new_turn_pos = color2turns_arrow_pos.at(model->getCurrentColor());
     if(new_turn_pos != turns_arrow.getPosition().y){
-        SpriteAnimator s(turns_arrow, Vector2f(turns_arrow.getPosition().x, new_turn_pos));
+        SpriteAnimator s(turns_arrow, Vector2f(turns_arrow.getPosition().x, new_turn_pos), animation_time);
         animations_ch4.push(s);
     }
     Color turns_arrow_color = turns_arrow.getColor();
@@ -706,18 +714,6 @@ void ParchisGUI::updateSprites(){
     this->skip_turn_button.setModelColor(model->getCurrentColor());
     this->skip_turn_button.setEnabled(model->canSkipTurn(model->getCurrentColor(), last_dice), *this);
     this->skip_turn_button.setLocked(!model->canSkipTurn(model->getCurrentColor(), last_dice), *this);
-
-    if(model->gameOver()){
-        cout << "La partida ha terminado" << endl;
-        int winner = model->getWinner();
-        color winner_color = model->getColorWinner();
-
-        cout << "Ha ganado el jugador " << winner << " (" << str(winner_color) << ")" << endl;
-        if(model->illegalMove()){
-            cout << "El jugador " << (winner==1?0:1) << " ha hecho un movimiento ilegal" << endl;
-        }
-    }
-
 
 }
 
@@ -779,7 +775,7 @@ void ParchisGUI::queueMove(color col, int id, Box origin, Box dest){
         Vector2f animate_pos = (Vector2f)box2position.at(dest)[id];
 
         Sprite *animate_sprite = &pieces[col][id];
-        SpriteAnimator animator = SpriteAnimator(*animate_sprite, animate_pos, 1000);
+        SpriteAnimator animator = SpriteAnimator(*animate_sprite, animate_pos, animation_time);
         animations_ch1.push(animator);
     }
     else{
@@ -790,7 +786,7 @@ void ParchisGUI::queueMove(color col, int id, Box origin, Box dest){
             Vector2f animate_pos = (Vector2f)box2position.at(dest)[0];
 
             Sprite *animate_sprite = &pieces[col][id];
-            SpriteAnimator animator = SpriteAnimator(*animate_sprite, animate_pos, 1000);
+            SpriteAnimator animator = SpriteAnimator(*animate_sprite, animate_pos, animation_time);
             animations_ch1.push(animator);
         }
         else{
@@ -801,13 +797,13 @@ void ParchisGUI::queueMove(color col, int id, Box origin, Box dest){
             // Ficha principal (la que realmente se mueve) por el canal 1 por si hay que encadenar animaciones.
             Vector2f animate_pos = (Vector2f)box2position.at(dest)[1];
             Sprite *animate_sprite = &pieces[occupation[main_move].first][occupation[main_move].second];
-            SpriteAnimator animator = SpriteAnimator(*animate_sprite, animate_pos, 1000);
+            SpriteAnimator animator = SpriteAnimator(*animate_sprite, animate_pos, animation_time);
             animations_ch1.push(animator);
 
             // Ficha desplazada por el canal 2.
             Vector2f animate_pos2 = (Vector2f)box2position.at(dest)[2];
             Sprite *animate_sprite2 = &pieces[occupation[collateral_move].first][occupation[collateral_move].second];
-            SpriteAnimator animator2 = SpriteAnimator(*animate_sprite2, animate_pos2, 1000);
+            SpriteAnimator animator2 = SpriteAnimator(*animate_sprite2, animate_pos2, animation_time);
             animations_ch2.push(animator2);
         }
     }
@@ -819,7 +815,7 @@ void ParchisGUI::queueMove(color col, int id, Box origin, Box dest){
             // (Siempre que el origen no sea ni casa ni meta).
             Vector2f animate_pos = (Vector2f)box2position.at(origin)[0];
             Sprite *animate_sprite = &pieces[origin_occupation.at(0).first][origin_occupation.at(0).second];
-            SpriteAnimator animator = SpriteAnimator(*animate_sprite, animate_pos, 1000);
+            SpriteAnimator animator = SpriteAnimator(*animate_sprite, animate_pos, animation_time);
             animations_ch3.push(animator);
         }
     }

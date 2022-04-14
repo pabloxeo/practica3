@@ -15,8 +15,18 @@ int main(int argc, char const *argv[]){
     //parchis.display();
     //parchis.moveFichas();
     if(argc == 1){
-        Parchis parchis(GROUPED);
+        //J1 con GUI
+        GUIPlayer p1 = GUIPlayer("J1");
+        //J2 con AI
+        AIPlayer p2 = AIPlayer("J2");
+
+        Parchis parchis(GROUPED, p1, p2);
         ParchisGUI parchis_gui(parchis);
+
+        // Set the GUI for GUIPlayers.
+        p1.setGUI(parchis_gui);
+
+        // Start the game.
         parchis_gui.run();
 
         return 0;
@@ -33,6 +43,11 @@ int main(int argc, char const *argv[]){
         //Inciar juego y GUI.
         Parchis parchis(GROUPED, p1, p2);
         ParchisGUI parchis_gui(parchis);
+
+        // Set the GUI for GUIPlayers.
+        p1.setGUI(parchis_gui);
+
+        // Start the game.
         parchis_gui.run();
 
         return 0;
@@ -50,6 +65,11 @@ int main(int argc, char const *argv[]){
         //Inciar juego y GUI.
         Parchis parchis(GROUPED, p1, p2);
         ParchisGUI parchis_gui(parchis);
+
+        // Set the GUI for GUIPlayers.
+        p2.setGUI(parchis_gui);
+
+        // Start the game.
         parchis_gui.run();
         
 

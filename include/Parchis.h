@@ -63,19 +63,22 @@ class Parchis{
         
         /**
          * @brief Default construct a new Parchis object
+         * @deprecated Los jugadores se deben pasar desde fuera.
          * 
          */
         Parchis();
 
         /**
          * @brief Construct a new Parchis object
-         * 
-         * @param b 
+         * @deprecated Los jugadores se deben pasar desde fuera.
+         *
+         * @param b
          */
         Parchis(const BoardConfig &b);
 
         /**
          * @brief Construct a new Parchis object
+         * @deprecated Los jugadores se deben pasar desde fuera.
          * 
          * @param b 
          * @param d 
@@ -84,6 +87,7 @@ class Parchis{
 
         /**
          * @brief Construct a new Parchis object
+         * @deprecated Los jugadores se deben pasar desde fuera.
          * 
          * @param b 
          * @param d 

@@ -19,6 +19,7 @@
 #include "SpriteAnimator.h"
 #include <list>
 #include <queue>
+//#include "GUIPlayer.h"
 //#include <thread>
 
 using namespace sf;
@@ -121,6 +122,9 @@ private:
     // Window icon
     Image icon;
     static const string icon_file;
+
+    // Turn variable (used to sync with the game).
+    int gui_turn;
 
     /**
      * @brief Función que ejecuta el código interno del ciclo de juego del parchís.
@@ -256,6 +260,8 @@ public:
     friend class AutoHeuristicButton;
     friend class MusicOnOffButton;
     friend class SoundOnOffButton;
+
+    friend class GUIPlayer;
 };
 
 #endif

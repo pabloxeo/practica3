@@ -22,7 +22,7 @@ class AIPlayer: public Player{
         
         void think(color & c_piece,  int & id_piece, int & dice) const;
 
-
+        inline virtual bool canThink() const{return true;}
 
 };
 #endif

@@ -27,6 +27,12 @@ void PieceSprite::onClickAction(Window & container){
     ParchisGUI * gui = dynamic_cast<ParchisGUI*>(&container);
 
     if(enabled && !locked && clicked){
+        GUIPlayer * player = static_cast<GUIPlayer*>(&gui->model->getCurrentPlayer());
+        player->setNextMove(this->getModelColor(), this->id, gui->last_dice);
+        player->confirmNextMove();
+        //gui->last_dice = -1;
+
+        /*
         Box origin = gui->model->getBoard().getPiece(this->getModelColor(), this->id);
 
         gui->model->movePiece(this->getModelColor(), this->id,  gui->last_dice);
@@ -47,6 +53,7 @@ void PieceSprite::onClickAction(Window & container){
         }
 
         gui->startGameLoop();
+        */
     }
     
     

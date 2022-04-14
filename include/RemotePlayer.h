@@ -19,6 +19,8 @@ class RemotePlayer : public Player {
 
         virtual bool move();
 
+        inline virtual bool isRemote() const{return true;}
+
 };
 
 #endif

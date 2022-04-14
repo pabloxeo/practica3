@@ -4,13 +4,36 @@
 # include "Attributes.h"
 # include "AIPlayer.h"
 # include <iostream>
+# include "ParchisGUI.h"
+
 using namespace std;
+
+class ParchisGUI;
 
 class GUIPlayer: public AIPlayer{
     private:
-        bool auto_think;        
+        ParchisGUI *gui;
+
+        bool auto_think;
+
+        color next_move_color;
+        int next_move_id;
+        int next_move_dice;
+
+        bool next_move_confirmed;
+
+        bool think_next_move;
+
     public:
-        inline GUIPlayer(const string & name):AIPlayer(name), auto_think(false){};
+        virtual void perceive(Parchis &p);
+
+        GUIPlayer(const string & name);
+
+        GUIPlayer(const string & name, ParchisGUI & gui);
+
+        inline void setGUI(ParchisGUI & gui){
+            this->gui = &gui;
+        }
 
         /**
          * @brief Función abstracta que define el movimiento devuelto por el jugador.
@@ -30,6 +53,20 @@ class GUIPlayer: public AIPlayer{
         inline void setAutoThinking(bool auto_think){
             this->auto_think = auto_think;
         }
+
+        inline virtual bool canUseGUI() const{ return true; }
+
+        void setNextMoveColor(color c);
+
+        void setNextMoveId(int id);
+
+        void setNextMoveDice(int dice);
+
+        void setNextMove(color c, int id, int dice);
+
+        void confirmNextMove();
+
+        void thinkNextMove();
 
 };
 #endif

@@ -28,5 +28,11 @@ class Player{
          */
         virtual bool move() = 0;
 
+        inline virtual bool canUseGUI() const{return false;}
+
+        inline virtual bool canThink() const{return false;}
+
+        inline virtual bool isRemote() const{return false;}
+
 };
 #endif

@@ -519,8 +519,30 @@ void Parchis::nextTurn(){
 }
 
 void Parchis::gameLoop(){
-    while (gameStep()){
-     // :)
+    // Incializar el juego para los jugadores por primera vez
+    for (int i = 0; i < players.size(); i++)
+    {
+        players.at(i)->perceive(*this);
+    }
+
+    // Bucle principal del juego.
+    while (!gameOver()){
+        // :)
+        gameStep();
+    }
+
+    // Gestionar final de la partida.
+    if (gameOver())
+    {
+        cout << "La partida ha terminado" << endl;
+        int winner = getWinner();
+        color winner_color = getColorWinner();
+
+        cout << "Ha ganado el jugador " << winner << " (" << str(winner_color) << ")" << endl;
+        if (illegalMove())
+        {
+            cout << "El jugador " << (winner == 1 ? 0 : 1) << " ha hecho un movimiento ilegal" << endl;
+        }
     }
 }
 
@@ -534,14 +556,29 @@ bool Parchis::gameStep(){
     //cout << current_player << endl;
     //cout << players.size() << endl;
     //cout << players.at(current_player) << endl;
-    for(int i = 0; i < players.size(); i++){
+    //for(int i = 0; i < players.size(); i++){
+    //    players.at(i)->perceive(*this);
+    //}
+
+    cout << "Turno: " << turn << endl;
+    cout << "Jugador actual: " << this->current_player << endl;
+    cout << "Color actual: " << str(this->current_color) << endl;
+
+    // El jugador actual hace su movimiento.
+    bool move = players.at(current_player)->move();
+
+    // Se notifica el movimiento a todos los jugadores.
+    for (int i = 0; i < players.size(); i++)
+    {
         players.at(i)->perceive(*this);
     }
 
-    bool move = players.at(current_player)->move();
+    return true;
+
     //cout << "HOLAAAA" << endl;
     //cout << move << endl;
 
+    /*
     if(move){
         // movePiece(c_piece, id_piece, dice);
         //Actualizar interfaz
@@ -556,6 +593,7 @@ bool Parchis::gameStep(){
     }
 
     return move;
+    */
 }
 
 bool Parchis::gameOver() const{

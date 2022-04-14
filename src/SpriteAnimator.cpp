@@ -37,7 +37,8 @@ void SpriteAnimator::restart(){
 void SpriteAnimator::update(){
     int t = this->animation_clock.getElapsedTime().asMilliseconds();
     if(t > animation_time) t = animation_time;
-    Vector2f curr_pos = (1.f - t / 1000.f) * start_pos + (t / 1000.f) * end_pos;
+    float fa_time = animation_time; 
+    Vector2f curr_pos = (1.f - t / fa_time) * start_pos + (t / fa_time) * end_pos;
     //cout << t << endl;
     sprite->setPosition(curr_pos);
     //cout << sprite << endl;

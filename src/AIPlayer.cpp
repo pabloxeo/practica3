@@ -9,6 +9,8 @@ bool AIPlayer::move(){
     int dice;
     think(c_piece, id_piece, dice);
 
+    cout << "Movimiento elegido: " << str(c_piece) << " " << id_piece << " " << dice << endl;
+
     actual->movePiece(c_piece, id_piece, dice);
     return true;
 }
