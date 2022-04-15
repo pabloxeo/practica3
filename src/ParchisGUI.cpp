@@ -1,7 +1,7 @@
 # include "ParchisGUI.h"
 # include "GUIPlayer.h"
 
-#define animation_time 10
+#define animation_time 500
 
 const map<Box, vector<Vector2i>> ParchisGUI::box2position{
     // Definición de las casillas normales
@@ -262,6 +262,8 @@ ParchisGUI::ParchisGUI(Parchis &model)
 
     collectSprites();
 
+    this->animation_lock = false;
+    this->not_playable_lock = false;
     this->updateSprites();
 
     //Música
@@ -279,10 +281,12 @@ ParchisGUI::ParchisGUI(Parchis &model)
     this->total_frames = 0;
     this->setFramerateLimit(60);
 
-    // Inicialización de la hebra. 
-    //this->call_thread_start = false;
+    // Inicialización de la hebra.
+    // this->call_thread_start = false;
 
     this->startGameLoop();
+
+
 }
 
 void ParchisGUI::collectSprites(){
@@ -474,6 +478,7 @@ void ParchisGUI::processMouse(){
     if(!already_hovered){
         this->defaultHover();
     }
+
 }
 
 void ParchisGUI::defaultHover(){
@@ -643,7 +648,15 @@ void ParchisGUI::updateSprites(){
     }
 
     cout << "last_dice: " << last_dice << endl;
+
+    if(model->getCurrentPlayer().canUseGUI()){
+        this->notPlayableLock(false);
+    }
+    else{
+        this->notPlayableLock(true);
+    }
     
+    bool def_lock = animation_lock || not_playable_lock;
 
     for(int i = 0; i < colors.size(); i++){
         color c = colors[i];
@@ -651,7 +664,7 @@ void ParchisGUI::updateSprites(){
         if(this->model->getCurrentColor() == c){
             for(int j = 0; j < player_pieces.size(); j++){
                 this->pieces[c][j].setEnabled(model->isLegalMove(c, player_pieces[j], last_dice), *this);
-                this->pieces[c][j].setLocked(!model->isLegalMove(c, player_pieces[j], last_dice), *this);
+                this->pieces[c][j].setLocked(!model->isLegalMove(c, player_pieces[j], last_dice) || def_lock, *this);
             }
         }
         else{
@@ -665,30 +678,38 @@ void ParchisGUI::updateSprites(){
         for(int j = 0; j < this->dices[c].size(); j++){
             DiceSprite* current = &this->dices[c][j];
             if(this->last_dice == 10 || this->last_dice == 20){
-                //cout << "TOCA CONTARSE " << this->last_dice << endl;
                 current->setLocked(true, *this);
                 current->setSelected(false, *this);
                 current->setEnabled(dice.isAvailable(c, current->getNumber()), *this);
             }
             else{
-                //cout << j << " " << current->getNumber() << " " << dice.isAvailable(c, current->getNumber()) << endl;
-                current->setEnabled(dice.isAvailable(c, current->getNumber()), *this);
-                current->setLocked(this->model->getCurrentColor() != c, *this);
-                current->setSelected(this->model->getCurrentColor() == c and this->last_dice == current->getNumber(), *this);
-                //cout << current->isEnabled() << endl;
+                
+                if(animation_lock){
+                    current->setLocked(true, *this);
+                    color last_col = get<0>(model->getLastAction());
+                    int last_move_dice = get<2>(model->getLastAction());
+                    current->setEnabled((c == last_col && current->getNumber() == last_move_dice) || dice.isAvailable(c, current->getNumber()), *this);
+                    current->setSelected(c == last_col && current->getNumber() == last_move_dice, *this);
+                }
+                
+                else{
+                    current->setEnabled(dice.isAvailable(c, current->getNumber()), *this);
+                    current->setLocked(this->model->getCurrentColor() != c || def_lock, *this);
+                    current->setSelected(this->model->getCurrentColor() == c and last_dice == current->getNumber(), *this);
+                }
             }
         }
         
         // Activar dados especiales para las comidas y las metas.
         if(model->isEatingMove() && c == model->getCurrentColor()){
             special_10_20_dice[c][0].setEnabled(true, *this);
-            special_10_20_dice[c][0].setLocked(false, *this);
+            special_10_20_dice[c][0].setLocked(false || def_lock, *this);
             special_10_20_dice[c][0].setSelected(true, *this);
             special_10_20_dice[c][0].setNumber(20);
         }
         else if(model->isGoalMove() && c == model->getCurrentColor()){
             special_10_20_dice[c][0].setEnabled(true, *this);
-            special_10_20_dice[c][0].setLocked(false, *this);
+            special_10_20_dice[c][0].setLocked(false || def_lock, *this);
             special_10_20_dice[c][0].setSelected(true, *this);
             special_10_20_dice[c][0].setNumber(10);
         }
@@ -699,22 +720,80 @@ void ParchisGUI::updateSprites(){
             special_10_20_dice[c][0].setNumber(-1);
         }
     }
-    // Actualizar posición y color de la flecha de turnos.
-    int new_turn_pos = color2turns_arrow_pos.at(model->getCurrentColor());
-    if(new_turn_pos != turns_arrow.getPosition().y){
-        SpriteAnimator s(turns_arrow, Vector2f(turns_arrow.getPosition().x, new_turn_pos), animation_time);
-        animations_ch4.push(s);
-    }
-    Color turns_arrow_color = turns_arrow.getColor();
-    if(turns_arrow_color != DiceSprite::color2Color.at(model->getCurrentColor())){
-        turns_arrow.setColor(DiceSprite::color2Color.at(model->getCurrentColor()));
-    }
 
     // Actualizar color y disponibilidad del botón de pasar turno.
     this->skip_turn_button.setModelColor(model->getCurrentColor());
     this->skip_turn_button.setEnabled(model->canSkipTurn(model->getCurrentColor(), last_dice), *this);
-    this->skip_turn_button.setLocked(!model->canSkipTurn(model->getCurrentColor(), last_dice), *this);
+    this->skip_turn_button.setLocked(!model->canSkipTurn(model->getCurrentColor(), last_dice) || def_lock, *this);
+}
 
+void ParchisGUI::updateSpritesLock(){
+    
+    if (animation_lock || not_playable_lock)
+    {
+        //Por algún motivo la aplicación a veces se cuelga cuando se cambian estos cursores.
+        //this->setDefaultCursorThinking(); // Este cursor hace que el programa se rompa, pero solo cuando se pone aquí ???
+        //this->setDefaultCursorForbidden();
+        //this->setDefaultCursor();
+
+        vector<color> colors = Parchis::game_colors;
+
+        for (int i = 0; i < colors.size(); i++)
+        {
+            color c = colors[i];
+            vector<Box> player_pieces = model->getBoard().getPieces(c);
+            for (int j = 0; j < player_pieces.size(); j++)
+            {
+                this->pieces[c][j].setLocked(true, *this);
+            }
+
+            for (int j = 0; j < this->dices[c].size(); j++)
+            {
+                DiceSprite *current = &this->dices[c][j];
+                current->setLocked(true, *this);
+            }
+
+            special_10_20_dice[c][0].setLocked(true, *this);
+        }
+
+        this->skip_turn_button.setLocked(true, *this);
+
+        this->move_heuristic_button.setEnabled(false, *this);
+        this->move_heuristic_button.setLocked(true, *this);
+    }
+    else
+    {
+        //this->setDefaultCursorNormal();
+        //this->setDefaultCursor();
+
+        this->move_heuristic_button.setEnabled(true, *this);
+        this->move_heuristic_button.setLocked(false, *this);
+        //if(not_playable_lock) updateSprites();
+    }
+}
+
+/*
+void ParchisGUI::selectAction(color col, int dice, bool b){
+    this->dices.at(col).at(dice).setSelected(b, *this);
+}*/
+
+
+void ParchisGUI::animationLock(bool lock){
+    if(lock != animation_lock){
+        this->animation_lock = lock;
+        updateSpritesLock();    
+    }
+}
+
+void ParchisGUI::notPlayableLock(bool lock){
+    if(lock != not_playable_lock){
+        this->not_playable_lock = lock;
+        updateSpritesLock();
+    }
+}
+
+bool ParchisGUI::animationsRunning(){
+    return !this->animations_ch1.empty() || !this->animations_ch2.empty() || !this->animations_ch3.empty() || !this->animations_ch4.empty();
 }
 
 void ParchisGUI::run(){
@@ -747,29 +826,65 @@ Vector2f ParchisGUI::box3position(Box piece, int id, int pos){
 //Cursores
 void ParchisGUI::setDefaultCursor()
 {
-    if(cursor.loadFromSystem(Cursor::Arrow))
-        this->setMouseCursor(cursor);
+    //if(cursor.loadFromSystem(Cursor::Arrow))
+    //    this->setMouseCursor(cursor);
+    mutex.lock();
+    this->setMouseCursor(default_cursor);
+    mutex.unlock();
 }
 
 void ParchisGUI::setForbiddenCursor()
 {
+    mutex.lock();
     if (cursor.loadFromSystem(Cursor::NotAllowed))
         this->setMouseCursor(cursor);
+    mutex.unlock();
 }
 
 void ParchisGUI::setHandCursor()
 {
+    mutex.lock();
     if (cursor.loadFromSystem(Cursor::Hand))
         this->setMouseCursor(cursor);
+    mutex.unlock();
 }
 
 void ParchisGUI::setThinkingCursor()
 {
+    mutex.lock();
     if (cursor.loadFromSystem(Cursor::Wait))
         this->setMouseCursor(cursor);
+    mutex.unlock();
 }
 
+void ParchisGUI::setDefaultCursorNormal(){
+    mutex.lock();
+    default_cursor.loadFromSystem(Cursor::Arrow);
+    mutex.unlock();
+}
+
+void ParchisGUI::setDefaultCursorForbidden(){
+    mutex.lock();
+    default_cursor.loadFromSystem(Cursor::NotAllowed);
+    mutex.unlock();
+}
+
+void ParchisGUI::setDefaultCursorHand(){
+    mutex.lock();
+    default_cursor.loadFromSystem(Cursor::Hand);
+    mutex.unlock();
+}
+
+void ParchisGUI::setDefaultCursorThinking(){
+    mutex.lock();
+    default_cursor.loadFromSystem(Cursor::Wait);
+    mutex.unlock();
+}
+
+
+
 void ParchisGUI::queueMove(color col, int id, Box origin, Box dest){
+    this->animationLock(true);
     if(dest.type == home || dest.type == goal){
         // Si el destino es casa o meta cada ficha va a su puesto preasignado por id.
         Vector2f animate_pos = (Vector2f)box2position.at(dest)[id];
@@ -818,6 +933,22 @@ void ParchisGUI::queueMove(color col, int id, Box origin, Box dest){
             SpriteAnimator animator = SpriteAnimator(*animate_sprite, animate_pos, animation_time);
             animations_ch3.push(animator);
         }
+    }
+}
+
+void ParchisGUI::queueTurnsArrow(color c){
+    this->animationLock(true);
+    // Actualizar posición y color de la flecha de turnos.
+    int new_turn_pos = color2turns_arrow_pos.at(c);
+    if (new_turn_pos != turns_arrow.getPosition().y)
+    {
+        SpriteAnimator s(turns_arrow, Vector2f(turns_arrow.getPosition().x, new_turn_pos), animation_time);
+        animations_ch4.push(s);
+    }
+    Color turns_arrow_color = turns_arrow.getColor();
+    if (turns_arrow_color != DiceSprite::color2Color.at(c))
+    {
+        turns_arrow.setColor(DiceSprite::color2Color.at(c));
     }
 }
 

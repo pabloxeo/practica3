@@ -33,7 +33,7 @@ void ParchisRemote::sendParchisMove(int turn, color c_piece, int id_piece, int d
          throw runtime_error("Error sending message");
     }
     cout << "301 MOVED sent" << endl;
-    cout << "Move: " << turn << " " << c_piece << " " << id_piece << " " << dice << endl;
+    cout << "Move: " << turn << " " << str(c_piece) << " " << id_piece << " " << dice << endl;
 }
 
 MessageKind ParchisRemote::receive(Packet & packet)
@@ -90,7 +90,7 @@ void ParchisRemote::analyzePacket(Packet & packet, const MessageKind & kind)
             int turn;
             
             ParchisRemote::packet2move(packet, turn, c_piece, id_piece, dice);
-            cout << "301 MOVED received: " << turn << " " << c_piece << " " << id_piece << " " << dice << endl;
+            cout << "301 MOVED received: " << turn << " " << str(c_piece) << " " << id_piece << " " << dice << endl;
             break;
         }
         default:
@@ -117,7 +117,7 @@ void ParchisRemote::packet2move(Packet & packet, int & turn, color & c_piece, in
     c_piece = (color)cint_piece;
     packet >> id_piece;
     packet >> dice;
-    cout << "Move: " << turn << " " << c_piece << " " << id_piece << " " << dice << endl;
+    cout << "Move: " << turn << " " << str(c_piece) << " " << id_piece << " " << dice << endl;
 }
 
 

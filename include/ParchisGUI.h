@@ -92,6 +92,7 @@ private:
 
     //Cursor
     Cursor cursor;
+    Cursor default_cursor;
 
     //List of animations.
     //list<SpriteAnimator> animations;
@@ -105,6 +106,10 @@ private:
 
     // Hebra del juego (no puede desarrollarse en la misma hebra que la GUI porque entonces cada acción en el juego bloquearía la GUI)
     Thread game_thread;
+
+    // Para exclusión mutua
+    Mutex mutex;
+    
     // Bool para indicar si hay que llamar a la hebra del juego en el bucle principal.
     bool call_thread_start;
 
@@ -122,6 +127,10 @@ private:
     // Window icon
     Image icon;
     static const string icon_file;
+
+    // Locks for the game buttons.
+    volatile bool animation_lock;
+    volatile bool not_playable_lock;
 
     // Turn variable (used to sync with the game).
     int gui_turn;
@@ -186,6 +195,16 @@ private:
      */
     void updateSprites();
 
+    void updateSpritesLock();
+
+    void selectAction(color col, int dice, bool b);
+
+    void animationLock(bool lock);
+
+    void notPlayableLock(bool lock);
+
+    bool animationsRunning();
+
     // Funciones para activar distintos cursores en el juego.
     void setDefaultCursor();
     void setForbiddenCursor();
@@ -194,11 +213,25 @@ private:
     void setSpecialHandCursor();
     void setConnectingCursor();
 
+    // Funciones para cambiar el default cursor, el que se muestra por defecto cuando no se hoverea nada.
+    void setDefaultCursorNormal();
+    void setDefaultCursorForbidden();
+    void setDefaultCursorThinking();
+    void setDefaultCursorHand();
+    void setDefaultCursorSpecialHand();
+    void setDefaultCursorConnecting();
+
     /**
      * @brief Encola un movimiento de ficha.
      * 
      */
     void queueMove(color col, int id, Box start, Box end);
+
+    /**
+     * @brief Encola la animación de la flecha de turnos.
+     * 
+     */
+    void queueTurnsArrow(color col);
 
     /**
      * @brief Activa o desactiva la música de fondo.

@@ -54,7 +54,7 @@ class GUIPlayer: public AIPlayer{
             this->auto_think = auto_think;
         }
 
-        inline virtual bool canUseGUI() const{ return true; }
+        inline virtual bool canUseGUI() const{ return !auto_think && !think_next_move && !next_move_confirmed;}
 
         void setNextMoveColor(color c);
 

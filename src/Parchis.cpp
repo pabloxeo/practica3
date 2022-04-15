@@ -534,6 +534,7 @@ void Parchis::gameLoop(){
     // Gestionar final de la partida.
     if (gameOver())
     {
+        cout << "++++++++++++++++++++++++" << endl;
         cout << "La partida ha terminado" << endl;
         int winner = getWinner();
         color winner_color = getColorWinner();
@@ -543,6 +544,7 @@ void Parchis::gameLoop(){
         {
             cout << "El jugador " << (winner == 1 ? 0 : 1) << " ha hecho un movimiento ilegal" << endl;
         }
+        cout << "++++++++++++++++++++++++" << endl;
     }
 }
 
@@ -560,9 +562,11 @@ bool Parchis::gameStep(){
     //    players.at(i)->perceive(*this);
     //}
 
+    cout << "----------------" << endl;
     cout << "Turno: " << turn << endl;
     cout << "Jugador actual: " << this->current_player << endl;
     cout << "Color actual: " << str(this->current_color) << endl;
+    cout << "----------------" << endl;
 
     // El jugador actual hace su movimiento.
     bool move = players.at(current_player)->move();

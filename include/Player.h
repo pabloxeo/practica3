@@ -15,7 +15,7 @@ class Player{
     public:
         virtual void perceive(Parchis & p);
 
-        inline Player(const string & name){this->name = name;}
+        inline Player(const string & name){this->name = name; actual = NULL;}
 
         /**
          * @brief Función abstracta que define el movimiento devuelto por el jugador.

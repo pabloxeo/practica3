@@ -9,6 +9,9 @@ class AIPlayer: public Player{
         
     public:
         inline AIPlayer(const string & name):Player(name){};
+
+        inline virtual void perceive(Parchis &p){Player::perceive(p);}
+
         /**
          * @brief Función abstracta que define el movimiento devuelto por el jugador.
          * 

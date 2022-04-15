@@ -32,8 +32,7 @@ GUIPlayer::GUIPlayer(const string & name, ParchisGUI & gui) : AIPlayer(name) {
 
 void GUIPlayer::perceive(Parchis &p){
     AIPlayer::perceive(p);
-
-    vector<tuple<color, int, Box, Box>> last_moves = gui->model->getLastMoves();
+    
 
     if(gui->gui_turn >= actual->getTurn()){
         cout << "Old move received. Already up to date." << endl;
@@ -44,7 +43,15 @@ void GUIPlayer::perceive(Parchis &p){
     }
     else{
         cout << "New move received. Updating GUI" << endl;
+        vector<tuple<color, int, Box, Box>> last_moves = gui->model->getLastMoves();
+        tuple<color, int, int> last_action = gui->model->getLastAction();
+        cout << "Last action: " << str(get<0>(last_action)) << " " << get<1>(last_action) << " " << get<2>(last_action) << endl;
         gui->gui_turn++;
+        //gui->last_dice = actual->getLastDice();
+        gui->queueTurnsArrow(actual->getCurrentColor());
+        gui->updateSprites();
+        //gui->selectAction(get<0>(last_action), get<2>(last_action), true);
+
         for (int i = 0; i < last_moves.size(); i++)
         {
             color col = get<0>(last_moves[i]);
@@ -52,17 +59,19 @@ void GUIPlayer::perceive(Parchis &p){
             Box origin = get<2>(last_moves[i]);
             Box dest = get<3>(last_moves[i]);
 
+            
+            
             gui->queueMove(col, id, origin, dest);
         }
 
-        gui->last_dice = -1;
-        gui->updateSprites();
-
-        // TODO: función para consultar todas las animaciones de golpe.
-        while (!gui->animations_ch1.empty() || !gui->animations_ch4.empty())
+        while (gui->animationsRunning())
         {
             sleep(milliseconds(10));
         }
+        gui->animationLock(false);
+
+        gui->last_dice = -1;
+        gui->updateSprites();
     }
 
     
@@ -74,6 +83,8 @@ bool GUIPlayer::move(){
     while(!this->next_move_confirmed && !this->think_next_move && !this->auto_think){
         sleep(milliseconds(10)); // espera 10 milisegundos (para no saturar la CPU)
     }
+
+    gui->notPlayableLock(true);
 
     // Movimiento a través de la GUI
     if(this->next_move_confirmed){
