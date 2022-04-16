@@ -68,5 +68,7 @@ class GUIPlayer: public AIPlayer{
 
         void thinkNextMove();
 
+        bool readyForNextTurn();
+
 };
 #endif

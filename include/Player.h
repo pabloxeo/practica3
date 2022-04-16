@@ -34,5 +34,7 @@ class Player{
 
         inline virtual bool isRemote() const{return false;}
 
+        inline virtual bool readyForNextTurn(){return true;}
+
 };
 #endif

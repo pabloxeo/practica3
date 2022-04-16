@@ -64,14 +64,15 @@ void GUIPlayer::perceive(Parchis &p){
             gui->queueMove(col, id, origin, dest);
         }
 
+        /*
         while (gui->animationsRunning())
         {
             sleep(milliseconds(10));
         }
+        
         gui->animationLock(false);
+        */
 
-        gui->last_dice = -1;
-        gui->updateSprites();
     }
 
     
@@ -144,4 +145,14 @@ void GUIPlayer::confirmNextMove(){
 
 void GUIPlayer::thinkNextMove(){
     this->think_next_move = true;
+}
+
+bool GUIPlayer::readyForNextTurn(){
+    if(!gui->animationsRunning()){
+        gui->animationLock(false); 
+        gui->last_dice = -1;
+        gui->updateSprites();
+        return true;
+    }
+    return false;
 }

@@ -123,6 +123,8 @@ class Parchis{
          */
         Parchis(const BoardConfig &b, Player &p1, Player &p2);
 
+        
+
         /**
          * @brief Get the Dice object
          * 
@@ -287,6 +289,12 @@ class Parchis{
          * 
          */
         bool gameStep();
+
+        /**
+         * @brief Función para comprobar que todos los jugadpres están listos para pasar el turno, y si no esperarlos.
+         *
+         */
+        void waitForPlayers() const;
 
         /**
          * @brief Get the Current Player object

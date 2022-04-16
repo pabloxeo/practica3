@@ -589,6 +589,7 @@ void ParchisGUI::processAnimations()
             }
         }
     }
+
 }
 
 void ParchisGUI::processSettings(){
@@ -779,17 +780,21 @@ void ParchisGUI::selectAction(color col, int dice, bool b){
 
 
 void ParchisGUI::animationLock(bool lock){
+    mutex.lock();
     if(lock != animation_lock){
         this->animation_lock = lock;
         updateSpritesLock();    
     }
+    mutex.unlock();
 }
 
 void ParchisGUI::notPlayableLock(bool lock){
+    mutex.lock();
     if(lock != not_playable_lock){
         this->not_playable_lock = lock;
         updateSpritesLock();
     }
+    mutex.unlock();
 }
 
 bool ParchisGUI::animationsRunning(){
