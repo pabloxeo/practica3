@@ -207,6 +207,7 @@ private:
 
     // Funciones para activar distintos cursores en el juego.
     void setDefaultCursor();
+    void setNormalCursor();
     void setForbiddenCursor();
     void setThinkingCursor();
     void setHandCursor();

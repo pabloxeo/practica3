@@ -829,7 +829,19 @@ void ParchisGUI::setDefaultCursor()
     //if(cursor.loadFromSystem(Cursor::Arrow))
     //    this->setMouseCursor(cursor);
     mutex.lock();
-    this->setMouseCursor(default_cursor);
+    if(animation_lock || not_playable_lock)
+        this->setThinkingCursor();
+    else
+        this->setNormalCursor();
+    //this->setMouseCursor(default_cursor);
+    mutex.unlock();
+}
+
+void ParchisGUI::setNormalCursor()
+{
+    mutex.lock();
+    if (cursor.loadFromSystem(Cursor::Arrow))
+        this->setMouseCursor(cursor);
     mutex.unlock();
 }
 
