@@ -113,6 +113,28 @@ private:
     // Bool para indicar si hay que llamar a la hebra del juego en el bucle principal.
     bool call_thread_start;
 
+    // Sonidos en el juego.
+    SoundBuffer sound_buffer_move;
+    SoundBuffer sound_buffer_boing;
+    SoundBuffer sound_buffer_forbidden;
+    SoundBuffer sound_buffer_eaten;
+    SoundBuffer sound_buffer_applause;
+
+    Sound sound_move;
+    Sound sound_boing;
+    Sound sound_forbidden;
+    Sound sound_eaten;
+    Sound sound_applause;
+
+    static const string sound_move_file;
+    static const string sound_boing_file;
+    static const string sound_forbidden_file;
+    static const string sound_eaten_file;
+    static const string sound_applause_file;
+
+    bool music_on;
+    bool sound_on;
+
     //Last dice number
     volatile int last_dice;
 
@@ -123,6 +145,11 @@ private:
     // Music-related variables
     Music background_theme;
     static const string background_theme_file;
+
+    Music background_theme_hurryup;
+    static const string background_theme_hurryup_file;
+
+    Music *current_background_theme;
 
     // Window icon
     Image icon;
@@ -214,7 +241,7 @@ private:
     void setSpecialHandCursor();
     void setConnectingCursor();
 
-    // Funciones para cambiar el default cursor, el que se muestra por defecto cuando no se hoverea nada.
+    // Funciones para cambiar el default cursor, el que se muestra por defecto cuando no se hoverea nada (deprecated).
     void setDefaultCursorNormal();
     void setDefaultCursorForbidden();
     void setDefaultCursorThinking();
@@ -222,11 +249,24 @@ private:
     void setDefaultCursorSpecialHand();
     void setDefaultCursorConnecting();
 
+    // Funciones para ejecutar un sonido.
+    void initializeSoundEffects();
+    void playQueuedMoveSounds();
+    void playMoveSound();
+    void playBoingSound();
+    void playForbiddenSound();
+    void playEatenSound();
+    void playApplauseSound();
+
+    queue <void (ParchisGUI::*)(void)> animation_ch1_callbacks;
+
+    void setSoundEffects(bool on);
+
     /**
      * @brief Encola un movimiento de ficha.
      * 
      */
-    void queueMove(color col, int id, Box start, Box end);
+    void queueMove(color col, int id, Box start, Box end, void (ParchisGUI::*callback)(void) = NULL);
 
     /**
      * @brief Encola la animación de la flecha de turnos.
@@ -246,6 +286,18 @@ private:
      * 
      */
     void initializeBackgroundMusic();
+
+    /**
+     * @brief 
+     * 
+     */
+    void switchBackgroundMusic();
+
+    /**
+     * @brief 
+     * 
+     */
+    void checkHurryUp();
 
     /**
      * @brief Método privado que implementa el box2position evitando colisiones.

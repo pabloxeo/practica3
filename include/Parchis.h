@@ -36,6 +36,7 @@ class Parchis{
 
         bool eating_move;
         bool goal_move;
+        bool goal_bounce;
 
         static const int final_red_box = 34;
         static const int final_blue_box = 17;
@@ -276,6 +277,10 @@ class Parchis{
             return goal_move;
         }
 
+        inline const bool goalBounce() const{
+            return goal_bounce;
+        }
+
 
         /**
          * @brief 
@@ -357,6 +362,13 @@ class Parchis{
          * @return false 
          */
         bool illegalMove() const;
+
+        /**
+         * @brief Devuelve el número de fichas de un color que han llegado a la meta.
+         * 
+         * @return 
+         */
+        int piecesAtGoal(color player) const;
 };
 
 

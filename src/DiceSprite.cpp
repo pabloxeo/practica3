@@ -77,11 +77,14 @@ void DiceSprite::setModelColor(color c){
 }
 
 void DiceSprite::onClickAction(Window & container) {
-    ParchisGUI * gui = dynamic_cast<ParchisGUI*>(&container);
+    ParchisGUI * gui = static_cast<ParchisGUI*>(&container);
 
     if(!locked && enabled && clicked && number != -1){
         gui->last_dice = this->number;
         gui->updateSprites();
+    }
+    else if(clicked && (locked || !enabled)){
+        gui->playForbiddenSound();
     }
 }
 

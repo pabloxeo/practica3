@@ -35,6 +35,7 @@ Parchis::Parchis()
     this->illegal_move_player = -1;
     this->goal_move = false;
     this->eating_move = false;
+    this->goal_bounce = false;
 
     this->turn = 1;
 }
@@ -57,6 +58,7 @@ Parchis::Parchis(const BoardConfig & b){
     this->illegal_move_player = -1;
     this->goal_move = false;
     this->eating_move = false;
+    this->goal_bounce = false;
 
     this->turn = 1;
 }
@@ -77,6 +79,7 @@ Parchis::Parchis(const Board & b, const Dice & d){
     this->illegal_move_player = -1;
     this->goal_move = false;
     this->eating_move = false;
+    this->goal_bounce = false;
 
     this->turn = 1;
 }
@@ -98,6 +101,7 @@ Parchis::Parchis(const BoardConfig &b, const Dice &d)
     this->illegal_move_player = -1;
     this->goal_move = false;
     this->eating_move = false;
+    this->goal_bounce = false;
 
     this->turn = 1;
 }
@@ -116,6 +120,7 @@ Parchis::Parchis(const Board & b, const Dice & d, Player & p1, Player & p2){
     this->illegal_move_player = -1;
     this->goal_move = false;
     this->eating_move = false;
+    this->goal_bounce = false;
 
     this->turn = 1;
 }
@@ -135,6 +140,7 @@ Parchis::Parchis(const BoardConfig &b, const Dice &d, Player &p1, Player &p2)
     this->illegal_move_player = -1;
     this->goal_move = false;
     this->eating_move = false;
+    this->goal_bounce = false;
 
     this->turn = 1;
 }
@@ -153,6 +159,7 @@ Parchis::Parchis(const BoardConfig &b, Player &p1, Player &p2){
     this->illegal_move_player = -1;
     this->goal_move = false;
     this->eating_move = false;
+    this->goal_bounce = false;
 
     this->turn = 1;
 }
@@ -403,7 +410,7 @@ void Parchis::movePiece(color player, int piece, int dice_number){
         // Switch por colores
         Box piece_box = board.getPiece(player, piece);
         if(isLegalMove(player, piece_box, dice_number)){
-            bool goal_bounce = false;
+            goal_bounce = false;
             Box final_box = computeMove(player, piece_box, dice_number, &goal_bounce);
             
             /* Gestión de las "comidas"*/
@@ -658,4 +665,9 @@ color Parchis::getColorWinner() const{
 
 bool Parchis::illegalMove() const{
     return this->illegal_move_player != -1;
+}
+
+int Parchis::piecesAtGoal(color col) const{
+    Box goal(0, box_type::goal, col);
+    return boxState(goal).size();
 }

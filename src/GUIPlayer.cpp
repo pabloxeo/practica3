@@ -59,9 +59,27 @@ void GUIPlayer::perceive(Parchis &p){
             Box origin = get<2>(last_moves[i]);
             Box dest = get<3>(last_moves[i]);
 
-            
-            
-            gui->queueMove(col, id, origin, dest);
+            void (ParchisGUI::*callfront)(void) = NULL;
+            void (ParchisGUI::*callback)(void) = NULL;
+            if(i == 0) callfront = &ParchisGUI::playMoveSound;
+            if(i == 0 && actual->isEatingMove()){
+                callfront = &ParchisGUI::playMoveSound;
+                callback = &ParchisGUI::playEatenSound;
+            } 
+            if(i == 0 && actual->goalBounce()){
+                callfront = &ParchisGUI::playMoveSound;
+                callback = &ParchisGUI::playBoingSound;
+            }
+            if(i == 0 && actual->isGoalMove()){
+                callfront = &ParchisGUI::playApplauseSound;
+            }
+            if(i == 1 && actual->isEatingMove() && actual->goalBounce()){
+                callfront = NULL;
+                callback = &ParchisGUI::playEatenSound;
+            }
+
+            if(callfront != NULL) (gui->*callfront)();
+            gui->queueMove(col, id, origin, dest, callback);
         }
 
         /*

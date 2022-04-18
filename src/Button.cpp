@@ -90,6 +90,9 @@ void MoveHeuristicButton::onClickAction(Window &container){
         gui->startGameLoop();
         */
     }
+    else if(clicked && (locked || !enabled)){
+        gui->playForbiddenSound();
+    }
 }
 
 void AutoHeuristicButton::onClickAction(Window &container){
@@ -128,6 +131,9 @@ void AutoHeuristicButton::onClickAction(Window &container){
 
             gui->startGameLoop();
         }*/
+    }
+    else if(clicked && (locked || !enabled)){
+        gui->playForbiddenSound();
     }
 }
 
@@ -232,6 +238,9 @@ void SkipTurnButton::onClickAction(Window & container){
         cout << "Color actual: " << str(gui->model->getCurrentColor()) << endl;
 
         gui->startGameLoop();
+    }
+    else if(clicked && (locked || !enabled)){
+        gui->playForbiddenSound();
     }
 }
 
@@ -367,7 +376,7 @@ void MusicOnOffButton::onClickAction(Window & container){
         updateButton();
 
         // Update music in the gui.
-        ParchisGUI * gui = dynamic_cast<ParchisGUI*>(&container);
+        ParchisGUI * gui = static_cast<ParchisGUI*>(&container);
         gui->setBackgroundMusic(music_on);
     }
 }
@@ -377,9 +386,9 @@ void SoundOnOffButton::onClickAction(Window & container){
         sound_on = !sound_on;
         updateButton();
 
-        // Update sound in the gui.
-        //ParchisGUI * gui = dynamic_cast<ParchisGUI*>(&container);
-        //gui->setSound(sound_on);
+        //Update sound in the gui.
+        ParchisGUI * gui = static_cast<ParchisGUI*>(&container);
+        gui->setSoundEffects(sound_on);
     }
 }
 

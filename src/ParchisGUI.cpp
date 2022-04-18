@@ -138,6 +138,8 @@ const map<Box, vector<Vector2i>> ParchisGUI::box2position{
 
 const string ParchisGUI::background_theme_file = "data/music/background_theme";
 
+const string ParchisGUI::background_theme_hurryup_file = "data/music/background_theme_hurryup";
+
 const string ParchisGUI::icon_file = "data/textures/icon_parchis.png";
 
 const IntRect ParchisGUI::turns_arrow_rect = IntRect(0, 280, 112, 112);
@@ -149,6 +151,16 @@ const map<color, int> ParchisGUI::color2turns_arrow_pos =
     {red, 210},
     {green, 290}
 };
+
+const string ParchisGUI::sound_move_file = "data/music/teleport";
+
+const string ParchisGUI::sound_boing_file = "data/music/boing";
+
+const string ParchisGUI::sound_forbidden_file = "data/music/nope";
+
+const string ParchisGUI::sound_eaten_file = "data/music/bad_news";
+
+const string ParchisGUI::sound_applause_file = "data/music/applause";
 
 ParchisGUI::ParchisGUI(Parchis &model)
     : RenderWindow(VideoMode(1600, 800, VideoMode::getDesktopMode().bitsPerPixel), L"Parchís", Style::Titlebar | Style::Close),
@@ -269,6 +281,9 @@ ParchisGUI::ParchisGUI(Parchis &model)
     //Música
     this->initializeBackgroundMusic();
     this->setBackgroundMusic(false);
+    //Sonidos
+    this->initializeSoundEffects();
+    this->setSoundEffects(false);
 
     //Icono de la ventana.
     if(icon.loadFromFile(icon_file)){
@@ -586,6 +601,13 @@ void ParchisGUI::processAnimations()
                     animations_ch_i->front().setStartPosition();
                     animations_ch_i->front().restart();
                 }
+                if (i == 0)
+                {
+                    void (ParchisGUI::*callback)(void) = animation_ch1_callbacks.front();
+                    if (callback != NULL)
+                        (this->*callback)();
+                    animation_ch1_callbacks.pop();
+                }
             }
         }
     }
@@ -646,6 +668,8 @@ void ParchisGUI::updateSprites(){
     if(model->isGoalMove()){
         cout << "TOCA CONTARSE 10" << endl;
         this->last_dice = 10;
+        checkHurryUp();
+        
     }
 
     cout << "last_dice: " << last_dice << endl;
@@ -900,8 +924,9 @@ void ParchisGUI::setDefaultCursorThinking(){
 
 
 
-void ParchisGUI::queueMove(color col, int id, Box origin, Box dest){
+void ParchisGUI::queueMove(color col, int id, Box origin, Box dest, void (ParchisGUI::*callback)(void)){
     this->animationLock(true);
+    animation_ch1_callbacks.push(callback);
     if(dest.type == home || dest.type == goal){
         // Si el destino es casa o meta cada ficha va a su puesto preasignado por id.
         Vector2f animate_pos = (Vector2f)box2position.at(dest)[id];
@@ -970,15 +995,17 @@ void ParchisGUI::queueTurnsArrow(color c){
 }
 
 void ParchisGUI::setBackgroundMusic(bool on){
+    music_on = on;
     if(on){
-        background_theme.play();
+        current_background_theme->play();
     }
     else{
-        background_theme.stop();
+        current_background_theme->stop();
     }
 }
 
 void ParchisGUI::initializeBackgroundMusic(){
+    // Main background theme.
     if (background_theme.openFromFile(background_theme_file + ".wav"))
     {
         background_theme.setLoop(true); // Para reproducir en bucle.
@@ -996,5 +1023,126 @@ void ParchisGUI::initializeBackgroundMusic(){
             cout << "No loop points found for background theme." << endl;
 
         background_theme.setVolume(100.f);
+    }
+    // Hurry up background theme.
+    if(background_theme_hurryup.openFromFile(background_theme_hurryup_file + ".wav")){
+        background_theme_hurryup.setLoop(true);
+        background_theme_hurryup.setVolume(100.f);
+
+        ifstream loop_file((background_theme_hurryup_file + ".loop").c_str());
+        if (loop_file.good())
+        {
+            float loop_start, loop_end;
+            loop_file >> loop_start;
+            loop_file >> loop_end;
+            background_theme_hurryup.setLoopPoints(Music::TimeSpan(seconds(loop_start), seconds(loop_end - loop_start)));
+            cout << "Added loop points for hurry up background theme: " << loop_start << " " << loop_end << endl;
+        }
+        else
+            cout << "No loop points found for hurry up background theme." << endl;
+    }
+
+    current_background_theme = &background_theme;
+}
+
+void ParchisGUI::switchBackgroundMusic(){
+    current_background_theme->stop();
+    if(current_background_theme == &background_theme){
+        current_background_theme = &background_theme_hurryup;
+    }
+    else{
+        current_background_theme = &background_theme;
+    }
+    if(music_on){
+        current_background_theme->play();
+    }
+    
+}
+
+void ParchisGUI::initializeSoundEffects(){
+    if(sound_buffer_move.loadFromFile(sound_move_file + ".wav")){
+        sound_move.setBuffer(sound_buffer_move);
+        sound_move.setVolume(100.f);
+        cout << "Loaded sound effect: " << sound_move_file << endl;
+    }
+    if(sound_buffer_boing.loadFromFile(sound_boing_file + ".wav")){
+        sound_boing.setBuffer(sound_buffer_boing);
+        sound_boing.setVolume(100.f);
+        cout << "Loaded sound effect: " << sound_boing_file << endl;
+    }
+    if(sound_buffer_forbidden.loadFromFile(sound_forbidden_file + ".wav")){
+        sound_forbidden.setBuffer(sound_buffer_forbidden);
+        sound_forbidden.setVolume(100.f);
+        cout << "Loaded sound effect: " << sound_forbidden_file << endl;
+    }
+    if(sound_buffer_eaten.loadFromFile(sound_eaten_file + ".wav")){
+        sound_eaten.setBuffer(sound_buffer_eaten);
+        sound_eaten.setVolume(100.f);
+        cout << "Loaded sound effect: " << sound_eaten_file << endl;
+    }
+    if(sound_buffer_applause.loadFromFile(sound_applause_file + ".wav")){
+        sound_applause.setBuffer(sound_buffer_applause);
+        sound_applause.setVolume(100.f);
+        cout << "Loaded sound effect: " << sound_applause_file << endl;
+    }
+}
+
+void ParchisGUI::setSoundEffects(bool on){
+    this->sound_on = on;
+}
+
+void ParchisGUI::playMoveSound(){
+    if(sound_on){
+        //Sound sound_move;
+        //sound_move.setBuffer(sound_buffer_move);
+        sound_move.play();
+    }
+}
+
+void ParchisGUI::playBoingSound(){
+    if(sound_on){
+        //Sound sound_boing;
+        //sound_boing.setBuffer(sound_buffer_boing);
+        sound_boing.play();
+    }
+}
+
+void ParchisGUI::playForbiddenSound(){
+    if(sound_on){
+        //Sound sound_forbidden;
+        //sound_forbidden.setBuffer(sound_buffer_forbidden);
+        sound_forbidden.play();
+    }
+}
+
+void ParchisGUI::playEatenSound(){
+    if(sound_on){
+        //Sound sound_eaten;
+        //sound_eaten.setBuffer(sound_buffer_eaten);
+        sound_eaten.play();
+    }
+}
+
+void ParchisGUI::playApplauseSound(){
+    if(sound_on){
+        //Sound sound_applause;
+        //sound_applause.setBuffer(sound_buffer_applause);
+        sound_applause.play();
+    }
+}
+
+void ParchisGUI::checkHurryUp(){
+    if(current_background_theme == &background_theme){
+        bool hurry_up = false;
+        vector<color> colors = Parchis::game_colors;
+
+        for(int i = 0; i < colors.size() && !hurry_up; i++){
+            if(model->piecesAtGoal(colors[i]) == 3){
+                hurry_up = true;
+            }
+        }
+        if(hurry_up){
+            switchBackgroundMusic();
+        }
     }
 }

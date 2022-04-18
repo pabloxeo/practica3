@@ -55,6 +55,9 @@ void PieceSprite::onClickAction(Window & container){
         gui->startGameLoop();
         */
     }
+    else if(clicked && (locked || !enabled)){
+        gui->playForbiddenSound();
+    }
     
     
 }
