@@ -241,8 +241,10 @@ bool Parchis::isLegalMove(color player, const Box & box, int dice_number) const{
     //Controlar que ya estés en la meta
     }else if(box.type == goal){
         return false;
-    // Comprobar que no haya ya dos fichas en la casilla.
-    }else if(final_box.type != goal && final_box.type != home &&  boxState(final_box).size() == 2){
+    // Comprobar que no haya ya dos fichas en la casilla (a menos que la casilla de destino sea home, meta o la misma que la de partida).
+    }
+    else if (final_box.type != goal && final_box.type != home && !(final_box == box) && boxState(final_box).size() == 2)
+    {
         return false;
     //Controlar los muros
     }
