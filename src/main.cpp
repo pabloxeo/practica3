@@ -34,9 +34,25 @@ int main(int argc, char const *argv[]){
 
         return 0;
     }
+    else if (argc == 2 and strcmp(argv[1], "--no-gui") == 0)
+    {
+        // J1 con GUI
+        AIPlayer p1 = AIPlayer("J1");
+        // J2 con AI
+        AIPlayer p2 = AIPlayer("J2");
+        // J2 con GUI
+        // GUIPlayer p2 = GUIPlayer("J2");
+
+        Parchis parchis(GROUPED, p1, p2);
+
+        // Start the game.
+        parchis.gameLoop();
+
+        return 0;
+    }
     else if(argc == 2 and strcmp(argv[1], "--client") == 0){
         ParchisClient client;
-        client.startClientConnection("127.0.0.1", 8888);
+        client.startClientConnection("127.0.0.1", 8891);
         
         //J1 con GUI.
         GUIPlayer p1 = GUIPlayer("J1");
@@ -57,7 +73,7 @@ int main(int argc, char const *argv[]){
     }
     else if(argc == 2 and strcmp(argv[1], "--server") == 0){
         ParchisServer server;
-        server.startListening(8888);
+        server.startListening(8891);
 
         //J1 remoto.
         RemotePlayer p1 = RemotePlayer("J1", server);
