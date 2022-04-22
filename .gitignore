@@ -36,5 +36,8 @@ bin/
 bin/*
 data/music.zip
 
+src/Ninja.cpp
+include/Ninja.h
+
 .idea/
 .vscode/
