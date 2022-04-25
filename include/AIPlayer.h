@@ -23,7 +23,7 @@ class AIPlayer: public Player{
          */
         virtual bool move();
         
-        void think(color & c_piece,  int & id_piece, int & dice) const;
+        virtual void think(color & c_piece,  int & id_piece, int & dice) const;
 
         inline virtual bool canThink() const{return true;}
 

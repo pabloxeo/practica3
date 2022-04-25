@@ -13,6 +13,9 @@ Board::Board(const BoardConfig & config){
     this->setFromConfig(config);
 }
 
+bool Board::operator==(const Board & board) const{
+    return this->pieces == board.pieces;
+}
 
 const Box & Board::getPiece(const color c, const int idx) const{
     return pieces.at(c)[idx];

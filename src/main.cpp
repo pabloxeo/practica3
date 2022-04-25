@@ -4,6 +4,7 @@
 # include "GUIPlayer.h"
 # include "RemotePlayer.h"
 # include "AIPlayer.h"
+# include "Ninja.h"
 
 #include <cstring>
 
@@ -18,7 +19,7 @@ int main(int argc, char const *argv[]){
         //J1 con GUI
         GUIPlayer p1 = GUIPlayer("J1");
         //J2 con AI
-        AIPlayer p2 = AIPlayer("J2");
+        Ninja p2 = Ninja("J2");
         //J2 con GUI
         //GUIPlayer p2 = GUIPlayer("J2");
 

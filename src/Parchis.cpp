@@ -164,7 +164,11 @@ Parchis::Parchis(const BoardConfig &b, Player &p1, Player &p2){
     this->turn = 1;
 }
 
-const Dice & Parchis::getDice(){
+bool Parchis::operator==(const Parchis & parchis) const{
+    return this->board == parchis.board && this->turn == parchis.turn;
+}
+
+const Dice & Parchis::getDice() const{
     return this->dice;
 }
 
@@ -404,6 +408,7 @@ void Parchis::movePiece(color player, int piece, int dice_number){
                 turn++;
                 last_action = tuple<color, int, int>(player, piece, dice_number);
             }else{
+                turn++;
                 illegal_move_player = current_player;
                 cout << "ILLEGALLY TRIED TO SKIP TURN" << endl;
             }
@@ -672,4 +677,91 @@ bool Parchis::illegalMove() const{
 int Parchis::piecesAtGoal(color col) const{
     Box goal(0, box_type::goal, col);
     return boxState(goal).size();
+}
+
+
+Parchis Parchis::generateNextMove(color & c_piece,  int & id_piece, int & dice) const{
+    c_piece = this->getCurrentColor();
+    bool change_dice = false;
+    vector<int> current_dices;
+    vector<int> current_pieces;
+
+    if (dice == -1){
+        dice = this->getAvailableDices(c_piece).at(0);
+    }
+
+    do{
+        //Compruebo si quedan movimientos legales con dice
+        current_pieces = this->getAvailablePieces(c_piece, dice);
+        if (current_pieces.size() > 0){
+            if(id_piece == -1){
+                id_piece = current_pieces.at(0);
+            }
+            else{
+                //Siguiente pieza a id_piece
+                for(int i = 0; i < current_pieces.size(); i++){
+                    if(current_pieces.at(i) == id_piece){
+                        if (i == current_pieces.size() - 1){
+                            //Cambio de dado
+                            //change_dice = true;
+                            if(this->canSkipTurn(c_piece, dice)){
+                                id_piece = SKIP_TURN;
+                            }
+                            else{
+                                change_dice = true;
+                            }
+                        }
+                        else{
+                            id_piece = current_pieces.at(i+1);
+                            change_dice = false;
+                        }
+                        break;
+                    }
+                }
+            }
+        }else if(this->canSkipTurn(c_piece, dice)){
+            id_piece = SKIP_TURN;
+        }
+        else{
+            //Siguiente dado
+            change_dice = true;
+        }
+
+        if(change_dice){
+            current_dices = this->getAvailableDices(c_piece);
+            for(int j = 0; j < current_dices.size(); j++){
+                if(current_dices.at(j) == dice){
+                    if(j == current_dices.size() -1){
+                        return *this;
+                    }else{
+                        dice = current_dices.at(j+1);
+                        break;
+                    }
+                }
+            }
+        }
+    }while(!change_dice);
+
+    Parchis next_move(*this);
+    cout << str(c_piece) << " " << id_piece << " " << dice << endl;
+    next_move.movePiece(c_piece, id_piece, dice);
+    return next_move;
+
+}
+
+bool Parchis::isSafeBox(const Box & box) const{
+    return (box.type == normal && find(safe_boxes.begin(), safe_boxes.end(), box.num) != safe_boxes.end());
+}
+
+bool Parchis::isSafePiece(const color & player, const int & piece) const{
+    return isSafeBox(this->board.getPiece(player, piece));
+}
+
+vector<color> Parchis::getPlayerColors(int player) const{
+    if (player == 0){
+        return {yellow, red};
+    }
+    else{
+        return {blue, green};
+    }
 }
