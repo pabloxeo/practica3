@@ -591,6 +591,11 @@ bool Parchis::gameStep(){
         players.at(i)->perceive(*this);
     }
 
+    for (int i = 0; i < viewers.size(); i++)
+    {
+        viewers.at(i)->perceive(*this);
+    }
+
     // Se espera a que todos los jugadores estén listos para el siguiente turno.
     waitForPlayers();
 
@@ -620,6 +625,7 @@ bool Parchis::gameStep(){
 void Parchis::waitForPlayers() const{
     // Sleep 10 milliseconds while there is a player that is not ready for next turn.
     vector<bool> ready_players(players.size(), false);
+    vector<bool> ready_viewers(viewers.size(), false);
     bool ready = false;
     while (!ready){
         ready = true;
@@ -627,6 +633,12 @@ void Parchis::waitForPlayers() const{
             if(!ready_players[i]){
                 ready_players[i] = players.at(i)->readyForNextTurn();
                 ready = ready && ready_players[i];
+            }
+        }
+        for (int i = 0; i < viewers.size(); i++){
+            if(!ready_viewers[i]){
+                ready_viewers[i] = viewers.at(i)->readyForNextTurn();
+                ready = ready && ready_viewers[i];
             }
         }
         if(!ready) sleep(milliseconds(10));

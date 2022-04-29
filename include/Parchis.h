@@ -31,6 +31,7 @@ class Parchis{
         int current_player;
         color current_color;
         vector <Player*> players;
+        vector <Player*> viewers;
 
         int illegal_move_player;
 
@@ -123,6 +124,8 @@ class Parchis{
          * @param p2
          */
         Parchis(const BoardConfig &b, Player &p1, Player &p2);
+
+        inline void addViewer(Player &p){viewers.push_back(&p);}
 
         bool operator==(const Parchis & parchis) const;
 
