@@ -19,7 +19,7 @@ int main(int argc, char const *argv[]){
         //J1 con GUI
         GUIPlayer p1 = GUIPlayer("J1");
         //J2 con AI
-        Ninja p2 = Ninja("J2");
+        AIPlayer p2 = AIPlayer("J2");
         //J2 con GUI
         //GUIPlayer p2 = GUIPlayer("J2");
 
