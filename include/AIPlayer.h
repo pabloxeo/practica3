@@ -5,10 +5,12 @@
 # include "Player.h"
 
 class AIPlayer: public Player{
-    private:
-        
+    protected:
+        int id;
     public:
-        inline AIPlayer(const string & name):Player(name){};
+        inline AIPlayer(const string & name):Player(name), id(0){};
+        
+        inline AIPlayer(const string & name, int id):Player(name), id(id){};
 
         inline virtual void perceive(Parchis &p){Player::perceive(p);}
 

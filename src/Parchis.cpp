@@ -512,7 +512,7 @@ const vector<pair <color, int>> Parchis::boxState(const Box & box) const{
 
 
 void Parchis::nextTurn(){
-    cout << "--------- CAMBIO DE TURNO ---------" << endl;
+    //cout << "--------- CAMBIO DE TURNO ---------" << endl;
     if (last_dice != 6 && !eating_move && !goal_move){
         this->current_player = (current_player+1)%2;
         switch(this->current_color){
@@ -743,7 +743,7 @@ Parchis Parchis::generateNextMove(color & c_piece,  int & id_piece, int & dice) 
     }while(change_dice);
 
     Parchis next_move(*this);
-    cout << str(c_piece) << " " << id_piece << " " << dice << endl;
+    //cout << str(c_piece) << " " << id_piece << " " << dice << endl;
     next_move.movePiece(c_piece, id_piece, dice);
     return next_move;
 
