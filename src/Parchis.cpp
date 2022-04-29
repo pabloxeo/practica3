@@ -704,7 +704,7 @@ Parchis Parchis::generateNextMove(color & c_piece,  int & id_piece, int & dice) 
                         if (i == current_pieces.size() - 1){
                             //Cambio de dado
                             //change_dice = true;
-                            if(this->canSkipTurn(c_piece, dice)){
+                            if(this->canSkipTurn(c_piece, dice) && id_piece != SKIP_TURN){
                                 id_piece = SKIP_TURN;
                             }
                             else{
@@ -719,7 +719,7 @@ Parchis Parchis::generateNextMove(color & c_piece,  int & id_piece, int & dice) 
                     }
                 }
             }
-        }else if(this->canSkipTurn(c_piece, dice)){
+        }else if(this->canSkipTurn(c_piece, dice) && id_piece != SKIP_TURN){
             id_piece = SKIP_TURN;
         }
         else{
@@ -740,7 +740,7 @@ Parchis Parchis::generateNextMove(color & c_piece,  int & id_piece, int & dice) 
                 }
             }
         }
-    }while(!change_dice);
+    }while(change_dice);
 
     Parchis next_move(*this);
     cout << str(c_piece) << " " << id_piece << " " << dice << endl;
