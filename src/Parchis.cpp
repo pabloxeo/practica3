@@ -765,3 +765,22 @@ vector<color> Parchis::getPlayerColors(int player) const{
         return {blue, green};
     }
 }
+
+int Parchis::distanceToGoal(color player, const Box & box) const{
+    switch(box.type){
+        case normal:
+            return abs(box.num - final_boxes.at(player)) + 8;
+        case goal:
+            return 0;
+        case final_queue:
+            return 8 - box.num;
+        case home:
+            return 1 + 65 + 8;                    
+        default:
+            return -1;
+    }
+}
+
+int Parchis::distanceToGoal(color player, int id_piece) const{
+    return distanceToGoal(player, this->board.getPiece(player, id_piece));
+}

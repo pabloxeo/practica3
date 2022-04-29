@@ -370,6 +370,24 @@ class Parchis{
          */
         int piecesAtGoal(color player) const;
 
+        /**
+         * @brief 
+         * 
+         * @param player 
+         * @param box 
+         * @return int 
+         */
+        int distanceToGoal(color player, const Box & box) const;
+
+        /**
+         * @brief 
+         * 
+         * @param player 
+         * @param box 
+         * @return int 
+         */
+        int distanceToGoal(color player, int id_piece) const;
+
         Parchis generateNextMove(color & c_piece,  int & id_piece, int & dice) const;
 
         bool isSafeBox(const Box & box) const;
