@@ -36,7 +36,7 @@ int main(int argc, char const *argv[]){
     }
     else if(argc == 2 and strcmp(argv[1], "--client") == 0){
         ParchisClient client;
-        client.startClientConnection("127.0.0.1", 8888);
+        client.startClientConnection("127.0.0.1", 8889);
         
         //J1 con GUI.
         GUIPlayer p1 = GUIPlayer("J1");
@@ -57,7 +57,7 @@ int main(int argc, char const *argv[]){
     }
     else if(argc == 2 and strcmp(argv[1], "--server") == 0){
         ParchisServer server;
-        server.startListening(8888);
+        server.startListening(8889);
 
         //J1 remoto.
         RemotePlayer p1 = RemotePlayer("J1", server);
