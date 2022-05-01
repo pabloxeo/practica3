@@ -45,6 +45,8 @@ class Board{
          */
         Board(const BoardConfig & config);
 
+        bool operator==(const Board & board) const;
+
         /**
          * @brief Función que devuelve el Box correspondiente a la ficha en la posición "idx" del vector de fichas de color "c".
          * 

@@ -3,4 +3,5 @@
 
 void Player::perceive(Parchis & p){
     actual = &p;
+    jugador = actual->getCurrentPlayerId();
 }

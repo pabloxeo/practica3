@@ -5,10 +5,12 @@
 # include "Player.h"
 
 class AIPlayer: public Player{
-    private:
-        
+    protected:
+        int id;
     public:
-        inline AIPlayer(const string & name):Player(name){};
+        inline AIPlayer(const string & name):Player(name), id(0){};
+        
+        inline AIPlayer(const string & name, int id):Player(name), id(id){};
 
         inline virtual void perceive(Parchis &p){Player::perceive(p);}
 
@@ -23,7 +25,7 @@ class AIPlayer: public Player{
          */
         virtual bool move();
         
-        void think(color & c_piece,  int & id_piece, int & dice) const;
+        virtual void think(color & c_piece,  int & id_piece, int & dice) const;
 
         inline virtual bool canThink() const{return true;}
 

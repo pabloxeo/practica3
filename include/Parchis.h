@@ -11,7 +11,7 @@
 #include <algorithm>
 
 // Macro que define el parámetro para indicar que no se mueve ficha.
-#define SKIP_TURN -1
+#define SKIP_TURN -9999
 
 using namespace std;
 
@@ -31,6 +31,7 @@ class Parchis{
         int current_player;
         color current_color;
         vector <Player*> players;
+        vector <Player*> viewers;
 
         int illegal_move_player;
 
@@ -124,7 +125,9 @@ class Parchis{
          */
         Parchis(const BoardConfig &b, Player &p1, Player &p2);
 
-        
+        inline void addViewer(Player &p){viewers.push_back(&p);}
+
+        bool operator==(const Parchis & parchis) const;
 
         /**
          * @brief Get the Dice object
@@ -132,7 +135,7 @@ class Parchis{
          * @param player 
          * @return const vector<int>& 
          */
-        const Dice & getDice ();
+        const Dice & getDice () const;
 
 
          /**
@@ -159,7 +162,7 @@ class Parchis{
          * @param dice_number 
          * @return const vector<int>& 
          */
-        inline const vector<int> getAvailableDices (color player){
+        inline const vector<int> getAvailableDices (color player) const{
             return dice.getDice(player);
         }
 
@@ -306,7 +309,7 @@ class Parchis{
          * 
          * @return int 
          */
-        inline int getCurrentPlayerId(){
+        inline int getCurrentPlayerId() const{
             return current_player;
         }
 
@@ -328,7 +331,7 @@ class Parchis{
          * 
          * @return color 
          */
-        inline color getCurrentColor(){
+        inline color getCurrentColor() const{
             return this->current_color;
         }
 
@@ -369,6 +372,32 @@ class Parchis{
          * @return 
          */
         int piecesAtGoal(color player) const;
+
+        /**
+         * @brief 
+         * 
+         * @param player 
+         * @param box 
+         * @return int 
+         */
+        int distanceToGoal(color player, const Box & box) const;
+
+        /**
+         * @brief 
+         * 
+         * @param player 
+         * @param box 
+         * @return int 
+         */
+        int distanceToGoal(color player, int id_piece) const;
+
+        Parchis generateNextMove(color & c_piece,  int & id_piece, int & dice) const;
+
+        bool isSafeBox(const Box & box) const;
+
+        bool isSafePiece(const color & player, const int & piece) const;
+
+        vector<color> getPlayerColors(int player) const;
 };
 
 

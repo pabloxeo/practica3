@@ -4,6 +4,7 @@
 # include "GUIPlayer.h"
 # include "RemotePlayer.h"
 # include "AIPlayer.h"
+# include "Ninja.h"
 
 #include <cstring>
 
@@ -31,6 +32,22 @@ int main(int argc, char const *argv[]){
 
         // Start the game.
         parchis_gui.run();
+
+        return 0;
+    }
+    else if (argc == 2 and strcmp(argv[1], "--no-gui") == 0)
+    {
+        // J1 con GUI
+        AIPlayer p1 = AIPlayer("J1");
+        // J2 con AI
+        AIPlayer p2 = AIPlayer("J2");
+        // J2 con GUI
+        // GUIPlayer p2 = GUIPlayer("J2");
+
+        Parchis parchis(GROUPED, p1, p2);
+
+        // Start the game.
+        parchis.gameLoop();
 
         return 0;
     }
