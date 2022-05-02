@@ -393,6 +393,8 @@ class Parchis{
 
         Parchis generateNextMove(color & c_piece,  int & id_piece, int & dice) const;
 
+        Parchis generateNextMoveDescending(color & c_piece,  int & id_piece, int & dice) const;
+
         bool isSafeBox(const Box & box) const;
 
         bool isSafePiece(const color & player, const int & piece) const;

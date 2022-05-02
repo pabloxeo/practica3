@@ -403,7 +403,7 @@ void Parchis::movePiece(color player, int piece, int dice_number){
                 this->last_moves.clear();
                 this->dice.removeNumber(player, dice_number);
                 this->nextTurn();
-                cout << "TURN SKIPPED" << endl;
+                //cout << "TURN SKIPPED" << endl;
 
                 turn++;
                 last_action = tuple<color, int, int>(player, piece, dice_number);
@@ -708,6 +708,7 @@ Parchis Parchis::generateNextMove(color & c_piece,  int & id_piece, int & dice) 
         if (current_pieces.size() > 0){
             if(id_piece == -1){
                 id_piece = current_pieces.at(0);
+                change_dice = false;
             }
             else{
                 //Siguiente pieza a id_piece
@@ -718,6 +719,7 @@ Parchis Parchis::generateNextMove(color & c_piece,  int & id_piece, int & dice) 
                             //change_dice = true;
                             if(this->canSkipTurn(c_piece, dice) && id_piece != SKIP_TURN){
                                 id_piece = SKIP_TURN;
+                                change_dice = false;
                             }
                             else{
                                 change_dice = true;
@@ -733,6 +735,7 @@ Parchis Parchis::generateNextMove(color & c_piece,  int & id_piece, int & dice) 
             }
         }else if(this->canSkipTurn(c_piece, dice) && id_piece != SKIP_TURN){
             id_piece = SKIP_TURN;
+            change_dice = false;
         }
         else{
             //Siguiente dado
@@ -747,6 +750,7 @@ Parchis Parchis::generateNextMove(color & c_piece,  int & id_piece, int & dice) 
                         return *this;
                     }else{
                         dice = current_dices.at(j+1);
+                        id_piece = -1;
                         break;
                     }
                 }
@@ -759,6 +763,78 @@ Parchis Parchis::generateNextMove(color & c_piece,  int & id_piece, int & dice) 
     next_move.movePiece(c_piece, id_piece, dice);
     return next_move;
 
+}
+
+Parchis Parchis::generateNextMoveDescending(color & c_piece,  int & id_piece, int & dice) const{
+    c_piece = this->getCurrentColor();
+    bool change_dice = false;
+    vector<int> current_dices;
+    vector<int> current_pieces;
+
+    if (dice == -1){
+        dice = this->getAvailableDices(c_piece).back();
+    }
+
+    do{
+        //Compruebo si quedan movimientos legales con dice
+        current_pieces = this->getAvailablePieces(c_piece, dice);
+        if (current_pieces.size() > 0){
+            if(id_piece == -1){
+                id_piece = current_pieces.at(0);
+                change_dice = false;
+            }
+            else{
+                //Siguiente pieza a id_piece
+                for(int i = 0; i < current_pieces.size(); i++){
+                    if(current_pieces.at(i) == id_piece){
+                        if (i == current_pieces.size() - 1){
+                            //Cambio de dado
+                            //change_dice = true;
+                            if(this->canSkipTurn(c_piece, dice) && id_piece != SKIP_TURN){
+                                id_piece = SKIP_TURN;
+                                change_dice = false;
+                            }
+                            else{
+                                change_dice = true;
+                            }
+                        }
+                        else{
+                            id_piece = current_pieces.at(i+1);
+                            change_dice = false;
+                        }
+                        break;
+                    }
+                }
+            }
+        }else if(this->canSkipTurn(c_piece, dice) && id_piece != SKIP_TURN){
+            id_piece = SKIP_TURN;
+            change_dice = false;
+        }
+        else{
+            //Siguiente dado
+            change_dice = true;
+        }
+
+        if(change_dice){
+            current_dices = this->getAvailableDices(c_piece);
+            for(int j = current_dices.size() - 1; j >= 0; j--){
+                if(current_dices.at(j) == dice){
+                    if(j == 0){
+                        return *this;
+                    }else{
+                        dice = current_dices.at(j-1);
+                        id_piece = -1;
+                        break;
+                    }
+                }
+            }
+        }
+    }while(change_dice);
+
+    Parchis next_move(*this);
+    //cout << str(c_piece) << " " << id_piece << " " << dice << endl;
+    next_move.movePiece(c_piece, id_piece, dice);
+    return next_move;
 }
 
 bool Parchis::isSafeBox(const Box & box) const{
