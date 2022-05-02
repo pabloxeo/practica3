@@ -232,12 +232,9 @@ void SkipTurnButton::onClickAction(Window & container){
     ParchisGUI * gui = dynamic_cast<ParchisGUI*>(&container);
 
     if(enabled && !locked && clicked){
-        gui->model->movePiece(this->getModelColor(), SKIP_TURN, gui->last_dice);
-
-        cout << "Jugador actual: " << gui->model->getCurrentPlayerId() << endl;
-        cout << "Color actual: " << str(gui->model->getCurrentColor()) << endl;
-
-        gui->startGameLoop();
+        GUIPlayer * player = static_cast<GUIPlayer*>(&gui->model->getCurrentPlayer());
+        player->setNextMove(this->getModelColor(), SKIP_TURN, gui->last_dice);
+        player->confirmNextMove();
     }
     else if(clicked && (locked || !enabled)){
         gui->playForbiddenSound();

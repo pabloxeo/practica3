@@ -18,6 +18,8 @@ enum BoardConfig{
     ALMOST_GOAL, // Todas las fichas comienzan en el pasillo de la meta (sin utilidad real, solo para facilitar depuración).
     DEBUG,       // Para depurar determinadas situaciones (ir mofdificando según necesidad)
     DEBUG2,      // Para depurar determinadas situaciones (ir mofdificando según necesidad)
+    DEBUG3,      // Para depurar determinadas situaciones (ir mofdificando según necesidad)
+    DEBUG4,      // Para depurar determinadas situaciones (ir mofdificando según necesidad)
 };
 
 
