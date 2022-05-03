@@ -3,6 +3,7 @@
 
 #include <SFML/Network.hpp>
 #include "Attributes.h"
+#include "Board.h"
 
 using namespace sf;
 using namespace std;
@@ -30,6 +31,7 @@ class ParchisRemote{
         inline ParchisRemote(){}
 
     public:
+        void sendGameParameters(int player, string name, BoardConfig init_board);
 
         void sendTestMessage(string message);
 
@@ -42,6 +44,8 @@ class ParchisRemote{
         static string packet2message(Packet & packet);
 
         static void packet2move(Packet & packet, int & turn, color & c_piece, int & id_piece, int & dice);
+
+        static void packet2gameParameters(Packet & packet, int & player, string & name, BoardConfig & init_board);
 };
 
 class ParchisClient: public ParchisRemote{
@@ -66,6 +70,8 @@ class ParchisServer: public ParchisRemote{
         inline ParchisServer(){}
 
         void startListening(const int & port);
+
+        void acceptConnection();
 
 };
 

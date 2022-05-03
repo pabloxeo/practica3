@@ -5,6 +5,22 @@
 using namespace std;
 using namespace sf;
 
+void ParchisRemote::sendGameParameters(int player, string name, BoardConfig init_board){
+    Packet packet;
+    packet << GAME_PARAMETERS;
+    packet << player;
+    packet << name;
+    packet << init_board;
+    Socket::Status status = socket.send(packet);
+    if(status != Socket::Done)
+    {
+        throw runtime_error("Error sending message");
+    }
+    cout << "GAME_PARAMETERS sent" << endl;
+    cout << "player: " << player << " name: " << name << " init_board: " << init_board << endl;
+}
+
+
 
 void ParchisRemote::sendTestMessage(string message)
 {
@@ -14,7 +30,7 @@ void ParchisRemote::sendTestMessage(string message)
     Socket::Status status = socket.send(packet);
     if(status != Socket::Done)
     {
-         throw runtime_error("Error sending message");
+        throw runtime_error("Error sending message");
     }
     cout << "TEST_MESSAGE sent" << endl;
     cout << "Message: " << message << endl;
@@ -52,6 +68,11 @@ MessageKind ParchisRemote::receive(Packet & packet)
     Packet p2(packet);
     switch(type)
     {
+        case GAME_PARAMETERS:
+        {
+            cout << "101 GAME_PARAMETERS received" << endl;
+            break;
+        }
         case TEST_MESSAGE:
         {
             cout << "300 TEST_MESSAGE received" << endl;
@@ -120,6 +141,16 @@ void ParchisRemote::packet2move(Packet & packet, int & turn, color & c_piece, in
     cout << "Move: " << turn << " " << str(c_piece) << " " << id_piece << " " << dice << endl;
 }
 
+void ParchisRemote::packet2gameParameters(Packet & packet, int & player, string & name, BoardConfig & init_board){
+    packet >> player;
+    packet >> name;
+    int cint_board;
+    packet >> cint_board;
+    init_board = (BoardConfig) cint_board;
+    cout << "player: " << player << " name: " << name << " init_board: " << init_board << endl;
+}
+
+
 
 
 void ParchisClient::startClientConnection(const string & ip_addr, const int & port){
@@ -139,7 +170,9 @@ void ParchisServer::startListening(const int & port){
     }
 
     cout << "Listening on port " << port << endl;
+}
 
+void ParchisServer::acceptConnection(){
     if(listener.accept(socket) != Socket::Done){
         throw runtime_error("Could not accept connection");
     }
