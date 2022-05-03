@@ -19,16 +19,16 @@ int main(int argc, char const *argv[]){
         //J1 con GUI
         GUIPlayer p1 = GUIPlayer("J1");
         //J2 con AI
-        AIPlayer p2 = AIPlayer("J2");
+        //AIPlayer p2 = AIPlayer("J2");
         //J2 con GUI
-        //GUIPlayer p2 = GUIPlayer("J2");
+        GUIPlayer p2 = GUIPlayer("J2");
 
-        Parchis parchis(GROUPED, p1, p2);
+        Parchis parchis(DEBUG5, p1, p2);
         ParchisGUI parchis_gui(parchis);
 
         // Set the GUI for GUIPlayers.
         p1.setGUI(parchis_gui);
-        //p2.setGUI(parchis_gui);
+        p2.setGUI(parchis_gui);
 
         // Start the game.
         parchis_gui.run();

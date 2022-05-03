@@ -350,8 +350,22 @@ const Box Parchis::computeMove(color player, const Box & piece_box, int dice_num
             if(goal_bounce != NULL) *goal_bounce = true;
         }
 
+    }else if(piece_box.num + dice_number > 68 && piece_box.num + dice_number - 68 > final_boxes.at(player) && piece_box.type == normal){
+        int count = piece_box.num + dice_number - 68 - final_boxes.at(player);
+        if (count <= 7){
+            final_box = Box(count, final_queue, player);
+        }else if (count == 8){
+            final_box = Box(0, goal, player);
+        }else{
+            int diff = 16 - (count);
+            if(diff > 0){
+                final_box = Box(diff, final_queue, player);
+            }else{
+                final_box = Box(final_boxes.at(player) + diff, normal, none);
+            }
+            if(goal_bounce != NULL) *goal_bounce = true;
+        }
     }
-    
     /*
     else if(piece_box.num <= 17 && piece_box.num + dice_number > 17 && player == blue && piece_box.type == normal){
         final_box = Box(piece_box.num + dice_number-17, final_queue, blue);
