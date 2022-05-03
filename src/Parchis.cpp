@@ -216,7 +216,7 @@ const vector<color> Parchis::anyWall(const Box & b1, const Box & b2) const{
     }
     vector<color> walls;
     bool reached_final_box = false;
-    if (b1.type == normal){
+    if (b1.type == normal && final_box.num != b1.num){
         for (int i = b1.num+1; !reached_final_box; i = i%68 + 1){
             reached_final_box = (final_box.num == i);
             color c = isWall(Box(i, normal, none));

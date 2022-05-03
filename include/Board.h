@@ -22,6 +22,7 @@ enum BoardConfig{
     DEBUG4,      // Para depurar determinadas situaciones (ir mofdificando según necesidad)
     DEBUG5,      // Para depurar determinadas situaciones (ir mofdificando según necesidad)
     DEBUG6,      // Para depurar determinadas situaciones (ir mofdificando según necesidad)
+    DEBUG7,      // Para depurar determinadas situaciones (ir mofdificando según necesidad)
 };
 
 
