@@ -883,7 +883,11 @@ vector<color> Parchis::getPlayerColors(int player) const{
 int Parchis::distanceToGoal(color player, const Box & box) const{
     switch(box.type){
         case normal:
-            return abs(box.num - final_boxes.at(player)) + 8;
+            if (box.num > final_boxes.at(player)){
+                return 68 - box.num + final_boxes.at(player);
+            }else{
+                return final_boxes.at(player) - box.num;
+            }
         case goal:
             return 0;
         case final_queue:
