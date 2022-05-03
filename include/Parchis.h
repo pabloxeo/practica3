@@ -38,6 +38,8 @@ class Parchis{
         bool eating_move;
         bool goal_move;
         bool goal_bounce;
+        bool remember_6;
+
 
         static const int final_red_box = 34;
         static const int final_blue_box = 17;

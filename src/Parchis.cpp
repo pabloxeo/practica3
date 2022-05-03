@@ -36,6 +36,7 @@ Parchis::Parchis()
     this->goal_move = false;
     this->eating_move = false;
     this->goal_bounce = false;
+    this->remember_6 = false;
 
     this->turn = 1;
 }
@@ -59,6 +60,7 @@ Parchis::Parchis(const BoardConfig & b){
     this->goal_move = false;
     this->eating_move = false;
     this->goal_bounce = false;
+    this->remember_6 = false;
 
     this->turn = 1;
 }
@@ -80,6 +82,7 @@ Parchis::Parchis(const Board & b, const Dice & d){
     this->goal_move = false;
     this->eating_move = false;
     this->goal_bounce = false;
+    this->remember_6 = false;
 
     this->turn = 1;
 }
@@ -102,6 +105,7 @@ Parchis::Parchis(const BoardConfig &b, const Dice &d)
     this->goal_move = false;
     this->eating_move = false;
     this->goal_bounce = false;
+    this->remember_6 = false;
 
     this->turn = 1;
 }
@@ -121,6 +125,7 @@ Parchis::Parchis(const Board & b, const Dice & d, Player & p1, Player & p2){
     this->goal_move = false;
     this->eating_move = false;
     this->goal_bounce = false;
+    this->remember_6 = false;
 
     this->turn = 1;
 }
@@ -141,6 +146,7 @@ Parchis::Parchis(const BoardConfig &b, const Dice &d, Player &p1, Player &p2)
     this->goal_move = false;
     this->eating_move = false;
     this->goal_bounce = false;
+    this->remember_6 = false;
 
     this->turn = 1;
 }
@@ -160,6 +166,7 @@ Parchis::Parchis(const BoardConfig &b, Player &p1, Player &p2){
     this->goal_move = false;
     this->eating_move = false;
     this->goal_bounce = false;
+    this->remember_6 = false;
 
     this->turn = 1;
 }
@@ -412,6 +419,8 @@ void Parchis::movePiece(color player, int piece, int dice_number){
             if(canSkipTurn(player, dice_number)){
                 eating_move = false;
                 goal_move = false;
+
+                remember_6 = (dice_number==6 or (remember_6 and (dice_number == 10 or dice_number == 20)));
                 
                 this->last_dice = dice_number;
                 this->last_moves.clear();
@@ -437,6 +446,9 @@ void Parchis::movePiece(color player, int piece, int dice_number){
             /* Gestión de las "comidas"*/
             eating_move = false;
             goal_move = false;
+
+            remember_6 = (dice_number==6 or (remember_6 and (dice_number == 10 or dice_number == 20)));
+
 
             //Comprobar si hay una ficha de otro color en la casilla destino
             vector<pair <color, int>> box_states = boxState(final_box);
@@ -527,7 +539,7 @@ const vector<pair <color, int>> Parchis::boxState(const Box & box) const{
 
 void Parchis::nextTurn(){
     //cout << "--------- CAMBIO DE TURNO ---------" << endl;
-    if (last_dice != 6 && !eating_move && !goal_move){
+    if (last_dice != 6 && !eating_move && !goal_move && !remember_6){
         this->current_player = (current_player+1)%2;
         switch(this->current_color){
             case yellow:

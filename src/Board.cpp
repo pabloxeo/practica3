@@ -97,6 +97,13 @@ void Board::setFromConfig(const BoardConfig & config){
                 {color::blue, {{66, box_type::normal, color::none}, {1, box_type::final_queue, color::blue}, {2, box_type::final_queue, color::blue}, {3, box_type::final_queue, color::blue}}},
                 {color::yellow, {{5, box_type::final_queue, color::yellow}, {0, box_type::home, color::yellow}, {0, box_type::home, color::yellow}, {0, box_type::home, color::yellow}}}};
             break;
+        case DEBUG6:
+            this->pieces = map<color, vector<Box>>{
+                {color::green, {{0, box_type::home, color::green}, {62, box_type::normal, color::none}, {13, box_type::normal, color::none}, {34, box_type::normal, color::none}}},
+                {color::red, {{0, box_type::home, color::red}, {42, box_type::normal, color::none}, {64, box_type::normal, color::none}, {17, box_type::normal, color::none}}},
+                {color::blue, {{0, box_type::home, color::blue}, {22, box_type::normal, color::none}, {47, box_type::normal, color::none}, {68, box_type::normal, color::none}}},
+                {color::yellow, {{0, box_type::home, color::yellow}, {16, box_type::normal, color::none}, {30, box_type::normal, color::none}, {51, box_type::normal, color::none}}}};
+            break;
     }
 }
 
