@@ -1,7 +1,7 @@
 # include "Dice.h"
 
 #include <iostream>
-#include<bits/stdc++.h>
+#include <algorithm>
 
 
 Dice::Dice(){
