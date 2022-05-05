@@ -17,6 +17,74 @@ int main(int argc, char const *argv[]){
     //ParchisGUI parchis;
     //parchis.display();
     //parchis.moveFichas();
+    string type_j1 = "GUI", type_j2 = "GUI";
+    int id_j1 = 0, id_j2 = 0;
+    int port = 8888;
+    string ip = "localhost";
+    string name_j1 = "J1", name_j2 = "J2";
+    bool gui = true;
+    bool ninja_server = false;
+
+    /* Parse the command line arguments in the following way:
+     * --p1 <type=GUI|AI|Client|Server|Ninja> (id=0) (name=J1)
+     * --p2 <type=GUI|AI|Client|Server|Ninja> (id=0) (name=J2)
+     * --ip <ip>  [Optional]
+     * --port <port>  [Optional]
+     * --board <config=GROUPED>
+     * --no-gui  [Optional]
+     * --ninja-server [Optional]
+     *
+     * Default parameters:
+     * --p1 GUI 0 J1 --p2 GUI 0 J2 
+     */
+    for(int i = 1; i < argc; i++){
+        if(strcmp(argv[i], "--p1") == 0){
+            i++;
+            type_j1 = argv[i];
+            i++;
+            id_j1 = atoi(argv[i]);
+            i++;
+            name_j1 = argv[i];
+        }
+        else if(strcmp(argv[i], "--p2") == 0){
+            i++;
+            type_j2 = argv[i];
+            i++;
+            id_j2 = atoi(argv[i]);
+            i++;
+            name_j2 = argv[i];
+        }
+        else if(strcmp(argv[i], "--ip") == 0){
+            i++;
+            ip = argv[i];
+        }
+        else if(strcmp(argv[i], "--port") == 0){
+            i++;
+            port = atoi(argv[i]);
+        }
+        else if(strcmp(argv[i], "--board") == 0){
+            i++;
+            BoardConfig config = BoardConfig::GROUPED;
+            if(strcmp(argv[i], "GROUPED") == 0){
+                config = BoardConfig::GROUPED;
+            }
+            if(strcmp(argv[i], "ALTERNED") == 0){
+                config = BoardConfig::ALTERNED;
+            }
+        }
+        else if(strcmp(argv[i], "--no-gui") == 0){
+            gui = false;
+        }
+        else{
+            cout << "Error parsing command line arguments" << endl;
+            cout << "Usage: " << argv[0] << " --p1 <type=GUI|AI|Client|Server|Ninja> (id=0) (name=J1) --p2 <type=GUI|AI|Client|Server|Ninja> (id=0) (name=J2) --ip <ip>  [Optional] --port <port>  [Optional] --board <config=GROUPED> --no-gui  [Optional]" << endl;
+            return -1;
+        }
+    }
+
+    bool is_remote = (type_j1 == "Client" || type_j1 == "Server" || type_j1 == "Ninja") or (type_j2 == "Client" || type_j2 == "Server" || type_j2 == "Ninja");
+    
+
     if(argc == 1){
         //J1 con GUI
         GUIPlayer p1 = GUIPlayer("J1");

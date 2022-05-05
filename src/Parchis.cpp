@@ -27,9 +27,9 @@ Parchis::Parchis()
 
     this->current_player = 0;
     this->current_color = yellow;
-    GUIPlayer *p1 = new GUIPlayer("Player 1"), *p2 = new GUIPlayer("Player 2");
-    players.push_back(p1);
-    players.push_back(p2);
+    //GUIPlayer *p1 = new GUIPlayer("Player 1"), *p2 = new GUIPlayer("Player 2");
+    //players.push_back(p1);
+    //players.push_back(p2);
     // last_moves vacío por defecto.
 
     this->illegal_move_player = -1;
@@ -51,10 +51,10 @@ Parchis::Parchis(const BoardConfig & b){
     this->current_player = 0;
     this->current_color = yellow;
     //GUIPlayer *p1 = new GUIPlayer("Player 1"), *p2 = new GUIPlayer("Player 2");
-    GUIPlayer *p1 = new GUIPlayer("Player 1");
-    AIPlayer *p2 = new AIPlayer("Player 2");
-    players.push_back(p1);
-    players.push_back(p2);
+    //GUIPlayer *p1 = new GUIPlayer("Player 1");
+    //AIPlayer *p2 = new AIPlayer("Player 2");
+    //players.push_back(p1);
+    //players.push_back(p2);
     // last_moves vacío por defecto.
 
     this->illegal_move_player = -1;
@@ -74,9 +74,9 @@ Parchis::Parchis(const Board & b, const Dice & d){
     this->last_dice = -1;
     this->current_player = 0;
     this->current_color = yellow;
-    GUIPlayer p1("Player 1"), p2("Player 2");
-    players.push_back(&p1);
-    players.push_back(&p2);
+    //GUIPlayer p1("Player 1"), p2("Player 2");
+    //players.push_back(&p1);
+    //players.push_back(&p2);
     //players = {&p1, &p2};
     // last_moves vacío por defecto.
 
@@ -98,9 +98,9 @@ Parchis::Parchis(const BoardConfig &b, const Dice &d)
     this->last_dice = -1;
     this->current_player = 0;
     this->current_color = yellow;
-    GUIPlayer p1("Player 1"), p2("Player 2");
-    players.push_back(&p1);
-    players.push_back(&p2);
+    //GUIPlayer p1("Player 1"), p2("Player 2");
+    //players.push_back(&p1);
+    //players.push_back(&p2);
     // players = {&p1, &p2};
     //  last_moves vacío por defecto.
 
