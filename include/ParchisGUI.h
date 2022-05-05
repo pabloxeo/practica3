@@ -30,6 +30,11 @@ class ParchisGUI: public RenderWindow
 private:
     static const map<Box, vector<Vector2i>> box2position;
 
+    static const float ASPECT_RATIO;
+
+    static const int getInitialWindowWidth();
+    static const int getInitialWindowHeight();
+
     //RenderWindow game_window;
     Parchis *model;
     

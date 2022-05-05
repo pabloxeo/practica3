@@ -162,8 +162,63 @@ const string ParchisGUI::sound_eaten_file = "data/music/bad_news";
 
 const string ParchisGUI::sound_applause_file = "data/music/applause";
 
+const float ParchisGUI::ASPECT_RATIO = 2.0f;
+
+const int ParchisGUI::getInitialWindowWidth(){
+    return ParchisGUI::getInitialWindowHeight() * ASPECT_RATIO;
+}
+
+const int ParchisGUI::getInitialWindowHeight(){
+    int screen_height = VideoMode::getDesktopMode().height;
+    int screen_width = VideoMode::getDesktopMode().width;
+    cout << "Screen dimension: " << screen_width << "x" << screen_height << endl;
+    // Check if the quotient is larger than 2*16:9
+    if ((float)screen_width / screen_height > 16.0f / 9.0f){
+        screen_width /= 2; // Quizás dos monitores
+    }
+    // Compare with the standard monitor resolutions.
+    if(screen_width <= 1366 && screen_height <= 768){
+        return 600;
+    }
+    else if(screen_width <= 1600 && screen_height <= 900){
+        return 750;
+    }
+    else if(screen_width <= 1920 && screen_height <= 1080){
+        return 800;
+    }
+    else if(screen_width <= 2304 && screen_height <= 1440){
+        cout << "Así que estás usando un MAC eh? :)" << endl;
+        return 1000;
+    }
+    else if(screen_width <= 2560 && screen_height <= 1440){
+        return 1100;
+    }
+    else if(screen_width <= 2560 && screen_height <= 1600){
+        if(screen_width == 2560 && screen_height == 1600) cout << "Así que estás usando un MAC eh? :)" << endl;
+        return 1200;
+    }
+    else if(screen_width <= 2880 && screen_height <= 1800){
+        if (screen_width == 2880 && screen_height == 1800) cout << "Así que estás usando un MAC eh? :)" << endl;
+        return 1300;
+    }
+    else if(screen_width <= 3000 && screen_height <= 2000){
+        return 1400;
+    }
+    else if(screen_width <= 3200 && screen_height <= 1800){
+        return 1400;
+    }
+    else if(screen_width <= 3840 && screen_height <= 2160){
+        return 1600;
+    }
+    else{
+        cout << "MADRE MÍA, QUÉ PEDAZO DE PANTALLA ESTAS USANDO?" << endl;
+        cout << min(screen_height, (int)(screen_width / ASPECT_RATIO)) - 200 << endl;
+        return min(screen_height, (int)(screen_width / ASPECT_RATIO))- 700;
+    }
+}
+
 ParchisGUI::ParchisGUI(Parchis &model)
-    : RenderWindow(VideoMode(1600, 800, VideoMode::getDesktopMode().bitsPerPixel), L"Parchís", Style::Titlebar | Style::Close),
+    : RenderWindow(VideoMode(getInitialWindowWidth(), getInitialWindowHeight(), VideoMode::getDesktopMode().bitsPerPixel), L"Parchís", Style::Titlebar | Style::Close | Style::Resize),
     game_thread(&ParchisGUI::gameLoop, this)
     // L"string" parece que permite representar caraceteres unicode. Útil para acentos y demás.
 {
@@ -271,6 +326,7 @@ ParchisGUI::ParchisGUI(Parchis &model)
 
     rotate_board = false;
     rotate_angle0 = 0.0;
+
 
     collectSprites();
 
@@ -570,6 +626,33 @@ void ParchisGUI::processEvents(){
                     current_sprite->setClicked(false, *this);
                 }
             }
+            
+        }
+
+        if(event.type == Event::Resized){
+            // resizing = true; // Variable deprecada.
+            Vector2u preaspect_size = this->getSize();
+            Vector2u realsize(preaspect_size.y * ASPECT_RATIO, preaspect_size.y);
+            float ratio = (float)preaspect_size.x / (float)preaspect_size.y;
+            float apply_ratio = ratio / 2.0f;
+            float viewport_start = 0.5f - apply_ratio / 2.0f;
+            float inv_ratio = 1.0f / apply_ratio;
+            float inv_viewport_start = 0.5f - inv_ratio / 2.f;
+            if(ratio < 2.0f){
+
+                general_view.setViewport(FloatRect(0.f, viewport_start + apply_ratio * 0.f, 1.f, apply_ratio * 1.0f));
+                board_view.setViewport(FloatRect(0.f, viewport_start + apply_ratio * 0.f, 0.5f, apply_ratio * 1.f));
+                dice_view.setViewport(FloatRect(800.f / 1600.f, viewport_start + apply_ratio * 50.f / 800.f, 720.f / 1600.f, apply_ratio * 320.f / 800.f));
+                bt_panel_view.setViewport(FloatRect(850.f / 1600.f, viewport_start + apply_ratio * 400.f / 800.f, 600.f / 1600.f, apply_ratio * 600.f / 800.f));
+            }
+            else{
+                general_view.setViewport(FloatRect(inv_viewport_start + inv_ratio * 0.f, 0.f, inv_ratio * 1.f, 1.f));
+                board_view.setViewport(FloatRect(inv_viewport_start + inv_ratio * 0.f, 0.f, inv_ratio * 0.5f, 1.f));
+                dice_view.setViewport(FloatRect(inv_viewport_start + inv_ratio * 800.f / 1600.f, 50.f / 800.f, inv_ratio * 720.f / 1600.f, 320.f / 800.f));
+                bt_panel_view.setViewport(FloatRect(inv_viewport_start + inv_ratio * 850.f / 1600.f, 400.f / 800.f, inv_ratio * 600.f / 1600.f, 600.f / 800.f));
+            }
+
+            //this->setSize(realsize);
         }
     }
 }
@@ -625,6 +708,10 @@ void ParchisGUI::processSettings(){
         board_view.rotate(angle - rotate_angle0);
         rotate_angle0 = angle;
     }
+    // Keep aspect ratio.
+    //Vector2u preaspect_size = this->getSize();
+    //Vector2u realsize(preaspect_size.y * ASPECT_RATIO, preaspect_size.y);
+    //this->setSize(realsize);
 }
 
 void ParchisGUI::paint(){

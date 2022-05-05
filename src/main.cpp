@@ -93,7 +93,7 @@ int main(int argc, char const *argv[]){
         //J2 con GUI
         GUIPlayer p2 = GUIPlayer("J2");
 
-        Parchis parchis(DEBUG7, p1, p2);
+        Parchis parchis(GROUPED, p1, p2);
         ParchisGUI parchis_gui(parchis);
 
         // Set the GUI for GUIPlayers.
