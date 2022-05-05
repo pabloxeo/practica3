@@ -33,6 +33,7 @@ Parchis::Parchis()
     // last_moves vacío por defecto.
 
     this->illegal_move_player = -1;
+    this->disconnected_player = -1;
     this->goal_move = false;
     this->eating_move = false;
     this->goal_bounce = false;
@@ -57,6 +58,7 @@ Parchis::Parchis(const BoardConfig & b){
     // last_moves vacío por defecto.
 
     this->illegal_move_player = -1;
+    this->disconnected_player = -1;
     this->goal_move = false;
     this->eating_move = false;
     this->goal_bounce = false;
@@ -79,6 +81,7 @@ Parchis::Parchis(const Board & b, const Dice & d){
     // last_moves vacío por defecto.
 
     this->illegal_move_player = -1;
+    this->disconnected_player = -1;
     this->goal_move = false;
     this->eating_move = false;
     this->goal_bounce = false;
@@ -102,6 +105,7 @@ Parchis::Parchis(const BoardConfig &b, const Dice &d)
     //  last_moves vacío por defecto.
 
     this->illegal_move_player = -1;
+    this->disconnected_player = -1;
     this->goal_move = false;
     this->eating_move = false;
     this->goal_bounce = false;
@@ -122,6 +126,7 @@ Parchis::Parchis(const Board & b, const Dice & d, Player & p1, Player & p2){
     // last_moves vacío por defecto.
 
     this->illegal_move_player = -1;
+    this->disconnected_player = -1;
     this->goal_move = false;
     this->eating_move = false;
     this->goal_bounce = false;
@@ -143,6 +148,7 @@ Parchis::Parchis(const BoardConfig &b, const Dice &d, Player &p1, Player &p2)
     // last_moves vacío por defecto.
 
     this->illegal_move_player = -1;
+    this->disconnected_player = -1;
     this->goal_move = false;
     this->eating_move = false;
     this->goal_bounce = false;
@@ -163,6 +169,7 @@ Parchis::Parchis(const BoardConfig &b, Player &p1, Player &p2){
     // last_moves vacío por defecto.
 
     this->illegal_move_player = -1;
+    this->disconnected_player = -1;
     this->goal_move = false;
     this->eating_move = false;
     this->goal_bounce = false;
@@ -679,6 +686,9 @@ int Parchis::getWinner() const{
     if(illegal_move_player != -1){
         return (illegal_move_player == 0)?1:0;
     }
+    if(disconnected_player != -1){
+        return (disconnected_player == 0)?1:0;
+    }
     color col = getColorWinner();
     switch(col){
         case yellow:
@@ -901,4 +911,8 @@ int Parchis::distanceToGoal(color player, const Box & box) const{
 
 int Parchis::distanceToGoal(color player, int id_piece) const{
     return distanceToGoal(player, this->board.getPiece(player, id_piece));
+}
+
+void Parchis::endGame(){
+    this->disconnected_player = current_player;
 }

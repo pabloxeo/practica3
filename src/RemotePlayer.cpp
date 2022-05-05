@@ -46,7 +46,13 @@ bool RemotePlayer::move(){
                     return true;
                 }
                 
-
+            case TEST_ALIVE:
+                cout << "102 TEST_ALIVE received. Still alive." << endl;
+                break;
+            case ERROR_DISCONNECTED:
+                cout << "400 ERROR_DISCONNECTED received. Disconnected." << endl;
+                actual->endGame();
+                return false;
             default:
                 cout << "Error: Unexpected " << msgkind << " received." << endl;
                 return false;

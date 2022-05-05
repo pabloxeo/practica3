@@ -9,9 +9,11 @@ using namespace sf;
 using namespace std;
 
 enum MessageKind{
+    NOP = 0,
     //1xx - Connection messages.
     HELLO = 100,
     GAME_PARAMETERS = 101,
+    TEST_ALIVE = 102,
 
     //2xx - OK messages.
     OK = 200,
@@ -21,16 +23,20 @@ enum MessageKind{
     MOVED = 301,
 
     //4xx - Error messages.
+    ERROR_DISCONNECTED = 400,
 
 };
 
 class ParchisRemote{
     protected:
-        TcpSocket socket;
+        TcpSocket *socket;
 
-        inline ParchisRemote(){}
+        ParchisRemote();
+        inline ~ParchisRemote(){socket->disconnect();  delete socket;}
 
     public:
+        bool isConnected();
+
         void sendGameParameters(int player, string name, BoardConfig init_board);
 
         void sendTestMessage(string message);
@@ -50,7 +56,7 @@ class ParchisRemote{
 
 class ParchisClient: public ParchisRemote{
     public:
-        inline ParchisClient(){}
+        ParchisClient();
         /**
          * @brief Inicia una conexión con el servidor remoto indicado.
          * 
@@ -64,14 +70,14 @@ class ParchisClient: public ParchisRemote{
 
 class ParchisServer: public ParchisRemote{
     private:
-        TcpListener listener;
+        //TcpListener listener;
 
     public:
-        inline ParchisServer(){}
+        ParchisServer();
 
-        void startListening(const int & port);
+        //void startListening(const int & port);
 
-        void acceptConnection();
+        void acceptConnection(TcpListener & listener);
 
 };
 

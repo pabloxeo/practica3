@@ -34,6 +34,7 @@ class Parchis{
         vector <Player*> viewers;
 
         int illegal_move_player;
+        int disconnected_player;
 
         bool eating_move;
         bool goal_move;
@@ -344,6 +345,8 @@ class Parchis{
          * @return false 
          */
         bool gameOver() const;
+
+        void endGame();
         
         /**
          * @brief Si la partida ha terminado, devuelve el índice del jugador ganador (0 o 1).
@@ -402,6 +405,8 @@ class Parchis{
         bool isSafePiece(const color & player, const int & piece) const;
 
         vector<color> getPlayerColors(int player) const;
+
+
 };
 
 

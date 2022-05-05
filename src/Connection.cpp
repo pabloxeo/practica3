@@ -5,13 +5,23 @@
 using namespace std;
 using namespace sf;
 
+ParchisRemote::ParchisRemote(){
+    this->socket = new TcpSocket();
+}
+
+ParchisClient::ParchisClient(): ParchisRemote(){
+}
+
+ParchisServer::ParchisServer(): ParchisRemote(){
+}
+
 void ParchisRemote::sendGameParameters(int player, string name, BoardConfig init_board){
     Packet packet;
     packet << GAME_PARAMETERS;
     packet << player;
     packet << name;
     packet << init_board;
-    Socket::Status status = socket.send(packet);
+    Socket::Status status = socket->send(packet);
     if(status != Socket::Done)
     {
         throw runtime_error("Error sending message");
@@ -27,7 +37,7 @@ void ParchisRemote::sendTestMessage(string message)
     Packet packet;
     packet << TEST_MESSAGE;
     packet << message;
-    Socket::Status status = socket.send(packet);
+    Socket::Status status = socket->send(packet);
     if(status != Socket::Done)
     {
         throw runtime_error("Error sending message");
@@ -43,10 +53,11 @@ void ParchisRemote::sendParchisMove(int turn, color c_piece, int id_piece, int d
     packet << c_piece;
     packet << id_piece;
     packet << dice;
-    Socket::Status status = socket.send(packet);
+    Socket::Status status = socket->send(packet);
     if(status != Socket::Done)
     {
-         throw runtime_error("Error sending message");
+        cout << "Error sending message" << endl;
+        socket->disconnect();
     }
     cout << "301 MOVED sent" << endl;
     cout << "Move: " << turn << " " << str(c_piece) << " " << id_piece << " " << dice << endl;
@@ -54,12 +65,14 @@ void ParchisRemote::sendParchisMove(int turn, color c_piece, int id_piece, int d
 
 MessageKind ParchisRemote::receive(Packet & packet)
 {
+    if(!isConnected()) return ERROR_DISCONNECTED;
     packet.clear();
-    Socket::Status status = socket.receive(packet);
+    Socket::Status status = socket->receive(packet);
 
     if(status != Socket::Done)
     {
-         throw runtime_error("Error receiving message");
+        cout << "Error receiving message" << endl;
+        socket->disconnect();
     }
     
     int type;
@@ -68,6 +81,8 @@ MessageKind ParchisRemote::receive(Packet & packet)
     Packet p2(packet);
     switch(type)
     {
+        case NOP:
+        break;
         case GAME_PARAMETERS:
         {
             cout << "101 GAME_PARAMETERS received" << endl;
@@ -81,6 +96,11 @@ MessageKind ParchisRemote::receive(Packet & packet)
         case MOVED:
         {
             cout << "301 MOVED received" << endl;
+            break;
+        }
+        case ERROR_DISCONNECTED:
+        {
+            cout << "400 ERROR_DISCONNECTED received" << endl;
             break;
         }
         default:
@@ -150,11 +170,18 @@ void ParchisRemote::packet2gameParameters(Packet & packet, int & player, string 
     cout << "player: " << player << " name: " << name << " init_board: " << init_board << endl;
 }
 
+bool ParchisRemote::isConnected()
+{
+    Packet packet;
+    packet << TEST_ALIVE;
+    Socket::Status status = socket->send(packet);
 
+    return (status == Socket::Done);
+}
 
 
 void ParchisClient::startClientConnection(const string & ip_addr, const int & port){
-    Socket::Status status = socket.connect(ip_addr, port);
+    Socket::Status status = socket->connect(ip_addr, port);
 
     if(status != Socket::Done){
         throw runtime_error("Could not connect to server");
@@ -163,7 +190,7 @@ void ParchisClient::startClientConnection(const string & ip_addr, const int & po
     cout << "Connected to server " << ip_addr << ":" << port << endl;
 
 }
-
+/*
 void ParchisServer::startListening(const int & port){
     if(listener.listen(port) != Socket::Done){
         throw runtime_error("Could not listen to port");
@@ -171,12 +198,14 @@ void ParchisServer::startListening(const int & port){
 
     cout << "Listening on port " << port << endl;
 }
-
-void ParchisServer::acceptConnection(){
-    if(listener.accept(socket) != Socket::Done){
+*/
+void ParchisServer::acceptConnection(TcpListener & listener){
+    //TcpSocket *socket = new TcpSocket();
+    cout << socket << endl;
+    if(listener.accept(*socket) != Socket::Done){
         throw runtime_error("Could not accept connection");
     }
 
-    cout << "Accepted connection from " << socket.getRemoteAddress() << ":" << socket.getRemotePort() << endl;
+    cout << "Accepted connection from " << socket->getRemoteAddress() << ":" << socket->getRemotePort() << endl;
 }
 
