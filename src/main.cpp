@@ -23,6 +23,7 @@ int main(int argc, char const *argv[]){
     string ip = "localhost";
     string name_j1 = "J1", name_j2 = "J2";
     bool gui = true;
+    bool server = false;
     bool ninja_server = false;
 
     /* Parse the command line arguments in the following way:
@@ -32,6 +33,7 @@ int main(int argc, char const *argv[]){
      * --port <port>  [Optional]
      * --board <config=GROUPED>
      * --no-gui  [Optional]
+     * --server  [Optional]
      * --ninja-server [Optional]
      *
      * Default parameters:
@@ -75,6 +77,18 @@ int main(int argc, char const *argv[]){
         else if(strcmp(argv[i], "--no-gui") == 0){
             gui = false;
         }
+        else if(strcmp(argv[i], "--server") == 0){
+            server = true;
+            i++;
+            type_j1 = argv[i];
+            i++;
+            id_j1 = atoi(argv[i]);
+            i++;
+            name_j1 = argv[i];
+        }
+        else if(strcmp(argv[i], "--ninja-server") == 0){
+            ninja_server = true;
+        }
         else{
             cout << "Error parsing command line arguments" << endl;
             cout << "Usage: " << argv[0] << " --p1 <type=GUI|AI|Client|Server|Ninja> (id=0) (name=J1) --p2 <type=GUI|AI|Client|Server|Ninja> (id=0) (name=J2) --ip <ip>  [Optional] --port <port>  [Optional] --board <config=GROUPED> --no-gui  [Optional]" << endl;
@@ -82,32 +96,170 @@ int main(int argc, char const *argv[]){
         }
     }
 
-    bool is_remote = (type_j1 == "Client" || type_j1 == "Server" || type_j1 == "Ninja") or (type_j2 == "Client" || type_j2 == "Server" || type_j2 == "Ninja");
-    
-    shared_ptr<Player> p1, p2;
-    if(type_j1 == "GUI"){
-        p1 = make_shared<GUIPlayer>(name_j1);
-    }
-    else if(type_j1 == "AI"){
-        p1 = make_shared<AIPlayer>(name_j1, id_j1);
-    }
-    else if(type_j1 == "Client"){
-        //p1 = make_shared<RemotePlayer>(id_j1, name_j1, ip, port);
-    }
+    bool is_remote = (type_j1 == "Remote" || type_j1 == "Server" || type_j1 == "Ninja") or (type_j2 == "Remote" || type_j2 == "Server" || type_j2 == "Ninja");
 
-    if(type_j2 == "GUI"){
-        p2 = make_shared<GUIPlayer>(name_j2);
+    shared_ptr<Player> p1, p2;
+
+    if(ninja_server){
+        TcpListener listener;
+        if(listener.listen(port) != Socket::Done){
+            throw runtime_error("Could not listen to port");
+        }
+
+        cout << "Listening on port " << port << endl;
+        
+        //Crear lista de ParchisServer
+        //Gracias Mario :)
+        list<shared_ptr<ParchisServer>> servers;
+        list<shared_ptr<Thread>> threads;
+
+        //Comprobar conexiones y cerrar hebras.
+        auto reviseThreads = [&threads, &servers](){
+            while(true){
+                cout << "Checking threads..." << endl;
+                auto it_threads = threads.begin();
+                auto it_servers = servers.begin();
+
+                for(; it_threads != threads.end() && it_servers != servers.end(); ++it_threads, ++it_servers){
+                    if(!(*it_servers)->isConnected()){
+                        (*it_threads)->wait();
+                        it_threads = threads.erase(it_threads);
+                        it_servers = servers.erase(it_servers);
+                        //delete (*it_threads);
+                        //delete (*it_servers);       
+                    }
+                }
+                sleep(seconds(60));
+            }
+        };
+
+        Thread thread_revise(reviseThreads);
+        thread_revise.launch();
+
+        
+        while(true){
+            auto server = make_shared<ParchisServer>();
+
+            auto initGame = [server] (){
+                Packet packet;
+                MessageKind message_kind;
+                do{
+                    message_kind = server->receive(packet);
+                    sleep(milliseconds(10));
+                }while(message_kind != GAME_PARAMETERS);
+
+                int player;
+                string name;
+                BoardConfig init_board;
+                server->packet2gameParameters(packet, player, name, init_board);
+
+                if (player == 0){
+                    //J1 remoto.
+                    shared_ptr<RemotePlayer> p1 = make_shared<RemotePlayer>("J1", server);
+                    //J2 con GUI.
+                    shared_ptr<AIPlayer> p2 = make_shared<AIPlayer>("J2");
+                    //Inciar juego.
+                    Parchis parchis(init_board, p1, p2);
+            
+                    parchis.gameLoop();
+                }
+                else{
+                    //J1 con GUI.
+                    shared_ptr<RemotePlayer> p2 = make_shared<RemotePlayer>("J1", server);
+                    //J2 con GUI.
+                    shared_ptr<AIPlayer> p1 = make_shared<AIPlayer>("J2");
+
+                    //Inciar juego 
+                    Parchis parchis(init_board, p1, p2);
+                    parchis.gameLoop();
+                }
+            };
+
+            server->acceptConnection(listener);
+            servers.push_back(server);
+            //Thread *thread = new Thread(initGame);
+            //Thread thread(initGame);
+            threads.push_back(make_shared<Thread>(initGame));
+            threads.back()->launch();
+        }
+        
     }
-    else if(type_j2 == "AI"){
-        p2 = make_shared<AIPlayer>(name_j2, id_j2);
+    else if(server){
+        TcpListener listener;
+        if(listener.listen(port) != Socket::Done){
+            throw runtime_error("Could not listen to port");
+        }
+        shared_ptr<ParchisServer> server = make_shared<ParchisServer>();
+        server->acceptConnection(listener);
+        Packet packet;
+        MessageKind message_kind;
+        do{
+            message_kind = server->receive(packet);
+            sleep(milliseconds(10));
+        }while(message_kind != GAME_PARAMETERS);
+
+        int player;
+        string name;
+        BoardConfig init_board;
+        server->packet2gameParameters(packet, player, name, init_board);
+
+        if (player == 0){
+            //J1 remoto.
+            p1 = make_shared<RemotePlayer>(name, server);
+            if(type_j1 == "GUI"){
+                p2 = make_shared<GUIPlayer>(name_j1);
+            }
+            else if(type_j1 == "AI"){
+                p2 = make_shared<AIPlayer>(name_j1, id_j1);
+            }        
+        }
+        else{
+            p2 = make_shared<RemotePlayer>(name, server);
+            if(type_j1 == "GUI"){
+                p1 = make_shared<GUIPlayer>(name_j1);
+            }
+            else if(type_j1 == "AI"){
+                p1 = make_shared<AIPlayer>(name_j1, id_j1);
+            }
+        }
     }
-    else if(type_j2 == "Client"){
-        //p2 = make_shared<RemotePlayer>(id_j2, name_j2, ip, port);
+    else{
+        if(type_j1 == "GUI"){
+            p1 = make_shared<GUIPlayer>(name_j1);
+        }
+        else if(type_j1 == "AI"){
+            p1 = make_shared<AIPlayer>(name_j1, id_j1);
+        }
+        else if(type_j1 == "Remote"){
+            shared_ptr<ParchisClient> client= make_shared<ParchisClient>();
+            client->startClientConnection(ip, port);
+            Packet packet;
+            MessageKind message_kind;
+            client->sendGameParameters(1, name_j1, GROUPED);
+            p1 = make_shared<RemotePlayer>(name_j1, client);
+            //p1 = make_shared<RemotePlayer>(id_j1, name_j1, ip, port);
+        }
+
+
+        if(type_j2 == "GUI"){
+            p2 = make_shared<GUIPlayer>(name_j2);
+        }
+        else if(type_j2 == "AI"){
+            p2 = make_shared<AIPlayer>(name_j2, id_j2);
+        }
+        else if(type_j2 == "Remote"){
+            shared_ptr<ParchisClient> client= make_shared<ParchisClient>();
+            client->startClientConnection(ip, port);
+            Packet packet;
+            MessageKind message_kind;
+            client->sendGameParameters(0, name_j2, GROUPED);
+            p2 = make_shared<RemotePlayer>(name_j2, client);
+            //p2 = make_shared<RemotePlayer>(id_j2, name_j2, ip, port);
+        }
     }
 
     Parchis parchis(ALMOST_GOAL, p1, p2);
     
-
     if(gui){
         ParchisGUI parchis_gui(parchis);
         shared_ptr<GUIPlayer> gui_p1 = dynamic_pointer_cast<GUIPlayer>(p1);
@@ -128,6 +280,8 @@ int main(int argc, char const *argv[]){
     else{
         parchis.gameLoop();
     }
+
+
 
     return 0;
 

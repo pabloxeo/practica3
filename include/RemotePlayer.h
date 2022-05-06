@@ -4,17 +4,19 @@
 #include "Attributes.h"
 #include "Player.h"
 #include "Connection.h"
+#include <memory>
 
 class RemotePlayer : public Player {
     private:
-        ParchisRemote *controller;
+        //ParchisRemote *controller;    
+        shared_ptr<ParchisRemote> controller;
 
 
     public:
         void perceive(Parchis &p);
 
-        inline RemotePlayer(const string &name, ParchisRemote &controller) :Player(name) {
-            this->controller = &controller;
+        inline RemotePlayer(const string &name, shared_ptr<ParchisRemote> controller) :Player(name) {
+            this->controller = controller;
         }
 
         virtual bool move();

@@ -29,10 +29,10 @@ enum MessageKind{
 
 class ParchisRemote{
     protected:
-        TcpSocket *socket;
+        TcpSocket socket;
 
         ParchisRemote();
-        inline ~ParchisRemote(){socket->disconnect();  delete socket;}
+        inline ~ParchisRemote(){socket.disconnect();}
 
     public:
         bool isConnected();
