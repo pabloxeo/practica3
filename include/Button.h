@@ -15,6 +15,7 @@
 #include "ClickableSprite.h"
 #include "IncludesSFML.h"
 #include "Attributes.h"
+#include <memory>
 
 using namespace std;
 

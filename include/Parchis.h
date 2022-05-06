@@ -9,6 +9,7 @@
 # include "AIPlayer.h"
 #include <iostream>
 #include <algorithm>
+#include <memory>
 
 // Macro que define el parámetro para indicar que no se mueve ficha.
 #define SKIP_TURN -9999
@@ -30,8 +31,8 @@ class Parchis{
         //0: yellow & red, 1: blue and green.
         int current_player;
         color current_color;
-        vector <Player*> players;
-        vector <Player*> viewers;
+        vector <shared_ptr<Player>> players;
+        vector <shared_ptr<Player>> viewers;
 
         int illegal_move_player;
         int disconnected_player;
@@ -128,7 +129,7 @@ class Parchis{
          */
         Parchis(const BoardConfig &b, Player &p1, Player &p2);
 
-        inline void addViewer(Player &p){viewers.push_back(&p);}
+        inline void addViewer(Player &p){viewers.push_back(shared_ptr<Player>(std::move(&p)));}
 
         bool operator==(const Parchis & parchis) const;
 
@@ -325,7 +326,7 @@ class Parchis{
             return *players[current_player];
         }
 
-        inline vector<Player*> & getPlayers(){
+        inline vector<shared_ptr<Player>> & getPlayers(){
             return players;
         }
 

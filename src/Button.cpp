@@ -100,10 +100,12 @@ void AutoHeuristicButton::onClickAction(Window &container){
 
     if (enabled && !locked && clicked)
     {
-        GUIPlayer *current;
+        //GUIPlayer *current;
+        shared_ptr<GUIPlayer> current;
         this->setSelected(!this->isSelected(), container);
         for(int i = 0; i < gui->model->getPlayers().size(); i++){
-            current = dynamic_cast<GUIPlayer *>(gui->model->getPlayers()[i]);
+            //current = dynamic_cast<GUIPlayer &>(gui->model->getPlayers()[i]);
+            current = dynamic_pointer_cast<GUIPlayer>(gui->model->getPlayers()[i]);
             if(current != NULL){
                 current->setAutoThinking(this->isSelected());
             }

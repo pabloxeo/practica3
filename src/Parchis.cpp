@@ -121,8 +121,9 @@ Parchis::Parchis(const Board & b, const Dice & d, Player & p1, Player & p2){
     this->last_dice = -1;
     this->current_player = 0;
     this->current_color = yellow;
-    players.push_back(&p1);
-    players.push_back(&p2);// = {&p1, &p2};
+    players.push_back(shared_ptr<Player>(std::move(&p1)));
+    players.push_back(shared_ptr<Player>(std::move(&p2))); 
+    // = {&p1, &p2};
     // last_moves vacío por defecto.
 
     this->illegal_move_player = -1;
@@ -143,8 +144,8 @@ Parchis::Parchis(const BoardConfig &b, const Dice &d, Player &p1, Player &p2)
     this->last_dice = -1;
     this->current_player = 0;
     this->current_color = yellow;
-    players.push_back(&p1);
-    players.push_back(&p2); // = {&p1, &p2};
+    players.push_back(shared_ptr<Player>(std::move(&p1)));
+    players.push_back(shared_ptr<Player>(std::move(&p2))); // = {&p1, &p2};
     // last_moves vacío por defecto.
 
     this->illegal_move_player = -1;
@@ -164,8 +165,8 @@ Parchis::Parchis(const BoardConfig &b, Player &p1, Player &p2){
     this->last_dice = -1;
     this->current_player = 0;
     this->current_color = yellow;
-    players.push_back(&p1);
-    players.push_back(&p2); // = {&p1, &p2};
+    players.push_back(shared_ptr<Player>(std::move(&p1)));
+    players.push_back(shared_ptr<Player>(std::move(&p1))); // = {&p1, &p2};
     // last_moves vacío por defecto.
 
     this->illegal_move_player = -1;
