@@ -33,7 +33,8 @@ GUIPlayer::GUIPlayer(const string & name, ParchisGUI & gui) : AIPlayer(name) {
 void GUIPlayer::perceive(Parchis &p){
     AIPlayer::perceive(p);
     
-
+    //cout << gui << endl;
+    //cout << actual << endl;
     if(gui->gui_turn >= actual->getTurn()){
         cout << "Old move received. Already up to date." << endl;
     }

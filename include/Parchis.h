@@ -118,7 +118,7 @@ class Parchis{
          * @param p1 
          * @param p2 
          */
-        Parchis(const BoardConfig &b, const Dice &d, Player &p1, Player &p2);
+        Parchis(const BoardConfig &b, const Dice &d, shared_ptr<Player> p1,  shared_ptr<Player> p2);
 
         /**
          * @brief Construct a new Parchis object
@@ -127,9 +127,9 @@ class Parchis{
          * @param p1
          * @param p2
          */
-        Parchis(const BoardConfig &b, Player &p1, Player &p2);
+        Parchis(const BoardConfig &b, shared_ptr<Player> p1,  shared_ptr<Player> p2);
 
-        inline void addViewer(Player &p){viewers.push_back(shared_ptr<Player>(std::move(&p)));}
+        inline void addViewer(shared_ptr<Player> p){viewers.push_back(shared_ptr<Player>(p));}
 
         bool operator==(const Parchis & parchis) const;
 

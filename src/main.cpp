@@ -84,7 +84,54 @@ int main(int argc, char const *argv[]){
 
     bool is_remote = (type_j1 == "Client" || type_j1 == "Server" || type_j1 == "Ninja") or (type_j2 == "Client" || type_j2 == "Server" || type_j2 == "Ninja");
     
+    shared_ptr<Player> p1, p2;
+    if(type_j1 == "GUI"){
+        p1 = make_shared<GUIPlayer>(name_j1);
+    }
+    else if(type_j1 == "AI"){
+        p1 = make_shared<AIPlayer>(name_j1, id_j1);
+    }
+    else if(type_j1 == "Client"){
+        //p1 = make_shared<RemotePlayer>(id_j1, name_j1, ip, port);
+    }
 
+    if(type_j2 == "GUI"){
+        p2 = make_shared<GUIPlayer>(name_j2);
+    }
+    else if(type_j2 == "AI"){
+        p2 = make_shared<AIPlayer>(name_j2, id_j2);
+    }
+    else if(type_j2 == "Client"){
+        //p2 = make_shared<RemotePlayer>(id_j2, name_j2, ip, port);
+    }
+
+    Parchis parchis(ALMOST_GOAL, p1, p2);
+    
+
+    if(gui){
+        ParchisGUI parchis_gui(parchis);
+        shared_ptr<GUIPlayer> gui_p1 = dynamic_pointer_cast<GUIPlayer>(p1);
+        if(gui_p1){
+            gui_p1->setGUI(parchis_gui);
+        }
+        shared_ptr<GUIPlayer> gui_p2 = dynamic_pointer_cast<GUIPlayer>(p2);
+        if(gui_p2){
+            gui_p2->setGUI(parchis_gui);
+        }
+        if(type_j1 != "GUI" && type_j2 != "GUI"){
+            shared_ptr<GUIPlayer> viewer = make_shared<GUIPlayer>("Viewer");  
+            viewer->setGUI(parchis_gui);
+            parchis.addViewer(viewer); 
+        }
+        parchis_gui.run();
+    }
+    else{
+        parchis.gameLoop();
+    }
+
+    return 0;
+
+    /*
     if(argc == 1){
         //J1 con GUI
         GUIPlayer p1 = GUIPlayer("J1");
@@ -312,5 +359,5 @@ int main(int argc, char const *argv[]){
     else{
         cout << "Usage: ./Parchis [--client|--server]" << endl;
         return 1;
-    }
+    }*/
 }
