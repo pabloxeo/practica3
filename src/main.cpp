@@ -7,6 +7,7 @@
 # include "Ninja.h"
 # include "IncludesSFML.h"
 # include "cout_colors.h"
+# include "GameSelector.h"
 
 #include <cstring>
 #include <memory>
@@ -100,6 +101,23 @@ int main(int argc, char const *argv[]){
 
     if(argc == 1){
         // Si no se pasan argumentos se crea la ventana para la selección de modo de juego, que se encargará de asignar los parámetros del juego a las variables.
+        cout << "No se pasaron argumentos, mostrando ventana de selección de juego..." << endl;
+        GameSelector game_selector;
+        game_selector.run();
+
+        GameParameters params = game_selector.getGameParameters();
+        type_j1 = params.type_j1;
+        id_j1 = params.id_j1;
+        name_j1 = params.name_j1;
+        type_j2 = params.type_j2;
+        id_j2 = params.id_j2;
+        name_j2 = params.name_j2;
+        ip = params.ip;
+        port = params.port;
+        config = params.config;
+        gui = params.gui;
+        server = params.server;
+        ninja_server = params.ninja_server;
     }
 
     bool is_remote = (type_j1 == "Remote" || type_j1 == "Server" || type_j1 == "Ninja") or (type_j2 == "Remote" || type_j2 == "Server" || type_j2 == "Ninja");
@@ -198,6 +216,7 @@ int main(int argc, char const *argv[]){
         if(listener.listen(port) != Socket::Done){
             throw runtime_error("Could not listen to port");
         }
+        cout << "Listening on port " << port << endl;
         shared_ptr<ParchisServer> server = make_shared<ParchisServer>();
         server->acceptConnection(listener);
         Packet packet;
