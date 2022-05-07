@@ -563,6 +563,9 @@ void ParchisGUI::processEvents(){
     {
         if (event.type == Event::Closed)
         {
+            cout << "Finalizando partida (por la fuerza)..." << endl;
+            model->endGame();
+            game_thread.wait();
             this->close();
         }
 

@@ -62,6 +62,7 @@ GUIPlayer::GUIPlayer(const string & name, int id, ParchisGUI & gui) : AIPlayer(n
 void GUIPlayer::perceive(Parchis &p){
     AIPlayer::perceive(p);
     
+    if(actual->gameOver()) return;
     //cout << gui << endl;
     //cout << actual << endl;
     if(gui->gui_turn >= actual->getTurn()){
@@ -129,9 +130,11 @@ void GUIPlayer::perceive(Parchis &p){
 bool GUIPlayer::move(){
     cout << "Esperando a que el jugador elija movimiento..." << endl;
 
-    while(!this->next_move_confirmed && !this->think_next_move && !this->auto_think){
+    while(!this->next_move_confirmed && !this->think_next_move && !this->auto_think && !actual->gameOver()){
         sleep(milliseconds(10)); // espera 10 milisegundos (para no saturar la CPU)
     }
+
+    if (actual->gameOver()) return false;
 
     gui->notPlayableLock(true);
 
@@ -196,6 +199,7 @@ void GUIPlayer::thinkNextMove(){
 }
 
 bool GUIPlayer::readyForNextTurn(){
+    if(actual->gameOver()) return true;
     if(!gui->animationsRunning()){
         gui->animationLock(false); 
         gui->last_dice = -1;

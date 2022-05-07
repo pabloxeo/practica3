@@ -58,7 +58,6 @@ bool RemotePlayer::move(){
                 return false;
         
         }
-        sleep(milliseconds(10));
     }
     return true;
 }
