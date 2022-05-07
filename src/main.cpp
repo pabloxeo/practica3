@@ -6,9 +6,11 @@
 # include "AIPlayer.h"
 # include "Ninja.h"
 # include "IncludesSFML.h"
+# include "cout_colors.h"
 
 #include <cstring>
 #include <memory>
+#include <string>
 
 using namespace sf;
 using namespace std;
@@ -25,6 +27,7 @@ int main(int argc, char const *argv[]){
     bool gui = true;
     bool server = false;
     bool ninja_server = false;
+    BoardConfig config = BoardConfig::GROUPED;
 
     /* Parse the command line arguments in the following way:
      * --p1 <type=GUI|AI|Client|Server|Ninja> (id=0) (name=J1)
@@ -66,7 +69,6 @@ int main(int argc, char const *argv[]){
         }
         else if(strcmp(argv[i], "--board") == 0){
             i++;
-            BoardConfig config = BoardConfig::GROUPED;
             if(strcmp(argv[i], "GROUPED") == 0){
                 config = BoardConfig::GROUPED;
             }
@@ -96,6 +98,10 @@ int main(int argc, char const *argv[]){
         }
     }
 
+    if(argc == 1){
+        // Si no se pasan argumentos se crea la ventana para la selección de modo de juego, que se encargará de asignar los parámetros del juego a las variables.
+    }
+
     bool is_remote = (type_j1 == "Remote" || type_j1 == "Server" || type_j1 == "Ninja") or (type_j2 == "Remote" || type_j2 == "Server" || type_j2 == "Ninja");
 
     shared_ptr<Player> p1, p2;
@@ -116,19 +122,22 @@ int main(int argc, char const *argv[]){
         //Comprobar conexiones y cerrar hebras.
         auto reviseThreads = [&threads, &servers](){
             while(true){
-                cout << "Checking threads..." << endl;
+                cout << COUT_BLUE_BOLD + "Checking threads..." + COUT_NOCOLOR << endl;
                 auto it_threads = threads.begin();
                 auto it_servers = servers.begin();
+                int nremoves = 0;
 
                 for(; it_threads != threads.end() && it_servers != servers.end(); ++it_threads, ++it_servers){
                     if(!(*it_servers)->isConnected()){
                         (*it_threads)->wait();
                         it_threads = threads.erase(it_threads);
                         it_servers = servers.erase(it_servers);
+                        nremoves++;
                         //delete (*it_threads);
                         //delete (*it_servers);       
                     }
                 }
+                cout << COUT_BLUE_BOLD + "Current connections: " << servers.size() << " (" << nremoves << " removed)" + COUT_NOCOLOR << endl;
                 sleep(seconds(60));
             }
         };
@@ -235,7 +244,7 @@ int main(int argc, char const *argv[]){
             client->startClientConnection(ip, port);
             Packet packet;
             MessageKind message_kind;
-            client->sendGameParameters(1, name_j1, GROUPED);
+            client->sendGameParameters(1, name_j1, config);
             p1 = make_shared<RemotePlayer>(name_j1, client);
             //p1 = make_shared<RemotePlayer>(id_j1, name_j1, ip, port);
         }
@@ -258,7 +267,7 @@ int main(int argc, char const *argv[]){
         }
     }
 
-    Parchis parchis(ALMOST_GOAL, p1, p2);
+    Parchis parchis(config, p1, p2);
     
     if(gui){
         ParchisGUI parchis_gui(parchis);
