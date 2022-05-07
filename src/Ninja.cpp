@@ -9,4 +9,5 @@ const int PROFUNDIDAD_ALFABETA = 8; // Umbral maximo de profundidad para la poda
 
 void Ninja::think(color & c_piece,  int & id_piece, int & dice) const{
     // jeje
+    AIPlayer::think(c_piece, id_piece, dice); // Nope ;)
 }

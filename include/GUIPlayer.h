@@ -29,7 +29,11 @@ class GUIPlayer: public AIPlayer{
 
         GUIPlayer(const string & name);
 
+        GUIPlayer(const string & name, int id);
+
         GUIPlayer(const string & name, ParchisGUI & gui);
+
+        GUIPlayer(const string & name, int id, ParchisGUI & gui);
 
         inline void setGUI(ParchisGUI & gui){
             this->gui = &gui;

@@ -13,19 +13,20 @@ ParchisClient::ParchisClient(): ParchisRemote(){
 ParchisServer::ParchisServer(): ParchisRemote(){
 }
 
-void ParchisRemote::sendGameParameters(int player, string name, BoardConfig init_board){
+void ParchisRemote::sendGameParameters(int player, string name, BoardConfig init_board, int ai_id){
     Packet packet;
     packet << GAME_PARAMETERS;
     packet << player;
     packet << name;
     packet << init_board;
+    packet << ai_id;
     Socket::Status status = socket.send(packet);
     if(status != Socket::Done)
     {
         throw runtime_error("Error sending message");
     }
     cout << "GAME_PARAMETERS sent" << endl;
-    cout << "player: " << player << " name: " << name << " init_board: " << init_board << endl;
+    cout << "player: " << player << " name: " << name << " init_board: " << init_board << " ai_id: " << ai_id << endl;
 }
 
 
@@ -159,13 +160,14 @@ void ParchisRemote::packet2move(Packet & packet, int & turn, color & c_piece, in
     cout << "Move: " << turn << " " << str(c_piece) << " " << id_piece << " " << dice << endl;
 }
 
-void ParchisRemote::packet2gameParameters(Packet & packet, int & player, string & name, BoardConfig & init_board){
+void ParchisRemote::packet2gameParameters(Packet & packet, int & player, string & name, BoardConfig & init_board, int & ai_id){
     packet >> player;
     packet >> name;
     int cint_board;
     packet >> cint_board;
     init_board = (BoardConfig) cint_board;
-    cout << "player: " << player << " name: " << name << " init_board: " << init_board << endl;
+    packet >> ai_id;
+    cout << "player: " << player << " name: " << name << " init_board: " << init_board << " ai_id: " << ai_id << endl;
 }
 
 bool ParchisRemote::isConnected()

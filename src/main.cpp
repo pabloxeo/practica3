@@ -178,23 +178,24 @@ int main(int argc, char const *argv[]){
                 int player;
                 string name;
                 BoardConfig init_board;
-                server->packet2gameParameters(packet, player, name, init_board);
+                int ai_id;
+                server->packet2gameParameters(packet, player, name, init_board, ai_id);
 
                 if (player == 0){
                     //J1 remoto.
                     shared_ptr<RemotePlayer> p1 = make_shared<RemotePlayer>("J1", server);
-                    //J2 con GUI.
-                    shared_ptr<AIPlayer> p2 = make_shared<AIPlayer>("J2");
+                    //J2 Ninja.
+                    shared_ptr<Ninja> p2 = make_shared<Ninja>("J2", ai_id);
                     //Inciar juego.
                     Parchis parchis(init_board, p1, p2);
             
                     parchis.gameLoop();
                 }
                 else{
-                    //J1 con GUI.
-                    shared_ptr<RemotePlayer> p2 = make_shared<RemotePlayer>("J1", server);
-                    //J2 con GUI.
-                    shared_ptr<AIPlayer> p1 = make_shared<AIPlayer>("J2");
+                    //J2 remoto.
+                    shared_ptr<RemotePlayer> p2 = make_shared<RemotePlayer>("J2", server);
+                    //J1 ninja.
+                    shared_ptr<Ninja> p1 = make_shared<Ninja>("J1", ai_id);
 
                     //Inciar juego 
                     Parchis parchis(init_board, p1, p2);
@@ -229,13 +230,14 @@ int main(int argc, char const *argv[]){
         int player;
         string name;
         BoardConfig init_board;
-        server->packet2gameParameters(packet, player, name, init_board);
+        int ai_id; // Ignorado por el server, lo elige él mismo su id.
+        server->packet2gameParameters(packet, player, name, init_board, ai_id);
 
         if (player == 0){
             //J1 remoto.
             p1 = make_shared<RemotePlayer>(name, server);
             if(type_j1 == "GUI"){
-                p2 = make_shared<GUIPlayer>(name_j1);
+                p2 = make_shared<GUIPlayer>(name_j1, id_j1);
             }
             else if(type_j1 == "AI"){
                 p2 = make_shared<AIPlayer>(name_j1, id_j1);
@@ -244,7 +246,7 @@ int main(int argc, char const *argv[]){
         else{
             p2 = make_shared<RemotePlayer>(name, server);
             if(type_j1 == "GUI"){
-                p1 = make_shared<GUIPlayer>(name_j1);
+                p1 = make_shared<GUIPlayer>(name_j1, id_j1);
             }
             else if(type_j1 == "AI"){
                 p1 = make_shared<AIPlayer>(name_j1, id_j1);
@@ -253,7 +255,7 @@ int main(int argc, char const *argv[]){
     }
     else{
         if(type_j1 == "GUI"){
-            p1 = make_shared<GUIPlayer>(name_j1);
+            p1 = make_shared<GUIPlayer>(name_j1, id_j1);
         }
         else if(type_j1 == "AI"){
             p1 = make_shared<AIPlayer>(name_j1, id_j1);
@@ -267,10 +269,19 @@ int main(int argc, char const *argv[]){
             p1 = make_shared<RemotePlayer>(name_j1, client);
             //p1 = make_shared<RemotePlayer>(id_j1, name_j1, ip, port);
         }
+        else if(type_j1 == "Ninja"){
+            shared_ptr<ParchisClient> client = make_shared<ParchisClient>();
+            // Se conecta al servidor de ninjas que establezcamos
+            client->startClientConnection("localhost", 8888);
+            Packet packet;
+            MessageKind message_kind;
+            client->sendGameParameters(1, name_j1, config, id_j1);
+            p1 = make_shared<RemotePlayer>(name_j1, client);
+        }
 
 
         if(type_j2 == "GUI"){
-            p2 = make_shared<GUIPlayer>(name_j2);
+            p2 = make_shared<GUIPlayer>(name_j2, id_j2);
         }
         else if(type_j2 == "AI"){
             p2 = make_shared<AIPlayer>(name_j2, id_j2);
@@ -283,6 +294,16 @@ int main(int argc, char const *argv[]){
             client->sendGameParameters(0, name_j2, GROUPED);
             p2 = make_shared<RemotePlayer>(name_j2, client);
             //p2 = make_shared<RemotePlayer>(id_j2, name_j2, ip, port);
+        }
+        else if (type_j2 == "Ninja")
+        {
+            shared_ptr<ParchisClient> client = make_shared<ParchisClient>();
+            // Se conecta al servidor de ninjas que establezcamos
+            client->startClientConnection("localhost", 8888);
+            Packet packet;
+            MessageKind message_kind;
+            client->sendGameParameters(0, name_j2, config, id_j2);
+            p2 = make_shared<RemotePlayer>(name_j2, client);
         }
     }
 

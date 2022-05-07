@@ -30,6 +30,35 @@ GUIPlayer::GUIPlayer(const string & name, ParchisGUI & gui) : AIPlayer(name) {
 
 }
 
+GUIPlayer::GUIPlayer(const string & name, int id) : AIPlayer(name, id) {
+    this->gui = NULL;
+
+    this->auto_think = false;
+
+    this->next_move_color = none;
+    this->next_move_id = -1;
+    this->next_move_dice = -1;
+
+    this->next_move_confirmed = false;
+
+    this->think_next_move = false;
+}
+
+GUIPlayer::GUIPlayer(const string & name, int id, ParchisGUI & gui) : AIPlayer(name, id) {
+    this->gui = &gui;
+
+    this->auto_think = false;
+
+    this->next_move_color = none;
+    this->next_move_id = -1;
+    this->next_move_dice = -1;
+
+    this->next_move_confirmed = false;
+
+    this->think_next_move = false;
+}
+
+
 void GUIPlayer::perceive(Parchis &p){
     AIPlayer::perceive(p);
     

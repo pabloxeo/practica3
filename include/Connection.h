@@ -37,7 +37,7 @@ class ParchisRemote{
     public:
         bool isConnected();
 
-        void sendGameParameters(int player, string name, BoardConfig init_board);
+        void sendGameParameters(int player, string name, BoardConfig init_board, int ai_id = 0);
 
         void sendTestMessage(string message);
 
@@ -51,7 +51,7 @@ class ParchisRemote{
 
         static void packet2move(Packet & packet, int & turn, color & c_piece, int & id_piece, int & dice);
 
-        static void packet2gameParameters(Packet & packet, int & player, string & name, BoardConfig & init_board);
+        static void packet2gameParameters(Packet & packet, int & player, string & name, BoardConfig & init_board, int & ai_id);
 };
 
 class ParchisClient: public ParchisRemote{
