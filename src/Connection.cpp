@@ -1,6 +1,7 @@
 # include "Connection.h"
 # include <iostream>
 # include <string>
+# include "cout_colors.h"
 
 using namespace std;
 using namespace sf;
@@ -27,6 +28,17 @@ void ParchisRemote::sendGameParameters(int player, string name, BoardConfig init
     }
     cout << "GAME_PARAMETERS sent" << endl;
     cout << "player: " << player << " name: " << name << " init_board: " << init_board << " ai_id: " << ai_id << endl;
+}
+
+void ParchisRemote::sendTestAlive(){
+    Packet packet;
+    packet << TEST_ALIVE;
+    Socket::Status status = socket.send(packet);
+    if(status != Socket::Done)
+    {
+        cout << COUT_RED_BOLD << "Error sending TEST_ALIVE. Maybe not alive :(" << COUT_NOCOLOR << endl;
+    }
+    cout << "TEST_ALIVE sent" << endl;
 }
 
 
@@ -85,6 +97,11 @@ MessageKind ParchisRemote::receive(Packet & packet)
         case GAME_PARAMETERS:
         {
             cout << "101 GAME_PARAMETERS received" << endl;
+            break;
+        }
+        case TEST_ALIVE:
+        {
+            cout << "102 TEST_ALIVE received" << endl;
             break;
         }
         case TEST_MESSAGE:
@@ -172,11 +189,14 @@ void ParchisRemote::packet2gameParameters(Packet & packet, int & player, string 
 
 bool ParchisRemote::isConnected()
 {
+    /*
     Packet packet;
     packet << TEST_ALIVE;
     Socket::Status status = socket.send(packet);
 
     return (status == Socket::Done);
+    */
+   return socket.getRemoteAddress() != IpAddress::None;
 }
 
 

@@ -39,9 +39,12 @@ class ParchisRemote{
 
         void sendGameParameters(int player, string name, BoardConfig init_board, int ai_id = 0);
 
+        void sendTestAlive();
+        
         void sendTestMessage(string message);
 
         void sendParchisMove(int turn, color c_piece, int id_piece, int dice);
+
 
         MessageKind receive(Packet & packet);
 

@@ -563,10 +563,10 @@ void ParchisGUI::processEvents(){
     {
         if (event.type == Event::Closed)
         {
+            this->close();
             cout << "Finalizando partida (por la fuerza)..." << endl;
             model->endGame();
             game_thread.wait();
-            this->close();
         }
 
         if(event.type == Event::MouseButtonPressed || event.type == Event::MouseButtonReleased){ // Eventos de ratón.

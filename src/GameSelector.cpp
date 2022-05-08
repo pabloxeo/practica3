@@ -704,7 +704,7 @@ void GameSelector::PrivateRoomButton::onSelectionAction(Window &container)
         gs->ai2_id_decbt.setEnabled(false, container);
         gs->ai2_id_text.setString("-");
 
-        gs->ip_box.setEnabled(false, container);
+        gs->ip_box.setEnabled(true, container);
         gs->ip_text.setString(L"Nombre para la sala");
         gs->port_box.setEnabled(false, container);
 
@@ -727,7 +727,7 @@ void GameSelector::PlayerIDButton::onSelectionAction(Window &container)
         GameSelector *gs = static_cast<GameSelector*>(&container);
         // Swap the type_j1 and type_j2 variables in game_parameters
         swap(gs->game_parameters.type_j1, gs->game_parameters.type_j2);
-        
+
         // Swap the enabled state ad values between the two id buttons.
         bool e1 = gs->ai1_id.isEnabled();
         gs->ai1_id.setEnabled(gs->ai2_id.isEnabled(), container);

@@ -145,7 +145,8 @@ int main(int argc, char const *argv[]){
                 auto it_servers = servers.begin();
                 int nremoves = 0;
 
-                for(; it_threads != threads.end() && it_servers != servers.end(); ++it_threads, ++it_servers){
+                for(; it_threads != threads.end() && it_servers != servers.end();){
+                    (*it_servers)->sendTestAlive();
                     if(!(*it_servers)->isConnected()){
                         (*it_threads)->wait();
                         it_threads = threads.erase(it_threads);
@@ -153,6 +154,10 @@ int main(int argc, char const *argv[]){
                         nremoves++;
                         //delete (*it_threads);
                         //delete (*it_servers);       
+                    }
+                    else{
+                        ++it_threads;
+                        ++it_servers;
                     }
                 }
                 cout << COUT_BLUE_BOLD + "Current connections: " << servers.size() << " (" << nremoves << " removed)" + COUT_NOCOLOR << endl;
