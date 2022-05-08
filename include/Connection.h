@@ -4,6 +4,9 @@
 #include <SFML/Network.hpp>
 #include "Attributes.h"
 #include "Board.h"
+#include <list>
+#include <memory>
+#include <set>
 
 using namespace sf;
 using namespace std;
@@ -40,7 +43,7 @@ class ParchisRemote{
         void sendGameParameters(int player, string name, BoardConfig init_board, int ai_id = 0);
 
         void sendTestAlive();
-        
+
         void sendTestMessage(string message);
 
         void sendParchisMove(int turn, color c_piece, int id_piece, int dice);
@@ -81,6 +84,96 @@ class ParchisServer: public ParchisRemote{
         //void startListening(const int & port);
 
         void acceptConnection(TcpListener & listener);
+
+};
+
+
+class NinjaServer{
+    private:
+        // Para partidas contra los ninjas.
+        struct ninja_game{
+            shared_ptr<ParchisServer> connection; // Gracias Mario :)
+            shared_ptr<Thread> thread;
+        };
+        list<ninja_game> ninja_games;
+
+        // Para partidas "aleatorias".
+        struct random_match_game{
+            shared_ptr<ParchisServer> connection_p1;
+            shared_ptr<ParchisServer> connection_p2;
+            shared_ptr<Thread> thread;
+        };
+        list<random_match_game> random_match_games;
+
+        // Para partidas privadas.
+        struct private_room_game{
+            string room_id;
+            shared_ptr<ParchisServer> connection_p1;
+            shared_ptr<ParchisServer> connection_p2;
+            shared_ptr<Thread> thread;
+
+            inline bool operator<(const private_room_game &b)
+            {
+                return this->room_id < b.room_id;
+            }
+        };
+
+        // Hebras sin asignar.
+        vector<shared_ptr<Thread>> idle_threads;
+
+        set<private_room_game> private_room_games;
+        
+        Thread reviser;
+
+        Thread master_thread;
+        ParchisClient master_connection;
+
+
+        Thread console_reader_thread            ;
+
+        TcpListener listener;
+        int listener_port;
+
+        bool is_running;
+
+        Mutex ninja_games_mutex;
+
+        void reviseNinjaThreadsStep();
+        void reviseNinjaThreadsLoop();
+
+        void reviseRandomMatchThreadsStep();
+        void reviseRandomMatchThreadsLoop();
+
+        void revisePrivateRoomThreadsStep();
+        void revisePrivateRoomThreadsLoop();
+
+        void reviserLoop();
+
+        void consoleReader();
+
+        void masterReceiver();
+
+        void acceptationLoop();
+        void acceptationStep(shared_ptr<ParchisServer> server);
+
+
+        void newNinjaGame(int player, string name, BoardConfig init_board, int ai_id);
+        void queueRandomMatchGame(string player_name);
+        void queuePrivateRoomGame(string room_id, string player_name);
+        
+
+    public:
+
+        NinjaServer(const int & port);
+
+        void startServer();
+
+        void stopServer();
+
+        void printStatus();
+
+
+        
 
 };
 

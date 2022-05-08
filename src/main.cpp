@@ -125,6 +125,11 @@ int main(int argc, char const *argv[]){
     shared_ptr<Player> p1, p2;
 
     if(ninja_server){
+        NinjaServer server(8888);
+        server.startServer();
+    }
+    /*
+    if(ninja_server){
         TcpListener listener;
         if(listener.listen(port) != Socket::Done){
             throw runtime_error("Could not listen to port");
@@ -216,7 +221,7 @@ int main(int argc, char const *argv[]){
             threads.back()->launch();
         }
         
-    }
+    }*/
     else if(server){
         TcpListener listener;
         if(listener.listen(port) != Socket::Done){
