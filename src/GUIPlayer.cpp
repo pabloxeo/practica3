@@ -62,7 +62,7 @@ GUIPlayer::GUIPlayer(const string & name, int id, ParchisGUI & gui) : AIPlayer(n
 void GUIPlayer::perceive(Parchis &p){
     AIPlayer::perceive(p);
     
-    if(actual->gameOver()) return;
+    //if(actual->gameOver()) return;
     //cout << gui << endl;
     //cout << actual << endl;
     if(gui->gui_turn >= actual->getTurn()){
