@@ -371,6 +371,9 @@ class Parchis{
          * @brief Función que devuelve la distancia a la meta del color "player" desde
          * la casilla "box". 
          * 
+         * La distancia se entiende como el número de casillas que hay que avanzar hasta
+         * la meta.
+         * 
          * @param player 
          * @param box 
          * @return int 
@@ -381,11 +384,43 @@ class Parchis{
          * @brief Función que devuelve la distancia a la meta de la ficha identificada
          * por id_piece del jugador identificado por player.
          * 
+         * La distancia se entiende como el número de casillas que hay que avanzar hasta
+         * la meta.
+         * 
          * @param player 
          * @param id_piece
          * @return int 
          */
         int distanceToGoal(color player, int id_piece) const;
+
+        /**
+         * @brief  Función que devuelve el número de casillas que hay que pasar para llegar desde
+         * box1 hasta box2 para un determinado color especificado por el parámetro player.
+         * 
+         * Devuelve -1 si la casilla box2 no es alcanzable desde box1 para una ficha del 
+         * color player.
+         * 
+         * @param player
+         * @param box1 
+         * @param box2 
+         * @return int 
+         */
+        int distanceBoxtoBox(color player, const Box & box1, const Box & box2) const;
+
+        /**
+         * @brief Función que devuelve el número de casillas que tiene que avanzar la ficha del 
+         * color player1 identificada con id_p1 para alcanzar la ficha del color player2 
+         * identificada con id_p2.
+         * 
+         * Devuelve -1 si la segunda pieza es inalcanzable por la primera.
+         * 
+         * @param player1 
+         * @param id_p1 
+         * @param player2 
+         * @param id_p2 
+         * @return int 
+         */
+        int distanceBoxtoBox(color player1, int id_p1, color player2, int id_p2) const;
 
         /**
          * @brief Función que genera el siguiente movimiento siguiendo un orden 
