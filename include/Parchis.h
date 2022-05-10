@@ -20,23 +20,29 @@ class Player;
 
 class Parchis{
     private:
-        //Tablero y dados
+        //Tablero
         Board board;
+        //Dados
         Dice dice;
 
         //Variables para almacenar los últimos movimientos
+        //Últimos movimientos identificados por el color.
         vector<tuple <color, int, Box, Box>> last_moves;
+        //Última acción identificada por el color.
         tuple <color, int, int> last_action;
+        //Último dado utilizado.
         int last_dice;
 
         //Turno actual
         int turn;
         
-        //Jugadores del juego y jugadores y colorores actuales
+        //Jugadores y colorores actuales
         //0: yellow & red, 1: blue and green.
         int current_player;
         color current_color;
+        //Vector de jugadores en juego.
         vector <shared_ptr<Player>> players;
+        //Vector de viewers (pueden observar la partida pero no intervenir en ella).
         vector <shared_ptr<Player>> viewers;
 
         //Variables para controlar acciones de los jugadores
@@ -60,29 +66,38 @@ class Parchis{
         static const int init_green_box = 55;
         static const int init_yellow_box = 4;
 
+        //Vector de casillas seguras.
         static const vector<int> safe_boxes;
 
+        //Vectores de casillas finales e iniciales identificadas por cada color.
         static const map<color, int> final_boxes;
         static const map<color, int> init_boxes;
 
         /**
-         * @brief
+         * @brief Método que gestiona el cambio de turno modificando las variables
+         * current_player y current_color.
          *
          */
         void nextTurn();
 
     public:
+        /**
+         * @brief Vector constante de los colores del juego.
+         * 
+         */
         static const vector<color> game_colors;
         
+        /****************** CONSTRUCTORES ******************/
+
         /**
-         * @brief Default construct a new Parchis object
+         * @brief Constructor por defecto de un nuevo objeto de Parchis.
          * @deprecated Los jugadores se deben pasar desde fuera.
          * 
          */
         Parchis();
 
         /**
-         * @brief Construct a new Parchis object
+         * @brief Constructor de un nuevo objeto de Parchis.
          * @deprecated Los jugadores se deben pasar desde fuera.
          *
          * @param b
@@ -90,7 +105,7 @@ class Parchis{
         Parchis(const BoardConfig &b);
 
         /**
-         * @brief Construct a new Parchis object
+         * @brief Constructor de un nuevo objeto de Parchis.
          * @deprecated Los jugadores se deben pasar desde fuera.
          * 
          * @param b 
@@ -99,7 +114,7 @@ class Parchis{
         Parchis(const Board & b, const Dice & d);
 
         /**
-         * @brief Construct a new Parchis object
+         * @brief Constructor de un nuevo objeto de Parchis.
          * @deprecated Los jugadores se deben pasar desde fuera.
          * 
          * @param b 
@@ -108,7 +123,7 @@ class Parchis{
         Parchis(const BoardConfig & b, const Dice & d);
 
         /**
-         * @brief Construct a new Parchis object
+         * @brief Constructor de un nuevo objeto de Parchis.
          * 
          * @param b 
          * @param d 
@@ -118,7 +133,7 @@ class Parchis{
         Parchis(const Board & b, const Dice & d, Player & p1, Player & p2);
 
         /**
-         * @brief Construct a new Parchis object
+         * @brief Constructor de un nuevo objeto de Parchis.
          * 
          * @param b 
          * @param d 
@@ -128,7 +143,7 @@ class Parchis{
         Parchis(const BoardConfig &b, const Dice &d, shared_ptr<Player> p1,  shared_ptr<Player> p2);
 
         /**
-         * @brief Construct a new Parchis object
+         * @brief Constructor de un nuevo objeto de Parchis.
          *
          * @param b
          * @param p1
@@ -136,12 +151,10 @@ class Parchis{
          */
         Parchis(const BoardConfig &b, shared_ptr<Player> p1,  shared_ptr<Player> p2);
 
-        inline void addViewer(shared_ptr<Player> p){viewers.push_back(shared_ptr<Player>(p));}
-
-        bool operator==(const Parchis & parchis) const;
+        /****************** GETTERS ******************/
 
         /**
-         * @brief Get the Dice object
+         * @brief Función que devuelve el atribute dice.
          * 
          * @param player 
          * @return const vector<int>& 
@@ -150,7 +163,7 @@ class Parchis{
 
 
          /**
-         * @brief Get the Board object
+         * @brief Función que devuelve el attributo board.
          * 
          * @param player 
          * @return const vector<int>& 
@@ -158,7 +171,140 @@ class Parchis{
         const Board & getBoard () const;
 
         /**
-         * @brief Get the Available Pieces object
+         * @brief Función que devuelve el atibuto last_action.
+         * 
+         * @return int 
+         */
+        inline const tuple <color, int, int> & getLastAction() const{
+            return last_action;
+        }
+
+        /**
+         * @brief Función que devuelve el atributo turn
+         * 
+         * @return const int 
+         */
+        inline const int getTurn() const{
+            return turn;
+        }
+
+        /**
+         * @brief Función que devuelve el atributo last_dice.
+         * 
+         * @return int 
+         */
+        int getLastDice();
+
+        /**
+         * @brief Función que devuelve el valor del atributo eating_move
+         * 
+         * @return true 
+         * @return false 
+         */
+        inline const bool isEatingMove() const {
+            return eating_move;
+        }
+
+        /**
+         * @brief Función que devuelve el valor del atributo goal_move
+         * 
+         * @return true 
+         * @return false 
+         */
+        inline const bool isGoalMove() const {
+            return goal_move;
+        }
+
+        /**
+         * @brief Función que devuelve el valor del atributo goal_bounce
+         * 
+         * @return true 
+         * @return false 
+         */
+        inline const bool goalBounce() const{
+            return goal_bounce;
+        }
+
+        /**
+         * @brief Función que devuelve el id del jugador actual.
+         * 
+         * @return int 
+         */
+        inline int getCurrentPlayerId() const{
+            return current_player;
+        }
+
+        /**
+         * @brief Función que devuelve una referencia al jugador actual.
+         * 
+         * @return Player& 
+         */
+        inline Player & getCurrentPlayer(){
+            return *players[current_player];
+        }
+
+        /**
+         * @brief Función que devuelve el vector de jugadores.
+         * 
+         * @return vector<shared_ptr<Player>>& 
+         */
+        inline vector<shared_ptr<Player>> & getPlayers(){
+            return players;
+        }
+
+        /**
+         * @brief Función que devuelve el atributo current_color.
+         * 
+         * @return color 
+         */
+        inline color getCurrentColor() const{
+            return this->current_color;
+        }
+
+        /**
+         * @brief Función que devuelve el atributo last_moves.
+         * 
+         * @return const vector<tuple <color, int, Box>>& 
+         */
+        const vector<tuple <color, int, Box, Box>> & getLastMoves() const;
+
+        /**
+         * @brief Función que devuelve los colores para un determinado jugador.
+         * 
+         * @param player 
+         * @return vector<color> 
+         */
+        vector<color> getPlayerColors(int player) const;
+
+
+        /****************************************************************/
+
+        /**
+         * @brief Sobrecarga del operador == de un parchis pasado como argumento y el actual.
+         * Se verifica que se de la igualdad entre el tablero (board) y el turno.
+         * 
+         * @param parchis 
+         * @return true 
+         * @return false 
+         */
+        bool operator==(const Parchis & parchis) const;
+
+        /**
+         * @brief Función que añade al jugador identificado por p como un nuevo viewer
+         * a la lista de viewers.
+         * 
+         * @param p 
+         */
+        inline void addViewer(shared_ptr<Player> p){viewers.push_back(shared_ptr<Player>(p));}
+        
+        /**
+         * @brief Función que devuelve todas las fichas de player que pueden 
+         * hacer un movimiento según el valor del dado dice_number.
+         * 
+         * Por ejemplo, si dice_number = 3, las fichas que se encuentran en home
+         * no aparecerán como disponibles.
+         * 
+         * También se gestionan las barreras y otros casos particulares. 
          * 
          * @param player 
          * @param dice_number 
@@ -167,7 +313,7 @@ class Parchis{
         const vector<int> getAvailablePieces (color player, int dice_number) const;
 
         /**
-         * @brief Get the Available Dices object
+         * @brief Obtener los números del dado disponibles para el jugador de color player.
          * 
          * @param player 
          * @param dice_number 
@@ -187,7 +333,9 @@ class Parchis{
         void movePiece(color player, int piece, int dice_number);
 
         /**
-         * @brief Comprobar si un movimiento es válido.
+         * @brief Función que comprueba si un movimiento es válido para las fichas de un determinado
+         * color en una determinada casilla. Tiene en cuenta barreras y otras particularidades.
+         * 
          * 
          * @param player 
          * @param box 
@@ -206,37 +354,15 @@ class Parchis{
          * @return false 
          */
         bool canSkipTurn(color player, int dice_number) const;
-
+        
         /**
-         * @brief Get the Last Moves object
+         * @brief Función que devuelve la ocupación de una casilla.
          * 
-         * @return const vector<tuple <color, int, Box>>& 
-         */
-        const vector<tuple <color, int, Box, Box>> & getLastMoves() const;
-
-        /**
-         * @brief Get the Last Action object
+         * Se proporciona en formato vector de parejas con identificador el color, y valor
+         * el número de fichas de ese color en esa casilla.
          * 
-         * @return int 
-         */
-        inline const tuple <color, int, int> & getLastAction() const{
-            return last_action;
-        }
-
-        inline const int getTurn() const{
-            return turn;
-        }
-
-
-        /**
-         * @brief Get the Last Dice object
-         * 
-         * @return int 
-         */
-        int getLastDice();
-
-        /**
-         * @brief Obtener la ocupación de un box
+         * Por ejemplo, si la  casilla tiene 1 ficha azul y otra amarilla, la función devolverá:
+         * {{blue, 1}, {yellow, 1}}
          * 
          * @param box 
          * @return vector<pair <color, int>> 
@@ -245,7 +371,7 @@ class Parchis{
 
         /**
          * @brief Función auxiliar que calcula la casilla destino tras aplicar el movimiento.
-         * 
+         *          
          * @param player 
          * @param box 
          * @param dice_number 
@@ -253,80 +379,31 @@ class Parchis{
          */
         const Box computeMove(color player, const Box & box, int dice_number, bool * goal_bounce = NULL) const;
 
+
         /**
-         * @brief Get the eating_move object
-         *
+         * @brief Método que gestiona el bucle principal del juego, mientras este no haya terminado,
+         * y de terminarlo en caso de que haya un ganador.
          * 
-         */
-
-        inline const bool isEatingMove() const {
-            return eating_move;
-        }
-
-        /**
-         * @brief Get the goal_move object
-         *
-         * 
-         */
-        inline const bool isGoalMove() const {
-            return goal_move;
-        }
-
-        inline const bool goalBounce() const{
-            return goal_bounce;
-        }
-
-
-        /**
-         * @brief 
+         * Se apoya en la función gameStep()
          * 
          */
         void gameLoop();
 
 
         /**
-         * @brief 
+         * @brief Método que gestiona un turno de juego. Obtiene el movimiento del jugador actual y notifica
+         * al resto de jugadores.
          * 
          */
         bool gameStep();
 
         /**
-         * @brief Función para comprobar que todos los jugadpres están listos para pasar el turno, y si no esperarlos.
+         * @brief Función para comprobar que todos los jugadores están listos para pasar el turno, y si no esperarlos.
          *
          */
         void waitForPlayers() const;
 
-        /**
-         * @brief Get the Current Player object
-         * 
-         * @return int 
-         */
-        inline int getCurrentPlayerId() const{
-            return current_player;
-        }
-
-        /**
-         * @brief Get the Current Player object
-         * 
-         * @return Player& 
-         */
-        inline Player & getCurrentPlayer(){
-            return *players[current_player];
-        }
-
-        inline vector<shared_ptr<Player>> & getPlayers(){
-            return players;
-        }
-
-        /**
-         * @brief Get the Current Color object
-         * 
-         * @return color 
-         */
-        inline color getCurrentColor() const{
-            return this->current_color;
-        }
-
+        
         /**
          * @brief Indica si la partida ha terminado.
          * 
@@ -335,6 +412,10 @@ class Parchis{
          */
         bool gameOver() const;
 
+        /**
+         * @brief Termina el juego asignando a la variable disconnected_player el jugador actual.
+         * 
+         */
         void endGame();
         
         /**
@@ -359,6 +440,8 @@ class Parchis{
          * @return false 
          */
         bool illegalMove() const;
+
+        /**************************** MÉTODOS PARA LA HEURÍSTICA *********************/
 
         /**
          * @brief Devuelve el número de fichas de un color que han llegado a la meta.
@@ -489,10 +572,6 @@ class Parchis{
          * @return const vector<color> 
          */
         const vector<color> anyWall(const Box & b1, const Box & b2) const;
-
-        vector<color> getPlayerColors(int player) const;
-
-
 };
 
 
