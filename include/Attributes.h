@@ -7,7 +7,7 @@
 
 using namespace std;
 
-//Lista con los diferentes tipos de casillas
+//Enumerado con los diferentes tipos de casillas
 enum color {blue, red, green, yellow, none};
 
 inline string str(color c){
@@ -21,10 +21,10 @@ inline string str(color c){
 }
 
 
-//Lista con los diferentes tipos de casillas
+//Enumerado con los diferentes tipos de casillas
 enum box_type {normal, home, final_queue, goal};
 
-//Struct para definir las casillas: número de casilla y tipo
+//Struct para definir las casillas: número de casilla, tipo y color.
 struct Box
 {
     int num;

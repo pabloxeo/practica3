@@ -32,13 +32,13 @@ class Board{
 
     public:
         /**
-         * @brief Default construct a new Board object
+         * @brief Constructor por defecto
          * 
          */
         Board();
 
         /**
-         * @brief Construct a new Board object
+         * @brief Constructor a partir de un objeto Board.
          * 
          * @param d 
          */
@@ -50,10 +50,18 @@ class Board{
          */
         Board(const BoardConfig & config);
 
+        /**
+         * @brief Sobrecarga del operador de igualdad.
+         * 
+         * @param board 
+         * @return true 
+         * @return false 
+         */
         bool operator==(const Board & board) const;
 
         /**
-         * @brief Función que devuelve el Box correspondiente a la ficha en la posición "idx" del vector de fichas de color "c".
+         * @brief Función que devuelve el Box correspondiente a la ficha 
+         * en la posición "idx" del vector de fichas de color "c".
          * 
          * @param c 
          * @param idx 
@@ -70,7 +78,8 @@ class Board{
         const vector<Box> & getPieces(const color c) const;
 
         /**
-         * @brief Función que mueve la ficha de la posición "idx" del vector de fichas de color "c" al box "final_box".
+         * @brief Función que mueve la ficha de la posición "idx" del vector 
+         * de fichas de color "c" al box "final_box".
          * 
          * @param c 
          * @param idx 

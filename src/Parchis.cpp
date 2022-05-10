@@ -17,7 +17,6 @@ const map<color, int> Parchis::init_boxes = {
     {red, init_red_box},
     {green, init_green_box}
 };
-
 Parchis::Parchis()
 {
     this->board = Board();

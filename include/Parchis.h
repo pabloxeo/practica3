@@ -20,29 +20,36 @@ class Player;
 
 class Parchis{
     private:
+        //Tablero y dados
         Board board;
         Dice dice;
+
+        //Variables para almacenar los últimos movimientos
         vector<tuple <color, int, Box, Box>> last_moves;
         tuple <color, int, int> last_action;
         int last_dice;
 
+        //Turno actual
         int turn;
         
+        //Jugadores del juego y jugadores y colorores actuales
         //0: yellow & red, 1: blue and green.
         int current_player;
         color current_color;
         vector <shared_ptr<Player>> players;
         vector <shared_ptr<Player>> viewers;
 
+        //Variables para controlar acciones de los jugadores
         int illegal_move_player;
         int disconnected_player;
 
+        //Booleanos para recordar movimientos especiales
         bool eating_move;
         bool goal_move;
         bool goal_bounce;
         bool remember_6;
 
-
+        //Definición de casillas especiales
         static const int final_red_box = 34;
         static const int final_blue_box = 17;
         static const int final_green_box = 51;
@@ -237,24 +244,6 @@ class Parchis{
         const vector<pair <color, int>> boxState(const Box & box) const;
 
         /**
-         * @brief Función que devuelve el color del muro (en caso de haberlo) en la casilla "box"
-         * 
-         * @param b 
-         * @return const color 
-         */
-        const color isWall(const Box & b) const;
-
-        /**
-         * @brief Función que devuelve el vector de colores de los muros (en caso de haberlos) del
-         * camino entre b1 y b2.
-         * 
-         * @param b1 
-         * @param b2 
-         * @return const vector<color> 
-         */
-        const vector<color> anyWall(const Box & b1, const Box & b2) const;
-
-        /**
          * @brief Función auxiliar que calcula la casilla destino tras aplicar el movimiento.
          * 
          * @param player 
@@ -279,7 +268,6 @@ class Parchis{
          *
          * 
          */
-
         inline const bool isGoalMove() const {
             return goal_move;
         }
@@ -375,12 +363,13 @@ class Parchis{
         /**
          * @brief Devuelve el número de fichas de un color que han llegado a la meta.
          * 
-         * @return 
+         * @return int 
          */
         int piecesAtGoal(color player) const;
 
         /**
-         * @brief 
+         * @brief Función que devuelve la distancia a la meta del color "player" desde
+         * la casilla "box". 
          * 
          * @param player 
          * @param box 
@@ -389,21 +378,82 @@ class Parchis{
         int distanceToGoal(color player, const Box & box) const;
 
         /**
-         * @brief 
+         * @brief Función que devuelve la distancia a la meta de la ficha identificada
+         * por id_piece del jugador identificado por player.
          * 
          * @param player 
-         * @param box 
+         * @param id_piece
          * @return int 
          */
         int distanceToGoal(color player, int id_piece) const;
 
+        /**
+         * @brief Función que genera el siguiente movimiento siguiendo un orden 
+         * ascendente de los dados.
+         * 
+         * @param c_piece 
+         * @param id_piece 
+         * @param dice 
+         * @return Parchis 
+         */
         Parchis generateNextMove(color & c_piece,  int & id_piece, int & dice) const;
 
+        /**
+         * @brief Función que genera el siguiente movimiento siguiendo un orden 
+         * descendente de los dados.
+         * 
+         * @param c_piece 
+         * @param id_piece 
+         * @param dice 
+         * @return Parchis 
+         */
         Parchis generateNextMoveDescending(color & c_piece,  int & id_piece, int & dice) const;
 
+        /**
+         * @brief Función que devuelve si una determinada casilla es segura o no.
+         * 
+         * @param box 
+         * @return true 
+         * @return false 
+         */
         bool isSafeBox(const Box & box) const;
 
+        /**
+         * @brief Función que devuelve si una determinada ficha de un determinado está
+         * en una casilla segura o no.
+         * 
+         * @param player 
+         * @param piece 
+         * @return true 
+         * @return false 
+         */
         bool isSafePiece(const color & player, const int & piece) const;
+
+        /**
+         * @brief Función que devuelve el color de la barrera (en caso de haberla) en la casilla "b".
+         * Es decir, si en la casilla "b" hay dos fichas de un mismo color devuelve este color.
+         * 
+         * @param b 
+         * @return const color 
+         */
+        const color isWall(const Box & b) const;
+
+        /**
+         * @brief Función que devuelve el vector de colores de las barreras (en caso de haberlas) del
+         * camino entre b1 y b2.
+         * 
+         * Esto es, se va recorriendo todas las casillas que habría que recorrer para ir de b1 y b2,
+         * y siempre que se encuentran dos fichas de un mismo color en una misma casilla se añade ese
+         * color al vector que se devuelve.
+         * 
+         * Por ejemplo: si en la casilla 2 hay una barrera amarilla y en la 4 una azul, el anywalls(1,6) 
+         * devuelve {yellow, blue}
+         * 
+         * @param b1 
+         * @param b2 
+         * @return const vector<color> 
+         */
+        const vector<color> anyWall(const Box & b1, const Box & b2) const;
 
         vector<color> getPlayerColors(int player) const;
 

@@ -10,22 +10,23 @@ using namespace std;
 class Dice{
     private:
         /**
-         * @brief The dices for each player. The dices are grouped by layers.
-         * First layer contains the classic 1-6 dices.
-         * New layers can be added to force special values, like move 10 or 20.
+         * @brief Dados para cada jugador. Los dados se agrupan por capas.
+         * La primera capa contiene los dados clásicos del 1-6.
+         * Se pueden añadir nuevas capas para forzar valores especiales,
+         * como mover 10 o 20.
          * 
          */
         map <color, vector<vector <int>> > dice;        
     
     public:
         /**
-         * @brief Default construct a new Dice object
+         * @brief Constructor por defecto de un nuevo objeto Dice
          * 
          */
         Dice();
 
         /**
-         * @brief Construct a new Dice object
+         * @brief Constructor de un nuevo objeto Dice
          * 
          * @param d 
          */
@@ -40,7 +41,7 @@ class Dice{
         const vector<int> & getDice (color player) const;
 
         /**
-         * @brief Get the All Dice Layers object
+         * @brief Devuelve los dados de todas las capas de un jugador.
          * 
          * @param player 
          * @return const vector<vector<int>>& 
@@ -48,7 +49,7 @@ class Dice{
         const vector<vector<int>> & getAllDiceLayers(color player) const;
 
         /**
-         * @brief Get the All Dice Layers object
+         * @brief Devuelve el tamaño de las capas de los dados de un jugador.
          * 
          * @param player 
          * @return const vector<vector<int>>& 
