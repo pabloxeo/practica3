@@ -41,5 +41,19 @@ class AIPlayer: public Player{
 
         inline virtual bool canThink() const{return true;}
 
+        /**
+         * @brief Heurística de prueba para validar el algoritmo de búsqueda.
+         * 
+         * @param estado Instancia de Parchis con el estado actual de la partida.
+         * @param jugador Id del jugador actual (0 o 1)
+         * @return double 
+         */
+        static double ValoracionTest(const Parchis &estado, int jugador);
+
+        /**
+         * @brief Propuesta de declaración de la función poda alfa-beta.
+         * La propuesta es solo sugerencia, los parámetros de la declaración podrían variar.
+         */
+        //double Poda_AlfaBeta(const Parchis &actual, int jugador, int profundidad, int profundidad_max, color &c_piece, int &id_piece, int &dice, double alpha, double beta, double (*heuristic)(const Parchis &, int)) const;
 };
 #endif
