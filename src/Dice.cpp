@@ -5,6 +5,7 @@
 
 
 Dice::Dice(){
+    //Asigna por defecto los 6 valores del dado a cada jugador.
     this->dice =  map <color, vector <vector<int> >> {
         {color::red,    {{1,2,3,4,5,6}}},
         {color::blue,   {{1,2,3,4,5,6}}},
@@ -30,9 +31,9 @@ const int Dice::getLayersSize(color player) const{
 }
 
 void Dice::removeNumber (color player, int n){
-    //for(int i = 0; i < dice[player].size(); i++) cout << dice[player][i] << endl;
-    //vector<int>::iterator aux = remove(dice[player].begin(), dice[player].end(), n);
+    //Se elimnina n del vector de valores asociado al dado de player.
     dice[player][dice[player].size() - 1].erase(remove(dice[player][dice[player].size() - 1].begin(), dice[player][dice[player].size() - 1].end(), n), dice[player][dice[player].size() - 1].end());
+    //Si se han gastado todos los números, se regenera de nuevo el dado.
     if (dice[player][dice[player].size() - 1].empty())
     {
         if(dice[player].size() == 1)
@@ -49,7 +50,6 @@ void Dice::resetDice (color player , const vector<int> & new_dice){
 
 bool Dice::isAvailable(color player, int n) const{
     vector<int> player_dice = dice.at(player).at(dice.at(player).size()-1);
-    //for(int i =0; i < player_dice.size(); i++) cout << player_dice[i] << endl;
     return (find(player_dice.begin(), player_dice.end(), n) != player_dice.end());
 }
 

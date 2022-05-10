@@ -68,7 +68,7 @@ class Dice{
          * @brief Resetear el dado del jugador "player" por el dado "new_dice". Default <1,2,3,4,5,6>.
          * 
          * @param player 
-         * @param new_dice 
+         * @param new_dice, por defecto {1,2,3,4,5,6}
          */
         void resetDice (color player , const vector<int> & new_dice = {1,2,3,4,5,6});
 
