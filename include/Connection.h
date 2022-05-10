@@ -7,6 +7,7 @@
 #include <list>
 #include <memory>
 #include <set>
+#include <deque>
 
 using namespace sf;
 using namespace std;
@@ -17,9 +18,18 @@ enum MessageKind{
     HELLO = 100,
     GAME_PARAMETERS = 101,
     TEST_ALIVE = 102,
+    HELLO_MASTER = 103,
+    HOW_R_U = 104,
+    QUEUED = 105,
+    RESERVE_IP = 106,
 
     //2xx - OK messages.
     OK = 200,
+    OK_MOVED = 201,
+    NINJA_STATUS = 202,
+    NINJA_ACCEPTED = 203,
+    ACCEPTED = 204,
+    OK_RESERVED = 205,
 
     //3xx - Game messages.
     TEST_MESSAGE = 300,
@@ -27,6 +37,10 @@ enum MessageKind{
 
     //4xx - Error messages.
     ERROR_DISCONNECTED = 400,
+    ERR_INVALID_MESSAGE = 401,
+    ERR_COULDNT_RESERVE = 402,
+    ERR_NO_NINJAS = 403,
+    ERR_UNAUTHORIZED = 404,
 
 };
 
@@ -40,24 +54,65 @@ class ParchisRemote{
     public:
         bool isConnected();
 
+        void sendHello();
+
         void sendGameParameters(int player, string name, BoardConfig init_board, int ai_id = 0);
 
         void sendTestAlive();
 
+        void sendHelloMaster(string ip, int port);
+
+        void sendHowAreYou();
+
+        void sendQueued(int queue_pos);
+
+        void sendReserveIp(string ip, int port);
+
+        void sendOK();
+
+        void sendOKMoved();
+
+        void sendNinjaStatus(int ninja_games, int random_games, int private_games);
+
+        void sendAcceptNinjaMessage();
+
+        void sendAcceptedMessage(string ip_addr, int port);
+
+        void sendOKReserved();
+
         void sendTestMessage(string message);
 
         void sendParchisMove(int turn, color c_piece, int id_piece, int dice);
+
+        void sendErrorMessage(MessageKind msgkind, string message = "");
+
 
 
         MessageKind receive(Packet & packet);
 
         static void analyzePacket(Packet & packet, const MessageKind & kind);
 
+        static void packet2HelloMaster(Packet & packet, string & ip, int & port);
+
+        static void packet2gameParameters(Packet & packet, int & player, string & name, BoardConfig & init_board, int & ai_id);
+        
+        static int packet2queuePos(Packet & packet);
+
+        static void packet2reservedIp(Packet & packet, string & ip, int & port);
+
+        static void packet2ninjaStatus(Packet & packet, int & ninja_games, int & random_games, int & private_games);
+
+        static void packet2acceptedIp(Packet & packet, string & ip_addr, int & port);
+
         static string packet2message(Packet & packet);
 
         static void packet2move(Packet & packet, int & turn, color & c_piece, int & id_piece, int & dice);
 
-        static void packet2gameParameters(Packet & packet, int & player, string & name, BoardConfig & init_board, int & ai_id);
+        static string packet2errorMessage(Packet & packet);
+
+        inline IpAddress getRemoteAddress() const{return socket.getRemoteAddress();}
+
+        inline unsigned short getRemotePort() const{return socket.getRemotePort();}
 };
 
 class ParchisClient: public ParchisRemote{
@@ -87,9 +142,20 @@ class ParchisServer: public ParchisRemote{
 
 };
 
+struct server_connection
+{
+    string ip_addr;
+    int port;
+    inline bool operator<(const server_connection &b) const
+    {
+        return this->ip_addr < b.ip_addr; //or this->ip_addr == b.ip_addr and this->port < b.port;
+    }
+};
 
 class NinjaServer{
     private:
+        string my_contact_ip;
+
         // Para partidas contra los ninjas.
         struct ninja_game{
             shared_ptr<ParchisServer> connection; // Gracias Mario :)
@@ -127,16 +193,22 @@ class NinjaServer{
 
         Thread master_thread;
         ParchisClient master_connection;
+        string master_ip;
+        int master_port;
 
 
-        Thread console_reader_thread            ;
+        //Thread console_reader_thread;
 
         TcpListener listener;
         int listener_port;
 
-        bool is_running;
+        volatile bool is_running;
 
         Mutex ninja_games_mutex;
+
+
+        set<server_connection> reserved_ips;
+        Mutex reserved_ips_mutex;
 
         void reviseNinjaThreadsStep();
         void reviseNinjaThreadsLoop();
@@ -160,20 +232,98 @@ class NinjaServer{
         void newNinjaGame(int player, string name, BoardConfig init_board, int ai_id);
         void queueRandomMatchGame(string player_name);
         void queuePrivateRoomGame(string room_id, string player_name);
+
+        void connectToMaster();
         
 
     public:
 
-        NinjaServer(const int & port);
+        NinjaServer(const int & port, const string & my_contact_ip = "127.0.0.1");
 
         void startServer();
 
         void stopServer();
 
+        void setMaster(const string & ip_addr, const int & port);
+
+        void printStatus();
+     
+};
+
+/**
+ * @brief Servidor maestro que se encarga de gestionar y repartir las conexiones a los servidores ninja.
+ * 
+ */
+class MasterServer{
+    private:
+        static const int MAX_ALLOWED_NINJA_GAMES = 1;
+        bool is_running;
+
+        int listener_port;
+        TcpListener listener;
+
+        set<string> allowed_ninja_ips;
+
+        Thread reviser_thread;
+
+        struct NinjaConnection{
+            shared_ptr<ParchisServer> connection;
+            string ip_addr;
+            int port;
+        };
+
+        list<NinjaConnection> ninja_connections;
+
+        struct MasterConnection{
+            shared_ptr<ParchisServer> connection;
+            shared_ptr<Thread> thread;
+        };
+
+        struct NinjaOccupation{
+            int ninja_games;
+            int private_games;
+            int random_games;
+        };
+
+        list<MasterConnection> client_connections;
+
+        deque<shared_ptr<ParchisServer>> queued_connections;
+
+        vector<shared_ptr<Thread>> idle_threads;
+
+        Mutex queue_insert_mutex;
+        Mutex instant_send_receive_mutex1;
+        Mutex instant_send_receive_mutex2;
+
+        void reviseNinjaConnectionsStep();
+        void reviseNinjaConnectionsLoop();
+
+        void reviseClientConnectionsStep();
+        void reviseClientConnectionsLoop();
+
+        void reviserLoop();
+
+        void consoleReader();
+
+        void acceptationLoop();
+
+        void acceptationStep(shared_ptr<ParchisServer> server);
+
+        void handleNinjaConnection(shared_ptr<ParchisServer> server, Packet & packet);
+
+        void handleClientConnection(shared_ptr<ParchisServer> server);
+
+    public:
+        MasterServer(const int & port);
+
+        void startServer();
+
+        void stopServer();
+
+        void addAllowedNinja(string ip);
+
         void printStatus();
 
-
-        
 
 };
 

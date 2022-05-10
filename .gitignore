@@ -40,3 +40,4 @@ data/music*
 
 .idea/
 .vscode/
+config/allowed_ninjas.txt

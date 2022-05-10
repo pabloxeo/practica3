@@ -12,9 +12,84 @@
 #include <cstring>
 #include <memory>
 #include <string>
+#include <fstream>
+#include <sstream>
+
+#define ALLOWED_NINJAS_FILE "config/allowed_ninjas.txt"
+#define MASTER_ADDRESSES_FILE "config/master_addresses.txt"
 
 using namespace sf;
 using namespace std;
+
+void readAllowedMasters(string file_name, vector<string> &ips, vector<int> &ports)
+{
+    // Read file_name. Each line has a string with an ip address and a port. Add each line to the returned vector.
+    ifstream file(file_name);
+    string line;
+    while (getline(file, line))
+    {
+        string ip;
+        int port;
+        stringstream ss(line);
+        ss >> ip;
+        ss >> port;
+        ips.push_back(ip);
+        ports.push_back(port);
+    }
+}
+
+void clientMasterHandshake(string & ip_addr, int & port){
+    vector<string> ips;
+    vector<int> ports;
+    readAllowedMasters(MASTER_ADDRESSES_FILE, ips, ports);
+    int i;
+    for(i = 0; i < ips.size(); i++){
+        try{
+            cout << "Trying " << ips[i] << ":" << ports[i] << endl;
+            shared_ptr<ParchisClient> client_master = make_shared<ParchisClient>();
+            client_master->startClientConnection(ips[i], ports[i]);
+            Packet packet;
+            MessageKind message_kind;
+            client_master->sendHello();
+            do
+            {
+                message_kind = client_master->receive(packet);
+                if (message_kind > 400)
+                {
+                    throw runtime_error("Could not connect to master server: " + to_string(message_kind));
+                }
+                else if (message_kind == QUEUED)
+                {
+                    cout << "Lo sentimos. El servidor está completo en este momento. Se te ha puesto en cola." << endl;
+                    int queue_pos = client_master->packet2queuePos(packet);
+                    cout << "Tu posición en la cola es: #" << queue_pos << endl;
+                }
+            } while (message_kind != ACCEPTED);
+            client_master->packet2acceptedIp(packet, ip_addr, port);
+            break;
+        }
+        catch(...){
+            cout << COUT_RED_BOLD << "Could not connect to master server: " << ips[i] << ":" << ports[i] << COUT_NOCOLOR << endl;
+        }
+    }
+    if(i == ips.size()){
+        cout << COUT_RED_BOLD << "No se ha podido conectar a ningún servidor. Avisa a tus profesores cuanto antes." << COUT_NOCOLOR << endl;
+    }
+}
+
+vector<string> readAllowedNinjas(string file_name){
+    // Read file_name. Each line has a string with an ip address. Add each line to the returned vector.
+    vector<string> ips;
+    ifstream file(file_name);
+    string line;
+    while (getline(file, line))
+    {
+        ips.push_back(line);
+    }
+    return ips;
+}
+
+
 
 int main(int argc, char const *argv[]){
     //ParchisGUI parchis;
@@ -28,6 +103,7 @@ int main(int argc, char const *argv[]){
     bool gui = true;
     bool server = false;
     bool ninja_server = false;
+    bool master_server = false;
     BoardConfig config = BoardConfig::GROUPED;
 
     /* Parse the command line arguments in the following way:
@@ -92,6 +168,9 @@ int main(int argc, char const *argv[]){
         else if(strcmp(argv[i], "--ninja-server") == 0){
             ninja_server = true;
         }
+        else if(strcmp(argv[i], "--master") == 0){
+            master_server = true;
+        }
         else{
             cout << "Error parsing command line arguments" << endl;
             cout << "Usage: " << argv[0] << " --p1 <type=GUI|AI|Client|Server|Ninja> (id=0) (name=J1) --p2 <type=GUI|AI|Client|Server|Ninja> (id=0) (name=J2) --ip <ip>  [Optional] --port <port>  [Optional] --board <config=GROUPED> --no-gui  [Optional]" << endl;
@@ -124,9 +203,30 @@ int main(int argc, char const *argv[]){
 
     shared_ptr<Player> p1, p2;
 
-    if(ninja_server){
-        NinjaServer server(8888);
-        server.startServer();
+    if(master_server){
+        MasterServer master_server(port);
+        vector<string> ips = readAllowedNinjas(ALLOWED_NINJAS_FILE);
+        for(string ip : ips){
+            master_server.addAllowedNinja(ip);
+        }
+        master_server.startServer();
+    }
+    else if(ninja_server){
+        NinjaServer server(port);
+        vector<string> ips;
+        vector<int> ports;
+        readAllowedMasters(MASTER_ADDRESSES_FILE, ips, ports);
+        for(int i = 0; i < ips.size(); i = (i+1)%ips.size()){
+            server.setMaster(ips[i], ports[i]);
+            try{
+                server.startServer();
+                cout << COUT_RED_BOLD << "Cortado servidor ninja" << COUT_NOCOLOR << endl;
+            }
+            catch(...){
+                cout << COUT_RED_BOLD << "No se pudo contactar con el master en " << ips[i] << ":" << ports[i] << COUT_NOCOLOR << endl;
+            }
+        }
+        
     }
     /*
     if(ninja_server){
@@ -280,9 +380,13 @@ int main(int argc, char const *argv[]){
             //p1 = make_shared<RemotePlayer>(id_j1, name_j1, ip, port);
         }
         else if(type_j1 == "Ninja"){
+            string ip_ninja;
+            int port_ninja;
+            clientMasterHandshake(ip_ninja, port_ninja);
             shared_ptr<ParchisClient> client = make_shared<ParchisClient>();
             // Se conecta al servidor de ninjas que establezcamos
-            client->startClientConnection("localhost", 8888);
+            //client->startClientConnection("localhost", 8888);
+            client->startClientConnection(ip_ninja, port_ninja);
             Packet packet;
             MessageKind message_kind;
             client->sendGameParameters(1, name_j1, config, id_j1);
@@ -307,9 +411,12 @@ int main(int argc, char const *argv[]){
         }
         else if (type_j2 == "Ninja")
         {
+            string ip_ninja;
+            int port_ninja;
+            clientMasterHandshake(ip_ninja, port_ninja);
             shared_ptr<ParchisClient> client = make_shared<ParchisClient>();
             // Se conecta al servidor de ninjas que establezcamos
-            client->startClientConnection("localhost", 8888);
+            client->startClientConnection(ip_ninja, port_ninja);
             Packet packet;
             MessageKind message_kind;
             client->sendGameParameters(0, name_j2, config, id_j2);

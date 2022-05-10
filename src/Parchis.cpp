@@ -630,6 +630,7 @@ bool Parchis::gameStep(){
         viewers.at(i)->perceive(*this);
     }
 
+
     // Se espera a que todos los jugadores estén listos para el siguiente turno.
     waitForPlayers();
 
