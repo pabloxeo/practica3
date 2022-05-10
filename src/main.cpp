@@ -17,6 +17,7 @@
 
 #define ALLOWED_NINJAS_FILE "config/allowed_ninjas.txt"
 #define MASTER_ADDRESSES_FILE "config/master_addresses.txt"
+#define MY_PUBLIC_IP_FILE "config/my_public_ip.txt"
 
 using namespace sf;
 using namespace std;
@@ -36,6 +37,7 @@ void readAllowedMasters(string file_name, vector<string> &ips, vector<int> &port
         ips.push_back(ip);
         ports.push_back(port);
     }
+    file.close();
 }
 
 void clientMasterHandshake(string & ip_addr, int & port){
@@ -86,6 +88,7 @@ vector<string> readAllowedNinjas(string file_name){
     {
         ips.push_back(line);
     }
+    file.close();
     return ips;
 }
 
@@ -212,7 +215,12 @@ int main(int argc, char const *argv[]){
         master_server.startServer();
     }
     else if(ninja_server){
-        NinjaServer server(port);
+        // Read MY_PUBLIC_IP_FILE and get the first string (ip_address)
+        ifstream file(MY_PUBLIC_IP_FILE);
+        string my_ip;
+        file >> my_ip;
+        file.close();
+        NinjaServer server(port, my_ip);
         vector<string> ips;
         vector<int> ports;
         readAllowedMasters(MASTER_ADDRESSES_FILE, ips, ports);

@@ -982,10 +982,10 @@ void ParchisGUI::setHandCursor()
 
 void ParchisGUI::setThinkingCursor()
 {
-    mutex.lock();
-    if (cursor.loadFromSystem(Cursor::Wait))
-        this->setMouseCursor(cursor);
-    mutex.unlock();
+    //mutex.lock();
+    //if (cursor.loadFromSystem(Cursor::Wait))
+    //    this->setMouseCursor(cursor);
+    //mutex.unlock();
 }
 
 void ParchisGUI::setDefaultCursorNormal(){
@@ -1007,9 +1007,9 @@ void ParchisGUI::setDefaultCursorHand(){
 }
 
 void ParchisGUI::setDefaultCursorThinking(){
-    mutex.lock();
-    default_cursor.loadFromSystem(Cursor::Wait);
-    mutex.unlock();
+    //mutex.lock();
+    //default_cursor.loadFromSystem(Cursor::Wait);
+    //mutex.unlock();
 }
 
 

@@ -825,7 +825,7 @@ void MasterServer::handleNinjaConnection(shared_ptr<ParchisServer> server, Packe
     string ip_addr;
     int port;
     server->packet2HelloMaster(packet, ip_addr, port);
-    if(ip_addr != server->getRemoteAddress().toString()){
+    if(ip_addr != server->getRemoteAddress().toString() && ip_addr != "127.0.0.1"){
         server->sendErrorMessage(ERR_UNAUTHORIZED, "La IP de contacto no se corresponde con la real.");
     }
     else{
