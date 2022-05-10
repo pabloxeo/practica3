@@ -7,7 +7,7 @@
 class AIPlayer: public Player{
     protected:
         //Id identificativo del jugador
-        int id;
+        const int id;
     public:
         /**
          * @brief Constructor de un objeto AIPlayer
@@ -22,7 +22,7 @@ class AIPlayer: public Player{
          * @param name Nombre  del jugador
          * @param id Id del jugador
          */
-        inline AIPlayer(const string & name, int id):Player(name), id(id){};
+        inline AIPlayer(const string & name, const int id):Player(name), id(id){};
 
         /**
          * @brief Función que percibe el el parchís y al jugador actual.
