@@ -24,9 +24,11 @@ bool AIPlayer::move(){
 void AIPlayer::think(color & c_piece, int & id_piece, int & dice) const{
     // IMPLEMENTACIÓN INICIAL DEL AGENTE
     // Esta implementación realiza un movimiento aleatorio.
-    // Se proporciona como ejemplo, pero se debe cambiar por una que realice un movimiento inteligente como lo que se muestran al final de la función.
+    // Se proporciona como ejemplo, pero se debe cambiar por una que realice un movimiento inteligente 
+    //como lo que se muestran al final de la función.
     
-    // OBJETIVO: Asignar a las variables c_piece, id_piece, dice (pasadas por referencia) los valores, respectivamente, de:
+    // OBJETIVO: Asignar a las variables c_piece, id_piece, dice (pasadas por referencia) los valores, 
+    //respectivamente, de:
     // - color de ficha a mover
     // - identificador de la ficha que se va a mover
     // - valor del dado con el que se va a mover la ficha.
