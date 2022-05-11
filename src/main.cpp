@@ -95,9 +95,6 @@ vector<string> readAllowedNinjas(string file_name){
 
 
 int main(int argc, char const *argv[]){
-    //ParchisGUI parchis;
-    //parchis.display();
-    //parchis.moveFichas();
     string type_j1 = "GUI", type_j2 = "GUI";
     int id_j1 = 0, id_j2 = 0;
     int port = 8888;
@@ -259,7 +256,7 @@ int main(int argc, char const *argv[]){
 
         if (player == 0){
             //J1 remoto.
-            p1 = make_shared<RemotePlayer>(name, server);
+            p1 = make_shared<RemotePlayer>(name, server); //Gracias mario ;)
             if(type_j1 == "GUI"){
                 p2 = make_shared<GUIPlayer>(name_j1, id_j1);
             }
