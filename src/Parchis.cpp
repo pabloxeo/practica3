@@ -48,142 +48,94 @@ void Parchis::nextTurn(){
 
 /****************** CONSTRUCTORES ******************/
 
+void Parchis::initGame(){
+    this->last_dice = -1;
+
+    this->current_player = 0;
+    this->current_color = yellow;
+
+    this->illegal_move_player = -1;
+    this->disconnected_player = -1;
+    this->goal_move = false;
+    this->eating_move = false;
+    this->goal_bounce = false;
+    this->remember_6 = false;
+
+    this->turn = 1;
+
+    bounces = {
+        {yellow, 0},
+        {blue, 0},
+        {red, 0},
+        {green, 0}
+    };
+    this->overbounce_player = -1;
+}
 
 Parchis::Parchis()
 {
     this->board = Board();
     this->dice = Dice();
+    initGame();
 
-    this->last_dice = -1;
-
-    this->current_player = 0;
-    this->current_color = yellow;
-
-    this->illegal_move_player = -1;
-    this->disconnected_player = -1;
-    this->goal_move = false;
-    this->eating_move = false;
-    this->goal_bounce = false;
-    this->remember_6 = false;
-
-    this->turn = 1;
+    players.push_back(make_shared<AIPlayer>("J1"));
+    players.push_back(make_shared<AIPlayer>("J2"));
 }
 
 Parchis::Parchis(const BoardConfig & b){
     this->board = Board(b);
     this->dice = Dice();
+    initGame();
 
-    this->last_dice = -1;
-
-    this->current_player = 0;
-    this->current_color = yellow;
-
-    this->illegal_move_player = -1;
-    this->disconnected_player = -1;
-    this->goal_move = false;
-    this->eating_move = false;
-    this->goal_bounce = false;
-    this->remember_6 = false;
-
-    this->turn = 1;
+    players.push_back(make_shared<AIPlayer>("J1"));
+    players.push_back(make_shared<AIPlayer>("J2"));
 }
 
 Parchis::Parchis(const Board & b, const Dice & d){
     this->board = board;
     this->dice = dice;
+    initGame();
 
-    this->last_dice = -1;
-    this->current_player = 0;
-    this->current_color = yellow;
-
-    this->illegal_move_player = -1;
-    this->disconnected_player = -1;
-    this->goal_move = false;
-    this->eating_move = false;
-    this->goal_bounce = false;
-    this->remember_6 = false;
-
-    this->turn = 1;
+    players.push_back(make_shared<AIPlayer>("J1"));
+    players.push_back(make_shared<AIPlayer>("J2"));
 }
 
 Parchis::Parchis(const BoardConfig &b, const Dice &d)
 {
     this->board = Board(b);
     this->dice = dice;
+    initGame();
 
-    this->last_dice = -1;
-    this->current_player = 0;
-    this->current_color = yellow;
-
-    this->illegal_move_player = -1;
-    this->disconnected_player = -1;
-    this->goal_move = false;
-    this->eating_move = false;
-    this->goal_bounce = false;
-    this->remember_6 = false;
-
-    this->turn = 1;
+    players.push_back(make_shared<AIPlayer>("J1"));
+    players.push_back(make_shared<AIPlayer>("J2"));
 }
 
 Parchis::Parchis(const Board & b, const Dice & d, Player & p1, Player & p2){
     this->board = board;
     this->dice = dice;
+    initGame();
 
-    this->last_dice = -1;
-    this->current_player = 0;
-    this->current_color = yellow;
     players.push_back(shared_ptr<Player>(std::move(&p1)));
-    players.push_back(shared_ptr<Player>(std::move(&p2))); 
-
-    this->illegal_move_player = -1;
-    this->disconnected_player = -1;
-    this->goal_move = false;
-    this->eating_move = false;
-    this->goal_bounce = false;
-    this->remember_6 = false;
-
-    this->turn = 1;
+    players.push_back(shared_ptr<Player>(std::move(&p2)));
 }
 
 Parchis::Parchis(const BoardConfig &b, const Dice &d, shared_ptr<Player> p1,  shared_ptr<Player> p2)
 {
     this->board = Board(b);
     this->dice = dice;
+    initGame();
 
-    this->last_dice = -1;
-    this->current_player = 0;
-    this->current_color = yellow;
     players.push_back(shared_ptr<Player>(p1));
     players.push_back(shared_ptr<Player>(p2));
-
-    this->illegal_move_player = -1;
-    this->disconnected_player = -1;
-    this->goal_move = false;
-    this->eating_move = false;
-    this->goal_bounce = false;
-    this->remember_6 = false;
-
-    this->turn = 1;
 }
 
 Parchis::Parchis(const BoardConfig &b, shared_ptr<Player> p1,  shared_ptr<Player> p2){
     this->board = Board(b);
     this->dice = Dice();
+    initGame();
 
-    this->last_dice = -1;
-    this->current_player = 0;
-    this->current_color = yellow;
     players.push_back(shared_ptr<Player>(p1));
-    players.push_back(shared_ptr<Player>(p2)); 
-
-    this->illegal_move_player = -1;
-    this->disconnected_player = -1;
-    this->goal_move = false;
-    this->eating_move = false;
-    this->goal_bounce = false;
-    this->remember_6 = false;
-
-    this->turn = 1;
+    players.push_back(shared_ptr<Player>(p2));
 }
 
 /****************** GETTERS ******************/
@@ -298,6 +250,14 @@ void Parchis::movePiece(color player, int piece, int dice_number){
             else{
                 this->last_moves.push_back(tuple<color, int, Box, Box>(player, piece, piece_box, Box(0, goal, player)));
                 this->last_moves.push_back(tuple<color, int, Box, Box>(player, piece, Box(0, goal, player), final_box));
+                bounces[player]++;
+                // Print the bounces map
+                for(auto it = bounces.begin(); it != bounces.end(); ++it){
+                    cout << str(it->first) << ": " << it->second << endl;
+                }
+                if(bounces[player] > 30){
+                    overbounce_player = current_player;
+                }
             }
 
             // Controlar si se come alguna ficha. En ese caso se actualiza también la ficha comida.
@@ -526,6 +486,10 @@ void Parchis::gameLoop(){
         {
             cout << "El jugador " << (winner == 1 ? 0 : 1) << " ha hecho un movimiento ilegal" << endl;
         }
+        if(overBounce())
+        {
+            cout << "El jugador " << (winner == 1 ? 0 : 1) << " ha excedido el límite de rebotes." << endl;
+        }
         cout << "++++++++++++++++++++++++" << endl;
     }
 }
@@ -598,6 +562,9 @@ int Parchis::getWinner() const{
     if(disconnected_player != -1){
         return (disconnected_player == 0)?1:0;
     }
+    if(overbounce_player != -1){
+        return (overbounce_player == 0)?1:0;
+    }
     color col = getColorWinner();
     switch(col){
         case yellow:
@@ -629,6 +596,10 @@ color Parchis::getColorWinner() const{
 
 bool Parchis::illegalMove() const{
     return this->illegal_move_player != -1;
+}
+
+bool Parchis::overBounce() const{
+    return this->overbounce_player != -1;
 }
 
 /**************************** MÉTODOS PARA LA HEURÍSTICA *********************/

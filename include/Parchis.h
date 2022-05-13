@@ -73,12 +73,22 @@ class Parchis{
         static const map<color, int> final_boxes;
         static const map<color, int> init_boxes;
 
+        // Contro de rebotes (para evitar partidas infinitas)
+        map<color, int> bounces;
+        int overbounce_player;
+
         /**
          * @brief Método que gestiona el cambio de turno modificando las variables
          * current_player y current_color.
          *
          */
         void nextTurn();
+
+        /**
+         * @brief Método que inicializa las partes comunes en los constructores del juego.
+         * 
+         */
+        void initGame();
 
     public:
         /**
@@ -88,6 +98,7 @@ class Parchis{
         static const vector<color> game_colors;
         
         /****************** CONSTRUCTORES ******************/
+
 
         /**
          * @brief Constructor por defecto de un nuevo objeto de Parchis.
@@ -434,6 +445,25 @@ class Parchis{
          * @return false 
          */
         bool illegalMove() const;
+
+        /**
+         * @brief Devuelve true si y solo si uno de los jugadores ha rebotado más de 30 veces con algún color.
+         * El jugador que ha rebotado pierde automáticamente.
+         * La finalidad de este límite es evitar que se produzcan partidas infinitas.
+         * 
+         * @return true 
+         * @return false 
+         */
+        bool overBounce() const;
+
+        /**
+         * @brief Devuelve el número de veces que han rebotado en la meta las fichas del color indicado por player.
+         * 
+         * @return int
+         */
+        inline const int getBounces(color player) const{
+            return bounces.at(player);
+        }
 
         /**************************** MÉTODOS PARA LA HEURÍSTICA *********************/
 

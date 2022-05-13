@@ -15,7 +15,7 @@ class Ninja: public AIPlayer{
         inline Ninja(const string & name):AIPlayer(name){};
 
         /**
-         * @brief Constructor de un objeto Nina especificando id
+         * @brief Constructor de un objeto Ninja especificando id
          * 
          * @param name 
          * @param id 
