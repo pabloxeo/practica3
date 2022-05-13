@@ -328,6 +328,13 @@ class Parchis{
         }
 
         /**
+         * @brief Termina una partida por la fuerza. Da por ganador al jugador que no esté en el turno actual.
+         * Para usar solo para gestionar desconexiones forzadas.
+         * 
+         */
+        void endGame();
+
+        /**
          * @brief Indica si la partida ha terminado.
          * 
          * @return true 
@@ -335,7 +342,6 @@ class Parchis{
          */
         bool gameOver() const;
 
-        void endGame();
         
         /**
          * @brief Si la partida ha terminado, devuelve el índice del jugador ganador (0 o 1).
@@ -455,6 +461,12 @@ class Parchis{
          */
         const vector<color> anyWall(const Box & b1, const Box & b2) const;
 
+        /**
+         * @brief Devuelve los colores asociados a cada jugador (amarillo y rojo para el 0 y verde y azul para el 1).
+         * 
+         * @param player 
+         * @return vector<color> 
+         */
         vector<color> getPlayerColors(int player) const;
 
 
