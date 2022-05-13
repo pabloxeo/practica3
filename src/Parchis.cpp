@@ -1,9 +1,12 @@
 #include "Parchis.h"
 
+//Definición de las casillas seguras
 const vector<int> Parchis::safe_boxes = {4, 13, 17, 21, 30, 34, 38, 47, 51, 55, 64, 68};
 
+//Definición de los colores del juego
 const vector<color> Parchis::game_colors = vector<color>{yellow, blue, red, green};
 
+//Definición de las casillas finales para cada color
 const map<color, int> Parchis::final_boxes = {
     {yellow, final_yellow_box},
     {blue, final_blue_box},
@@ -11,12 +14,41 @@ const map<color, int> Parchis::final_boxes = {
     {green, final_green_box}
 };
 
+//Definición de las casillas de inicio para cada jugador
 const map<color, int> Parchis::init_boxes = {
     {yellow, init_yellow_box},
     {blue, init_blue_box},
     {red, init_red_box},
     {green, init_green_box}
 };
+
+/****************** MÉTODOS PRIVADOS ******************/
+
+void Parchis::nextTurn(){
+    //cout << "--------- CAMBIO DE TURNO ---------" << endl;
+    if (last_dice != 6 && !eating_move && !goal_move && !remember_6){
+        this->current_player = (current_player+1)%2;
+        switch(this->current_color){
+            case yellow:
+                this->current_color = blue;
+                break;
+            case blue:
+                this->current_color = red;
+                break;
+            case red:
+                this->current_color = green;
+                break;
+            case green:
+                this->current_color = yellow;
+                break;
+        }
+    }
+}
+
+
+/****************** CONSTRUCTORES ******************/
+
+
 Parchis::Parchis()
 {
     this->board = Board();
@@ -26,10 +58,6 @@ Parchis::Parchis()
 
     this->current_player = 0;
     this->current_color = yellow;
-    //GUIPlayer *p1 = new GUIPlayer("Player 1"), *p2 = new GUIPlayer("Player 2");
-    //players.push_back(p1);
-    //players.push_back(p2);
-    // last_moves vacío por defecto.
 
     this->illegal_move_player = -1;
     this->disconnected_player = -1;
@@ -49,12 +77,6 @@ Parchis::Parchis(const BoardConfig & b){
 
     this->current_player = 0;
     this->current_color = yellow;
-    //GUIPlayer *p1 = new GUIPlayer("Player 1"), *p2 = new GUIPlayer("Player 2");
-    //GUIPlayer *p1 = new GUIPlayer("Player 1");
-    //AIPlayer *p2 = new AIPlayer("Player 2");
-    //players.push_back(p1);
-    //players.push_back(p2);
-    // last_moves vacío por defecto.
 
     this->illegal_move_player = -1;
     this->disconnected_player = -1;
@@ -73,11 +95,6 @@ Parchis::Parchis(const Board & b, const Dice & d){
     this->last_dice = -1;
     this->current_player = 0;
     this->current_color = yellow;
-    //GUIPlayer p1("Player 1"), p2("Player 2");
-    //players.push_back(&p1);
-    //players.push_back(&p2);
-    //players = {&p1, &p2};
-    // last_moves vacío por defecto.
 
     this->illegal_move_player = -1;
     this->disconnected_player = -1;
@@ -97,11 +114,6 @@ Parchis::Parchis(const BoardConfig &b, const Dice &d)
     this->last_dice = -1;
     this->current_player = 0;
     this->current_color = yellow;
-    //GUIPlayer p1("Player 1"), p2("Player 2");
-    //players.push_back(&p1);
-    //players.push_back(&p2);
-    // players = {&p1, &p2};
-    //  last_moves vacío por defecto.
 
     this->illegal_move_player = -1;
     this->disconnected_player = -1;
@@ -122,8 +134,6 @@ Parchis::Parchis(const Board & b, const Dice & d, Player & p1, Player & p2){
     this->current_color = yellow;
     players.push_back(shared_ptr<Player>(std::move(&p1)));
     players.push_back(shared_ptr<Player>(std::move(&p2))); 
-    // = {&p1, &p2};
-    // last_moves vacío por defecto.
 
     this->illegal_move_player = -1;
     this->disconnected_player = -1;
@@ -144,8 +154,7 @@ Parchis::Parchis(const BoardConfig &b, const Dice &d, shared_ptr<Player> p1,  sh
     this->current_player = 0;
     this->current_color = yellow;
     players.push_back(shared_ptr<Player>(p1));
-    players.push_back(shared_ptr<Player>(p2)); // = {&p1, &p2};
-    // last_moves vacío por defecto.
+    players.push_back(shared_ptr<Player>(p2));
 
     this->illegal_move_player = -1;
     this->disconnected_player = -1;
@@ -165,8 +174,7 @@ Parchis::Parchis(const BoardConfig &b, shared_ptr<Player> p1,  shared_ptr<Player
     this->current_player = 0;
     this->current_color = yellow;
     players.push_back(shared_ptr<Player>(p1));
-    players.push_back(shared_ptr<Player>(p2)); // = {&p1, &p2};
-    // last_moves vacío por defecto.
+    players.push_back(shared_ptr<Player>(p2)); 
 
     this->illegal_move_player = -1;
     this->disconnected_player = -1;
@@ -178,9 +186,7 @@ Parchis::Parchis(const BoardConfig &b, shared_ptr<Player> p1,  shared_ptr<Player
     this->turn = 1;
 }
 
-bool Parchis::operator==(const Parchis & parchis) const{
-    return this->board == parchis.board && this->turn == parchis.turn;
-}
+/****************** GETTERS ******************/
 
 const Dice & Parchis::getDice() const{
     return this->dice;
@@ -190,117 +196,37 @@ const Board & Parchis::getBoard() const{
     return this->board;
 }
 
-const color Parchis::isWall(const Box & b) const{
-    if(b.type == home || b.type == goal) return none;
-
-    const vector<pair <color, int>> occupation = boxState(b);
-    if (occupation.size() == 2 && occupation.at(0).first == occupation.at(1).first){
-        return  occupation.at(0).first;
-    }else{
-        return none;
-    }
+int Parchis::getLastDice(){
+    return this->last_dice;
 }
 
-const vector<color> Parchis::anyWall(const Box & b1, const Box & b2) const{
-    Box final_box;
-    if (b2.type == final_queue || b2.type == goal){
-        switch (b2.col){
-            case blue:
-                final_box = Box(final_blue_box, normal, none);
-            break;
-            case red:
-                final_box = Box(final_red_box, normal, none);
-            break;
-            case green:
-                final_box = Box(final_green_box, normal, none);
-            break;
-            case yellow:
-                final_box = Box(final_yellow_box, normal, none);
-            break;
-        }
-    }else{
-        final_box = b2;
-    }
-    vector<color> walls;
-    bool reached_final_box = false;
-    if (b1.type == normal && final_box.num != b1.num){
-        for (int i = b1.num+1; !reached_final_box; i = i%68 + 1){
-            reached_final_box = (final_box.num == i);
-            color c = isWall(Box(i, normal, none));
-            if(c != none){
-                walls.push_back(c);
-            }
-        }
-    }
-    return walls;
+const vector<tuple<color, int, Box, Box>> & Parchis::getLastMoves() const{
+    return this->last_moves;
 }
 
-
-bool Parchis::isLegalMove(color player, const Box & box, int dice_number) const{
-    if(gameOver())
-        return false;
-    // Controlar si intento mover una ficha que no es del color del jugador actual.
-    if(player != current_color)
-        return false;
-    // Controlar si intento mover un número que no está disponible en mis dados.
-    if(!dice.isAvailable(player, dice_number))
-        return false;
-    // Controlar si intento contar un número distinto de 20 cuando me he comido una ficha.
-    if(isEatingMove() && dice_number != 20)
-        return false;
-    // Controlar si intento contar un número distinto de 10 cuando he llevado una ficha a la meta.
-    if(isGoalMove() && dice_number != 10)
-        return false;
-    // Control de movimientos
-    Box final_box = computeMove(player, box, dice_number);
-    // Controlar si barreras, si está en la casa el movimiento solo sería legal si dice_number == 5, ...
-    if (box.type == home && dice_number != 5){
-        return false;
-    //Controlar que ya estés en la meta
-    }else if(box.type == goal){
-        return false;
-    // Comprobar que no haya ya dos fichas en la casilla (a menos que la casilla de destino sea home, meta o la misma que la de partida).
-    }
-    else if (final_box.type != goal && final_box.type != home && !(final_box == box) && boxState(final_box).size() == 2)
-    {
-        return false;
-    //Controlar los muros
+vector<color> Parchis::getPlayerColors(int player) const{
+    if (player == 0){
+        return {yellow, red};
     }
     else{
-        // Comprobar que en el camino del movimiento no hay barreras
-        vector<color> walls = anyWall(box, final_box);
-        for (int i = 0; i < walls.size(); i++){
-            //cout << walls.at(i) << endl;
-            if (walls.at(i) != player){
-                return false;
-            }
-        }
-        // Comprobar que si he sacado un 6 y tengo barreras de mi color he elegido una de las fichas en la barrera.
-        if(dice_number == 6){
-            bool hay_walls = false;
-            for(int i = 0; i < board.getPieces(player).size() && !hay_walls; i++){
-                //cout << "HOLAA" << endl;
-                //cout << player << " " << isWall(board.getPiece(player, i)) << endl;
-                hay_walls = (isWall(board.getPiece(player, i)) == player);
-            }
-
-            if(hay_walls && isWall(box) != player){
-                return false;
-            }
-        }
-    } // TODO: falta (al menos) un caso: que salga un 6, haya alguna barrera de ese color y se elija una ficha fuera de la barrera.
-    return true;
+        return {blue, green};
+    }
 }
 
-bool Parchis::canSkipTurn(color player, int dice_number) const{
-    return dice.isAvailable(player, dice_number) and getAvailablePieces(player, dice_number).size() == 0;
+/**************************************************/
+
+
+bool Parchis::operator==(const Parchis & parchis) const{
+    return this->board == parchis.board && this->turn == parchis.turn;
 }
 
 const vector<int> Parchis::getAvailablePieces(color player, int dice_number) const{
     vector<Box> player_pieces = board.getPieces(player);
     vector<int> available_pieces;
 
+    //Para cada ficha del jugador
     for(int i = 0; i < player_pieces.size(); i++){
+        //Compruebo si el movimiento es legal
         if(isLegalMove(player, player_pieces[i], dice_number)){
             available_pieces.push_back(i);
         }
@@ -308,114 +234,6 @@ const vector<int> Parchis::getAvailablePieces(color player, int dice_number) con
 
     return available_pieces;
 
-}
-
-const Box Parchis::computeMove(color player, const Box & piece_box, int dice_number, bool * goal_bounce) const{
-    Box final_box;
-
-    if(goal_bounce != NULL) *goal_bounce = false;
-
-    //Si sale un 6, comprobar si se da condición para avanzar 7 o 6
-    if(dice_number == 6){
-        bool pieces_out = true;
-        for (int i = 0; i < board.getPieces(player).size() && pieces_out; i++){
-            if (board.getPieces(player).at(i).type == home){
-                pieces_out = false;
-            }
-        }
-
-        if (pieces_out){
-            dice_number = 7;
-        }
-    }
-
-    //Si sale de la casilla de home
-    if (piece_box.type == home){
-        switch (player){
-            case red:
-                final_box = Box(init_red_box, normal, none);
-                break;
-            case blue:
-                final_box = Box(init_blue_box, normal, none);
-                break;
-            case yellow:
-                final_box = Box(init_yellow_box, normal, none);
-                break;
-            case green:
-                final_box = Box(init_green_box, normal, none);
-                break;
-        }
-    }        
-    //Condiciones para empezar a avanzar por pasillo de meta
-    else if(piece_box.num <= final_boxes.at(player) && piece_box.num + dice_number > final_boxes.at(player) && piece_box.type == normal){
-        //final_box = Box(final_boxes[player], normal, none);
-        int count = piece_box.num + dice_number - final_boxes.at(player);
-        if (count <= 7){
-            final_box = Box(count, final_queue, player);
-        }else if (count == 8){
-            final_box = Box(0, goal, player);
-        }else{
-            int diff = 16 - (count);
-            if(diff > 0){
-                final_box = Box(diff, final_queue, player);
-            }else{
-                final_box = Box(final_boxes.at(player) + diff, normal, none);
-            }
-            if(goal_bounce != NULL) *goal_bounce = true;
-        }
-
-    }else if(piece_box.num + dice_number > 68 && piece_box.num + dice_number - 68 > final_boxes.at(player) && piece_box.type == normal){
-        int count = piece_box.num + dice_number - 68 - final_boxes.at(player);
-        if (count <= 7){
-            final_box = Box(count, final_queue, player);
-        }else if (count == 8){
-            final_box = Box(0, goal, player);
-        }else{
-            int diff = 16 - (count);
-            if(diff > 0){
-                final_box = Box(diff, final_queue, player);
-            }else{
-                final_box = Box(final_boxes.at(player) + diff, normal, none);
-            }
-            if(goal_bounce != NULL) *goal_bounce = true;
-        }
-    }
-    /*
-    else if(piece_box.num <= 17 && piece_box.num + dice_number > 17 && player == blue && piece_box.type == normal){
-        final_box = Box(piece_box.num + dice_number-17, final_queue, blue);
-
-    }else if(piece_box.num <= 34 && piece_box.num + dice_number > 34 && player == red && piece_box.type == normal){
-        final_box = Box(piece_box.num + dice_number-34, final_queue, red);
-
-    }else if(piece_box.num <= 51 && piece_box.num + dice_number > 51 && player == green && piece_box.type == normal){
-        final_box = Box(piece_box.num + dice_number-51, final_queue, green);
-
-    }else if(piece_box.num <= 68 && piece_box.num + dice_number > 68 && player == yellow && piece_box.type == normal){
-        final_box = Box(piece_box.num + dice_number-68, final_queue, yellow);
-    }
-    */
-    //Si ya está en pasillo de meta
-    else if(piece_box.type == final_queue){
-        if (piece_box.num + dice_number <= 7){
-            final_box = Box(piece_box.num + dice_number, final_queue, player);
-        }else if (piece_box.num + dice_number == 8){
-            final_box = Box(0, goal, player);
-        }else{
-            int diff = 16 - (piece_box.num + dice_number);
-            if(diff > 0){
-                final_box = Box(diff, final_queue, player);
-            }else{
-                final_box = Box(final_boxes.at(player) + diff, normal, none);
-            }
-            if(goal_bounce != NULL) *goal_bounce = true;
-        }
-    }
-    //Por defecto
-    else{
-        final_box = Box(1 + (piece_box.num+ dice_number - 1) % 68, box_type::normal, color::none);
-    }
-
-    return final_box;
 }
 
 void Parchis::movePiece(color player, int piece, int dice_number){
@@ -433,7 +251,6 @@ void Parchis::movePiece(color player, int piece, int dice_number){
                 this->last_moves.clear();
                 this->dice.removeNumber(player, dice_number);
                 this->nextTurn();
-                //cout << "TURN SKIPPED" << endl;
 
                 turn++;
                 last_action = tuple<color, int, int>(player, piece, dice_number);
@@ -504,6 +321,7 @@ void Parchis::movePiece(color player, int piece, int dice_number){
                 dice.forceNumber(player, 20);
             }
             if(goal_move){
+                // Añadir al dado de player el valor 10
                 dice.forceNumber(player, 10);
             }
 
@@ -519,16 +337,64 @@ void Parchis::movePiece(color player, int piece, int dice_number){
     }
 }
 
-const vector<tuple<color, int, Box, Box>> & Parchis::getLastMoves() const{
-    return this->last_moves;
+bool Parchis::isLegalMove(color player, const Box & box, int dice_number) const{
+    if(gameOver())
+        return false;
+    // Controlar si intento mover una ficha que no es del color del jugador actual.
+    if(player != current_color)
+        return false;
+    // Controlar si intento mover un número que no está disponible en mis dados.
+    if(!dice.isAvailable(player, dice_number))
+        return false;
+    // Controlar si intento contar un número distinto de 20 cuando me he comido una ficha.
+    if(isEatingMove() && dice_number != 20)
+        return false;
+    // Controlar si intento contar un número distinto de 10 cuando he llevado una ficha a la meta.
+    if(isGoalMove() && dice_number != 10)
+        return false;
+    // Control de movimientos
+    Box final_box = computeMove(player, box, dice_number);
+    // Controlar si barreras, si está en la casa el movimiento solo sería legal si dice_number == 5, ...
+    if (box.type == home && dice_number != 5){
+        return false;
+    //Controlar que ya estés en la meta
+    }else if(box.type == goal){
+        return false;
+    // Comprobar que no haya ya dos fichas en la casilla (a menos que la casilla de destino sea home, meta o la misma que la de partida).
+    }
+    else if (final_box.type != goal && final_box.type != home && !(final_box == box) && boxState(final_box).size() == 2)
+    {
+        return false;
+    //Controlar los muros
+    }
+    else{
+        // Comprobar que en el camino del movimiento no hay barreras
+        vector<color> walls = anyWall(box, final_box);
+        for (int i = 0; i < walls.size(); i++){
+            if (walls.at(i) != player){
+                return false;
+            }
+        }
+        // Comprobar que si he sacado un 6 y tengo barreras de mi color he elegido una de las fichas en la barrera.
+        if(dice_number == 6){
+            bool hay_walls = false;
+            for(int i = 0; i < board.getPieces(player).size() && !hay_walls; i++){
+                hay_walls = (isWall(board.getPiece(player, i)) == player);
+            }
+
+            if(hay_walls && isWall(box) != player){
+                return false;
+            }
+        }
+    } // TODO: falta (al menos) un caso: que salga un 6, haya alguna barrera de ese color y se elija una ficha fuera de la barrera.
+    return true;
 }
 
-int Parchis::getLastDice(){
-    return this->last_dice;
+bool Parchis::canSkipTurn(color player, int dice_number) const{
+    return dice.isAvailable(player, dice_number) and getAvailablePieces(player, dice_number).size() == 0;
 }
 
 const vector<pair <color, int>> Parchis::boxState(const Box & box) const{
-
     vector<pair <color, int>> occupation;
 
     for (int c = color::blue; c < color::none; c++){
@@ -543,26 +409,95 @@ const vector<pair <color, int>> Parchis::boxState(const Box & box) const{
     return occupation;
 }
 
+const Box Parchis::computeMove(color player, const Box & piece_box, int dice_number, bool * goal_bounce) const{
+    Box final_box;
 
-void Parchis::nextTurn(){
-    //cout << "--------- CAMBIO DE TURNO ---------" << endl;
-    if (last_dice != 6 && !eating_move && !goal_move && !remember_6){
-        this->current_player = (current_player+1)%2;
-        switch(this->current_color){
-            case yellow:
-                this->current_color = blue;
-                break;
-            case blue:
-                this->current_color = red;
-                break;
-            case red:
-                this->current_color = green;
-                break;
-            case green:
-                this->current_color = yellow;
-                break;
+    if(goal_bounce != NULL) *goal_bounce = false;
+
+    //Si sale un 6, comprobar si se da condición para avanzar 7 o 6
+    if(dice_number == 6){
+        bool pieces_out = true;
+        for (int i = 0; i < board.getPieces(player).size() && pieces_out; i++){
+            if (board.getPieces(player).at(i).type == home){
+                pieces_out = false;
+            }
+        }
+        if (pieces_out){
+            dice_number = 7;
         }
     }
+    //Si sale de la casilla de home
+    if (piece_box.type == home){
+        switch (player){
+            case red:
+                final_box = Box(init_red_box, normal, none);
+                break;
+            case blue:
+                final_box = Box(init_blue_box, normal, none);
+                break;
+            case yellow:
+                final_box = Box(init_yellow_box, normal, none);
+                break;
+            case green:
+                final_box = Box(init_green_box, normal, none);
+                break;
+        }
+    }        
+    //Condiciones para empezar a avanzar por pasillo de meta
+    else if(piece_box.num <= final_boxes.at(player) && piece_box.num + dice_number > final_boxes.at(player) && piece_box.type == normal){
+        int count = piece_box.num + dice_number - final_boxes.at(player);
+        if (count <= 7){
+            final_box = Box(count, final_queue, player);
+        }else if (count == 8){
+            final_box = Box(0, goal, player);
+        }else{
+            int diff = 16 - (count);
+            if(diff > 0){
+                final_box = Box(diff, final_queue, player);
+            }else{
+                final_box = Box(final_boxes.at(player) + diff, normal, none);
+            }
+            if(goal_bounce != NULL) *goal_bounce = true;
+        }
+
+    }else if(piece_box.num + dice_number > 68 && piece_box.num + dice_number - 68 > final_boxes.at(player) && piece_box.type == normal){
+        int count = piece_box.num + dice_number - 68 - final_boxes.at(player);
+        if (count <= 7){
+            final_box = Box(count, final_queue, player);
+        }else if (count == 8){
+            final_box = Box(0, goal, player);
+        }else{
+            int diff = 16 - (count);
+            if(diff > 0){
+                final_box = Box(diff, final_queue, player);
+            }else{
+                final_box = Box(final_boxes.at(player) + diff, normal, none);
+            }
+            if(goal_bounce != NULL) *goal_bounce = true;
+        }
+    }
+    //Si ya está en pasillo de meta
+    else if(piece_box.type == final_queue){
+        if (piece_box.num + dice_number <= 7){
+            final_box = Box(piece_box.num + dice_number, final_queue, player);
+        }else if (piece_box.num + dice_number == 8){
+            final_box = Box(0, goal, player);
+        }else{
+            int diff = 16 - (piece_box.num + dice_number);
+            if(diff > 0){
+                final_box = Box(diff, final_queue, player);
+            }else{
+                final_box = Box(final_boxes.at(player) + diff, normal, none);
+            }
+            if(goal_bounce != NULL) *goal_bounce = true;
+        }
+    }
+    //Por defecto
+    else{
+        final_box = Box(1 + (piece_box.num+ dice_number - 1) % 68, box_type::normal, color::none);
+    }
+
+    return final_box;
 }
 
 void Parchis::gameLoop(){
@@ -596,19 +531,6 @@ void Parchis::gameLoop(){
 }
 
 bool Parchis::gameStep(){
-    //int id_piece;
-    //color c_piece;
-    //int dice;
-
-
-
-    //cout << current_player << endl;
-    //cout << players.size() << endl;
-    //cout << players.at(current_player) << endl;
-    //for(int i = 0; i < players.size(); i++){
-    //    players.at(i)->perceive(*this);
-    //}
-
     cout << "----------------" << endl;
     cout << "Turno: " << turn << endl;
     cout << "Jugador actual: " << this->current_player << endl;
@@ -624,40 +546,22 @@ bool Parchis::gameStep(){
         players.at(i)->perceive(*this);
     }
 
+    //Se notifica el movimiento a todos los viewers.
     for (int i = 0; i < viewers.size(); i++)
     {
         viewers.at(i)->perceive(*this);
     }
 
-
     // Se espera a que todos los jugadores estén listos para el siguiente turno.
     waitForPlayers();
 
     return true;
-
-    //cout << "HOLAAAA" << endl;
-    //cout << move << endl;
-
-    /*
-    if(move){
-        // movePiece(c_piece, id_piece, dice);
-        //Actualizar interfaz
-        
-        // cout << "------- Parchis -------" << endl;
-        cout << "Jugador actual: " << this->current_player << endl;
-        cout << "Color actual: " << str(this->current_color) << endl;        
-    }
-
-    for (int i = 0; i < players.size(); i++){
-        players.at(i)->perceive(*this);
-    }
-
-    return move;
-    */
 }
 
 void Parchis::waitForPlayers() const{
-    // Sleep 10 milliseconds while there is a player that is not ready for next turn.
+    // Sleep 10 milliseconds mientras haya un jugador que aún no esté listo para
+    // el siguiente turno.
+    // Comprobamos tanto jugadores como viewers.
     vector<bool> ready_players(players.size(), false);
     vector<bool> ready_viewers(viewers.size(), false);
     bool ready = false;
@@ -681,6 +585,10 @@ void Parchis::waitForPlayers() const{
 
 bool Parchis::gameOver() const{
     return getWinner() != -1;
+}
+
+void Parchis::endGame(){
+    this->disconnected_player = current_player;
 }
 
 int Parchis::getWinner() const{
@@ -723,11 +631,48 @@ bool Parchis::illegalMove() const{
     return this->illegal_move_player != -1;
 }
 
+/**************************** MÉTODOS PARA LA HEURÍSTICA *********************/
+
 int Parchis::piecesAtGoal(color col) const{
     Box goal(0, box_type::goal, col);
     return boxState(goal).size();
 }
 
+int Parchis::distanceToGoal(color player, const Box & box) const{
+    //Calculo número de casillas hasta llegar a la meta
+    switch(box.type){
+        case normal:
+            //En caso de casilla normal, el número de casillas hasta la entrada
+            //al pasillo final, + 8 casillas del pasillo.
+            if (box.num > final_boxes.at(player)){
+                return 68 - box.num + final_boxes.at(player) + 8;
+            }else{
+                return final_boxes.at(player) - box.num + 8;
+            }
+        case goal:
+            //En caso de estar en la meta, 0.
+            return 0;
+        case final_queue:
+            //En caso de estar en el pasillo final, el número de casillas que te
+            //queden hasta el 8.
+            return 8 - box.num;
+        case home:
+            //El máximo, cuando estás en home. 65 de moverte hasta la entrada al pasillo
+            //final, + 8 casillas del pasillo, + 1 por tener que salir de la casa.
+            return 1 + 65 + 8;                    
+        default:
+            return -1;
+    }
+}
+
+int Parchis::distanceToGoal(color player, int id_piece) const{
+    return distanceToGoal(player, this->board.getPiece(player, id_piece));
+}
+
+int Parchis::distanceBoxtoBox(color player, const Box & box1, const Box & box2) const{
+    //TODO
+    return 0;
+}
 
 Parchis Parchis::generateNextMove(color & c_piece,  int & id_piece, int & dice) const{
     c_piece = this->getCurrentColor();
@@ -735,6 +680,7 @@ Parchis Parchis::generateNextMove(color & c_piece,  int & id_piece, int & dice) 
     vector<int> current_dices;
     vector<int> current_pieces;
 
+    //Si dice tiene valor por defecto, cojo el primero.
     if (dice == -1){
         dice = this->getAvailableDices(c_piece).at(0);
     }
@@ -743,6 +689,7 @@ Parchis Parchis::generateNextMove(color & c_piece,  int & id_piece, int & dice) 
         //Compruebo si quedan movimientos legales con dice
         current_pieces = this->getAvailablePieces(c_piece, dice);
         if (current_pieces.size() > 0){
+            //Si id_piece tiene valor por defecto, cojo el primero.
             if(id_piece == -1){
                 id_piece = current_pieces.at(0);
                 change_dice = false;
@@ -750,18 +697,21 @@ Parchis Parchis::generateNextMove(color & c_piece,  int & id_piece, int & dice) 
             else{
                 //Siguiente pieza a id_piece
                 for(int i = 0; i < current_pieces.size(); i++){
+                    //Compruebo si hay más piezas disponibles
                     if(current_pieces.at(i) == id_piece){
+                        //Si no los hay
                         if (i == current_pieces.size() - 1){
-                            //Cambio de dado
-                            //change_dice = true;
+                            //Compruebo si puedo pasar de turno
                             if(this->canSkipTurn(c_piece, dice) && id_piece != SKIP_TURN){
                                 id_piece = SKIP_TURN;
                                 change_dice = false;
                             }
+                            // Si no, cambio de dado
                             else{
                                 change_dice = true;
                             }
                         }
+                        // Si sí las hay, cojo la siguiente
                         else{
                             id_piece = current_pieces.at(i+1);
                             change_dice = false;
@@ -770,21 +720,28 @@ Parchis Parchis::generateNextMove(color & c_piece,  int & id_piece, int & dice) 
                     }
                 }
             }
+        // Si no, compruebo si puedo pasar turno con ese dado.
         }else if(this->canSkipTurn(c_piece, dice) && id_piece != SKIP_TURN){
             id_piece = SKIP_TURN;
             change_dice = false;
         }
+        // Si no, cambio de dado.
         else{
             //Siguiente dado
             change_dice = true;
         }
 
+        //Si tengo que cambiar de dado
         if(change_dice){
+            //Compruebo los disponibles
             current_dices = this->getAvailableDices(c_piece);
+            //Los recorro en orden ASCENDENTE
             for(int j = 0; j < current_dices.size(); j++){
                 if(current_dices.at(j) == dice){
+                    //Si no hay más, me salgo
                     if(j == current_dices.size() -1){
                         return *this;
+                    //Si sí hay, cojo el siguiente
                     }else{
                         dice = current_dices.at(j+1);
                         id_piece = -1;
@@ -796,7 +753,6 @@ Parchis Parchis::generateNextMove(color & c_piece,  int & id_piece, int & dice) 
     }while(change_dice);
 
     Parchis next_move(*this);
-    //cout << str(c_piece) << " " << id_piece << " " << dice << endl;
     next_move.movePiece(c_piece, id_piece, dice);
     return next_move;
 
@@ -808,6 +764,7 @@ Parchis Parchis::generateNextMoveDescending(color & c_piece,  int & id_piece, in
     vector<int> current_dices;
     vector<int> current_pieces;
 
+    //Si dice tiene valor por defecto, cojo el primero.
     if (dice == -1){
         dice = this->getAvailableDices(c_piece).back();
     }
@@ -816,6 +773,7 @@ Parchis Parchis::generateNextMoveDescending(color & c_piece,  int & id_piece, in
         //Compruebo si quedan movimientos legales con dice
         current_pieces = this->getAvailablePieces(c_piece, dice);
         if (current_pieces.size() > 0){
+            //Si id_piece tiene valor por defecto, cojo el primero.
             if(id_piece == -1){
                 id_piece = current_pieces.at(0);
                 change_dice = false;
@@ -823,18 +781,21 @@ Parchis Parchis::generateNextMoveDescending(color & c_piece,  int & id_piece, in
             else{
                 //Siguiente pieza a id_piece
                 for(int i = 0; i < current_pieces.size(); i++){
+                    //Compruebo si hay más piezas disponibles
                     if(current_pieces.at(i) == id_piece){
+                        //Si no las hay
                         if (i == current_pieces.size() - 1){
-                            //Cambio de dado
-                            //change_dice = true;
+                            //Compruebo si puedo pasar de turno
                             if(this->canSkipTurn(c_piece, dice) && id_piece != SKIP_TURN){
                                 id_piece = SKIP_TURN;
                                 change_dice = false;
                             }
+                            // Si no, cambio dado
                             else{
                                 change_dice = true;
                             }
                         }
+                        //Si sí las hay, cojo la siguiente
                         else{
                             id_piece = current_pieces.at(i+1);
                             change_dice = false;
@@ -843,21 +804,29 @@ Parchis Parchis::generateNextMoveDescending(color & c_piece,  int & id_piece, in
                     }
                 }
             }
+
+        // Si no, compruebo si puedo pasar turno con ese dado.
         }else if(this->canSkipTurn(c_piece, dice) && id_piece != SKIP_TURN){
             id_piece = SKIP_TURN;
             change_dice = false;
         }
+        // Si no, cambio de dado
         else{
             //Siguiente dado
             change_dice = true;
         }
 
+        //Si tengo que cambiar de dado
         if(change_dice){
+            //Compruebo dados disponibles
             current_dices = this->getAvailableDices(c_piece);
+            //Los recorro en orden DESCENDENTE
             for(int j = current_dices.size() - 1; j >= 0; j--){
                 if(current_dices.at(j) == dice){
+                    //Si no hay más, me salgo
                     if(j == 0){
                         return *this;
+                    //Si sí hay, cojo el anterior
                     }else{
                         dice = current_dices.at(j-1);
                         id_piece = -1;
@@ -869,7 +838,6 @@ Parchis Parchis::generateNextMoveDescending(color & c_piece,  int & id_piece, in
     }while(change_dice);
 
     Parchis next_move(*this);
-    //cout << str(c_piece) << " " << id_piece << " " << dice << endl;
     next_move.movePiece(c_piece, id_piece, dice);
     return next_move;
 }
@@ -882,38 +850,51 @@ bool Parchis::isSafePiece(const color & player, const int & piece) const{
     return isSafeBox(this->board.getPiece(player, piece));
 }
 
-vector<color> Parchis::getPlayerColors(int player) const{
-    if (player == 0){
-        return {yellow, red};
-    }
-    else{
-        return {blue, green};
+
+const color Parchis::isWall(const Box & b) const{
+    if(b.type == home || b.type == goal) return none;
+
+    const vector<pair <color, int>> occupation = boxState(b);
+    if (occupation.size() == 2 && occupation.at(0).first == occupation.at(1).first){
+        return  occupation.at(0).first;
+    }else{
+        return none;
     }
 }
 
-int Parchis::distanceToGoal(color player, const Box & box) const{
-    switch(box.type){
-        case normal:
-            if (box.num > final_boxes.at(player)){
-                return 68 - box.num + final_boxes.at(player);
-            }else{
-                return final_boxes.at(player) - box.num;
+const vector<color> Parchis::anyWall(const Box & b1, const Box & b2) const{
+    Box final_box;
+    if (b2.type == final_queue || b2.type == goal){
+        //Si el casilla destino es meta o pasillo final, la cambiamos por la última casilla
+        //antes de entrar al pasillo final.
+        switch (b2.col){
+            case blue:
+                final_box = Box(final_blue_box, normal, none);
+            break;
+            case red:
+                final_box = Box(final_red_box, normal, none);
+            break;
+            case green:
+                final_box = Box(final_green_box, normal, none);
+            break;
+            case yellow:
+                final_box = Box(final_yellow_box, normal, none);
+            break;
+        }
+    }else{
+        final_box = b2;
+    }
+    vector<color> walls;
+    bool reached_final_box = false;
+    if (b1.type == normal && final_box.num != b1.num){
+        for (int i = b1.num+1; !reached_final_box; i = i%68 + 1){ //Vamos recorriendo casillas intermedias
+            reached_final_box = (final_box.num == i);
+            //Si hay un muro, lo añadimos al vector de muros.
+            color c = isWall(Box(i, normal, none));
+            if(c != none){
+                walls.push_back(c);
             }
-        case goal:
-            return 0;
-        case final_queue:
-            return 8 - box.num;
-        case home:
-            return 1 + 65 + 8;                    
-        default:
-            return -1;
+        }
     }
-}
-
-int Parchis::distanceToGoal(color player, int id_piece) const{
-    return distanceToGoal(player, this->board.getPiece(player, id_piece));
-}
-
-void Parchis::endGame(){
-    this->disconnected_player = current_player;
+    return walls;
 }
