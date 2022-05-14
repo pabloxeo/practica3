@@ -12,6 +12,10 @@
 using namespace sf;
 using namespace std;
 
+// Para control de versiones y obligar a actualizar a versiones incompatibles con el online.
+# define NINJA_VERSION 1
+# define ONLINE_VERSION 1
+
 enum MessageKind{
     NOP = 0,
     //1xx - Connection messages.
@@ -23,6 +27,8 @@ enum MessageKind{
     QUEUED = 105,
     RESERVE_IP = 106,
     KILL = 107,
+    RANDOM_GAME = 108,
+    PRIVATE_GAME = 109,
 
     //2xx - OK messages.
     OK = 200,
@@ -43,6 +49,7 @@ enum MessageKind{
     ERR_COULDNT_RESERVE = 402,
     ERR_NO_NINJAS = 403,
     ERR_UNAUTHORIZED = 404,
+    ERR_UPDATE = 405,
 
 };
 
@@ -56,7 +63,7 @@ class ParchisRemote{
     public:
         bool isConnected();
 
-        void sendHello();
+        void sendHello(const vector<string> & args);
 
         void sendGameParameters(int player, string name, BoardConfig init_board, int ai_id = 0);
 
@@ -96,7 +103,9 @@ class ParchisRemote{
 
         static void analyzePacket(Packet & packet, const MessageKind & kind);
 
-        static void packet2HelloMaster(Packet & packet, string & ip, int & port);
+        static void packet2Hello(Packet & packet, int & version, vector<string> & args);
+
+        static void packet2HelloMaster(Packet & packet, string & ip, int & port, int & online_version, int & ninja_version);
 
         static void packet2gameParameters(Packet & packet, int & player, string & name, BoardConfig & init_board, int & ai_id);
         
@@ -315,7 +324,7 @@ class MasterServer{
 
         void handleNinjaConnection(shared_ptr<ParchisServer> server, Packet & packet);
 
-        void handleClientConnection(shared_ptr<ParchisServer> server);
+        void handleClientConnection(shared_ptr<ParchisServer> server, Packet & packet);
 
     public:
         MasterServer(const int & port);

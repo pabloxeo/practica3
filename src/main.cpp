@@ -40,7 +40,7 @@ void readAllowedMasters(string file_name, vector<string> &ips, vector<int> &port
     file.close();
 }
 
-void clientMasterHandshake(string & ip_addr, int & port){
+void clientMasterHandshake(string & ip_addr, int & port, const vector<string> & args){
     vector<string> ips;
     vector<int> ports;
     readAllowedMasters(MASTER_ADDRESSES_FILE, ips, ports);
@@ -52,13 +52,17 @@ void clientMasterHandshake(string & ip_addr, int & port){
             client_master->startClientConnection(ips[i], ports[i]);
             Packet packet;
             MessageKind message_kind;
-            client_master->sendHello();
+            client_master->sendHello(args);
             do
             {
                 message_kind = client_master->receive(packet);
                 if (message_kind > 400)
                 {
-                    throw runtime_error("Could not connect to master server: " + to_string(message_kind));
+                    cout << COUT_RED_BOLD << client_master->packet2errorMessage(packet) << COUT_NOCOLOR << endl;
+                    if(message_kind == ERR_UPDATE){
+                        exit(1);
+                    }
+                    else throw runtime_error("Could not connect to master server: " + to_string(message_kind));
                 }
                 else if (message_kind == QUEUED)
                 {
@@ -301,7 +305,7 @@ int main(int argc, char const *argv[]){
         else if(type_j1 == "Ninja"){
             string ip_ninja;
             int port_ninja;
-            clientMasterHandshake(ip_ninja, port_ninja);
+            clientMasterHandshake(ip_ninja, port_ninja, {"ninjagame"});
             shared_ptr<ParchisClient> client = make_shared<ParchisClient>();
             // Se conecta al servidor de ninjas que establezcamos
             //client->startClientConnection("localhost", 8888);
@@ -342,7 +346,7 @@ int main(int argc, char const *argv[]){
         {
             string ip_ninja;
             int port_ninja;
-            clientMasterHandshake(ip_ninja, port_ninja);
+            clientMasterHandshake(ip_ninja, port_ninja, {"ninjagame"});
             shared_ptr<ParchisClient> client = make_shared<ParchisClient>();
             // Se conecta al servidor de ninjas que establezcamos
             client->startClientConnection(ip_ninja, port_ninja);

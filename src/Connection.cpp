@@ -18,9 +18,14 @@ ParchisClient::ParchisClient(): ParchisRemote(){
 ParchisServer::ParchisServer(): ParchisRemote(){
 }
 
-void ParchisRemote::sendHello(){
+void ParchisRemote::sendHello(const vector<string> & args){
     Packet packet;
     packet << HELLO;
+    packet << ONLINE_VERSION;
+    packet << (int) args.size();
+    for(auto & arg : args)
+        packet << arg;
+
     Socket::Status status = socket.send(packet);
     if (status != Socket::Done)
     {
@@ -29,7 +34,12 @@ void ParchisRemote::sendHello(){
     }
     else{
         cout << "HELLO sent." << endl;
+        cout << "version: " << ONLINE_VERSION << endl;
+        cout << "args: ";
+        for(auto & arg : args)
+            cout << arg << " ";
     }
+    cout << endl;
 }
 
 void ParchisRemote::sendGameParameters(int player, string name, BoardConfig init_board, int ai_id){
@@ -64,6 +74,8 @@ void ParchisRemote::sendHelloMaster(string ip, int port){
     packet << HELLO_MASTER;
     packet << ip;
     packet << port;
+    packet << ONLINE_VERSION;
+    packet << NINJA_VERSION;
     Socket::Status status = socket.send(packet);
     if(status != Socket::Done)
     {
@@ -71,7 +83,8 @@ void ParchisRemote::sendHelloMaster(string ip, int port){
     }
     else{
         cout << "HELLO_MASTER sent" << endl;
-        cout << "ip: " << ip << " port: " << port << endl;
+        cout << "ip: " << ip << " port: " << port << " online_version: " << ONLINE_VERSION << " ninja_version: " << NINJA_VERSION << endl;
+
     }
 }
 
@@ -392,6 +405,11 @@ MessageKind ParchisRemote::receive(Packet & packet)
             cout << "404 ERR_UNAUTHORIZED received" << endl;
             break;
         }
+        case ERR_UPDATE:
+        {
+            cout << "405 ERR_UPDATE received" << endl;
+            break;
+        }
         default:
         {
             cout << "Received unknown message: " << type << endl;
@@ -431,10 +449,31 @@ void ParchisRemote::analyzePacket(Packet & packet, const MessageKind & kind)
     }
 }
 
-void ParchisRemote::packet2HelloMaster(Packet & packet, string & ip_addr, int & port){
+void ParchisRemote::packet2Hello(Packet & packet, int & version, vector<string> & args)
+{
+    packet >> version;
+    int size;
+    packet >> size;
+    for(int i = 0; i < size; i++)
+    {
+        string arg;
+        packet >> arg;
+        args.push_back(arg);
+    }
+    cout << "version: " << version << " args: ";
+    for(int i = 0; i < size; i++)
+    {
+        cout << args[i] << " ";
+    }
+    cout << endl;
+}
+
+void ParchisRemote::packet2HelloMaster(Packet & packet, string & ip_addr, int & port, int & online_version, int & ninja_version){
     packet >> ip_addr;
     packet >> port;
-    cout << "ip_addr: " << ip_addr << " port: " << port << endl;
+    packet >> online_version;
+    packet >> ninja_version;
+    cout << "ip_addr: " << ip_addr << " port: " << port << " online_version: " << online_version << " ninja_version: " << ninja_version << endl;
 }
 
 int ParchisRemote::packet2queuePos(Packet & packet)
@@ -855,7 +894,7 @@ void MasterServer::acceptationStep(shared_ptr<ParchisServer> server){
         return;
     }
     else if(message_kind == HELLO){
-        handleClientConnection(server);
+        handleClientConnection(server, packet);
     }
     else if(message_kind == HELLO_MASTER){
         handleNinjaConnection(server, packet);
@@ -866,7 +905,18 @@ void MasterServer::handleNinjaConnection(shared_ptr<ParchisServer> server, Packe
     // Consultar si la ip recibida y el puerto están en la lista de ninjas permitidos.
     string ip_addr;
     int port;
-    server->packet2HelloMaster(packet, ip_addr, port);
+    int online_version;
+    int ninja_version;
+    server->packet2HelloMaster(packet, ip_addr, port, online_version, ninja_version);
+    if(ninja_version != NINJA_VERSION){
+        server->sendErrorMessage(ERR_UPDATE, "Hay una versión más reciente del servidor ninja. Es necesario actualizar el repositorio.");
+        return;
+    }
+    if (online_version != ONLINE_VERSION)
+    {
+        server->sendErrorMessage(ERR_UPDATE, "Hay una actualización disponible del juego y del modo online. Es necesario actualizar el repositorio.");
+        return;
+    }
     if(ip_addr != server->getRemoteAddress().toString() && ip_addr != "127.0.0.1"){
         server->sendErrorMessage(ERR_UNAUTHORIZED, "La IP de contacto no se corresponde con la real.");
     }
@@ -885,9 +935,19 @@ void MasterServer::handleNinjaConnection(shared_ptr<ParchisServer> server, Packe
     }
 }
 
-void MasterServer::handleClientConnection(shared_ptr<ParchisServer> server){
+void MasterServer::handleClientConnection(shared_ptr<ParchisServer> server, Packet & packet){
     // vector<NinjaOccupation> ninja_occupations;
     //  Consultar con todos los servidores ninja la ocupación, y asignarle el menos ocupado.
+    int version;
+    vector<string> args;
+    server->packet2Hello(packet, version, args);
+
+    if(version != ONLINE_VERSION){
+        server->sendErrorMessage(ERR_UPDATE, "Hay una versión más reciente del juego. Es necesario actualizar el repositorio para jugar online, y también recomendable para el juego local. Recuerda: git pull upstream main (tras haber seguido los pasos del tutorial).");
+        return;
+    }
+
+
     int lowest_occupation = 999999;
     auto lowest_occupation_it = ninja_connections.end();
     for (auto it = ninja_connections.begin(); it != ninja_connections.end(); ++it)
@@ -926,6 +986,7 @@ void MasterServer::handleClientConnection(shared_ptr<ParchisServer> server){
     {
         if (lowest_occupation < MAX_ALLOWED_NINJA_GAMES)
         {
+
             // Asignarle el servidor ninja.
             instant_send_receive_mutex1.lock();
             (*lowest_occupation_it).connection->sendReserveIp((*lowest_occupation_it).ip_addr, (*lowest_occupation_it).port);
