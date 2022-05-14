@@ -503,7 +503,7 @@ void Parchis::gameLoop(){
 bool Parchis::gameStep(){
     cout << "----------------" << endl;
     cout << "Turno: " << turn << endl;
-    cout << "Jugador actual: " << this->current_player << endl;
+    cout << "Jugador actual: " << this->current_player << " (" << this->players.at(current_player)->getName() << ")" << endl;
     cout << "Color actual: " << str(this->current_color) << endl;
     cout << "----------------" << endl;
 
