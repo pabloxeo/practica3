@@ -647,8 +647,100 @@ int Parchis::distanceToGoal(color player, int id_piece) const{
 }
 
 int Parchis::distanceBoxtoBox(color player, const Box & box1, const Box & box2) const{
-    //TODO
-    return 0;
+    Box ref_box1 = box1;
+    Box ref_box2 = box2;
+
+    // Reducimos el problema a distancia entre casillas normales.
+    switch(box2.type){
+        case normal:
+            ref_box2 = box2;
+            break;
+        case goal:
+        case final_queue:
+            ref_box2 = Box(final_boxes.at(box2.col), normal, none);
+            break;
+        case home:
+            ref_box2 = Box(init_boxes.at(box2.col), normal, none);
+            break;
+    }
+    switch(box1.type){
+        case normal:
+            ref_box1 = box1;
+            break;
+        case goal:
+        case final_queue:
+            ref_box1 = Box(final_boxes.at(box1.col), normal, none);
+            break;
+        case home:
+            ref_box1 = Box(init_boxes.at(box1.col), normal, none);
+            break;
+    }
+    
+    // Casos inalcanzables (espacios de color único).
+    if(box2.type != normal && player != box2.col){
+        return -1;
+    }
+
+    // Para el resto de casos calculamos la distancia "normal" y luego añadimos los extras.
+    int distance = 0;
+    
+    // Si mi pasillo está por medio es inalcanzable.
+    if(ref_box1.num < final_boxes.at(player) && final_boxes.at(player) < ref_box2.num){
+        return -1;
+    }
+    // Si mi pasillo está por delante, y la casilla destino después del 68, inalcanzable.
+    if(ref_box1.num > ref_box2.num && ref_box1.num < final_boxes.at(player)){
+        return -1;
+    }
+    // Si mi pasillo está antes de la casilla destino, y parto de algo mayor, inalcanzable.
+    if(ref_box1.num > ref_box2.num && final_boxes.at(player) < ref_box2.num){
+        return -1;
+    }
+    // En caso contrario, es alcanzable.
+    // Si el destino está por encima, devuelvo la diferencia.
+    if(ref_box2.num > ref_box1.num){
+        distance = ref_box2.num - ref_box2.num;
+    }
+    // Si el destino está por debajo, devuelvo la distancia al 68 más lo que me queda hasta el destino.
+    else{
+        distance = 68 - box1.num + box2.num;
+    }
+
+    // Añadimos los "extras".
+    switch(box1.type){
+        case home:
+            distance += 1;
+            break;
+        case final_queue:
+            distance -= box1.num;
+            break;
+        case goal:
+            distance -= 8;
+            break;
+    }
+    switch(box2.type){
+        case home:
+            distance -= 1;
+            break;
+        case final_queue:
+            distance += box2.num;
+            break;
+        case goal:
+            distance += 8;
+            break;
+    }
+
+    // Si ha salido negativo es por cosas como que ambas casillas son del pasillo final y la primera está adelantada
+    // --> Inalcanzable (salvo rebote).
+    if(distance < 0){
+        return -1;
+    }
+
+    return distance;
+}
+
+int Parchis::distanceBoxtoBox(color player1, int id_p1, color player2, int p2) const{
+    return distanceBoxtoBox(player1, this->board.getPiece(player1, id_p1), this->board.getPiece(player2, p2));
 }
 
 Parchis Parchis::generateNextMove(color & c_piece,  int & id_piece, int & dice) const{

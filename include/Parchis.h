@@ -503,21 +503,26 @@ class Parchis{
         /**
          * @brief  Función que devuelve el número de casillas que hay que pasar para llegar desde
          * box1 hasta box2 para un determinado color especificado por el parámetro player.
-         * 
-         * Devuelve -1 si la casilla box2 no es alcanzable desde box1 para una ficha del 
+         *
+         * Devuelve -1 si la casilla box2 no es alcanzable desde box1 para una ficha del
          * color player.
-         * 
+         *
+         * No se tienen en cuenta rebotes.
+         * Para ver la distancia entre dos casillas teniendo en cuenta rebotes o no (para el color player), podría hacer:
+         * distanceBoxtobox(player, box1, box2) (si no me devuelve -1 podré llegar a la casilla sin rebotar).
+         * distanceToGoal(player, box1) + distanceToGoal(player, box2) (distancia entre las dos casillas con rebote).
+         *
          * @param player
-         * @param box1 
-         * @param box2 
-         * @return int 
+         * @param box1
+         * @param box2
+         * @return int
          */
         int distanceBoxtoBox(color player, const Box & box1, const Box & box2) const;
 
         /**
          * @brief Función que devuelve el número de casillas que tiene que avanzar la ficha del 
          * color player1 identificada con id_p1 para alcanzar la ficha del color player2 
-         * identificada con id_p2.
+         * identificada con id_p2. No se tienen en cuenta rebotes.
          * 
          * Devuelve -1 si la segunda pieza es inalcanzable por la primera.
          * 
