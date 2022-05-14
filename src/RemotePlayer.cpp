@@ -33,6 +33,7 @@ bool RemotePlayer::move(){
 
                 if(turn <= actual->getTurn()){
                     cout << "Old move received. Already up to date." << endl;
+                    //controller->sendOKMoved();
                     break;
                 }
                 else if(turn > actual->getTurn() + 1){
@@ -43,6 +44,7 @@ bool RemotePlayer::move(){
                     cout << "Current move received. Moving..." << endl;
                     actual->movePiece(c_piece, id_piece, dice);
                     moved = true;
+                    //controller->sendOKMoved();
                     return true;
                 }
                 
@@ -60,4 +62,27 @@ bool RemotePlayer::move(){
         }
     }
     return true;
+}
+
+bool RemotePlayer::readyForNextTurn(){
+    return true;
+    /*
+    Packet packet;
+    MessageKind msgkind = controller->receive(packet);
+    switch(msgkind){
+        case TEST_ALIVE:
+            cout << "102 TEST_ALIVE received. Still alive." << endl;
+            return false;
+        case ERROR_DISCONNECTED:
+            cout << "400 ERROR_DISCONNECTED received. Disconnected." << endl;
+            actual->endGame();
+            return false;
+        case OK_MOVED:
+            cout << "201 OK_MOVED received. Ready for next turn." << endl;
+            return true;
+        default:
+            cout << "Error: Unexpected " << msgkind << " received." << endl;
+            return false;
+    }
+    */
 }

@@ -144,6 +144,21 @@ void ParchisRemote::sendOKMoved(){
     }
 }
 
+void ParchisRemote::sendOKStartGame(string name){
+    Packet packet;
+    packet << OK_START_GAME;
+    packet << name;
+    Socket::Status status = socket.send(packet);
+    if(status != Socket::Done)
+    {
+        cout << COUT_RED_BOLD << "Error sending OK_START_GAME." << COUT_NOCOLOR << endl;
+    }
+    else{
+        cout << "OK_START_GAME sent" << endl;
+        cout << "name: " << name << endl;
+    }
+}
+
 void ParchisRemote::sendNinjaStatus(int ninja_games, int random_games, int private_games){
     Packet packet;
     packet << NINJA_STATUS;
@@ -335,6 +350,11 @@ MessageKind ParchisRemote::receive(Packet & packet)
         case OK_RESERVED:
         {
             cout << "205 OK_RESERVED received" << endl;
+            break;
+        }
+        case OK_START_GAME:
+        {
+            cout << "206 OK_START_GAME received" << endl;
             break;
         }
         case TEST_MESSAGE:
@@ -580,6 +600,9 @@ void NinjaServer::stopServer(){
     //console_reader_thread.wait();
     //cout << "Cerrando conexión con master..." << endl;
     //master_thread.wait();
+    ParchisClient client;
+    client.startClientConnection("localhost", this->listener_port);
+    client.sendTestAlive();
 }
 
 void NinjaServer::acceptationLoop(){
@@ -606,6 +629,18 @@ void NinjaServer::acceptationStep(shared_ptr<ParchisServer> server){
     shared_ptr<Thread> thread = idle_threads.back();
     idle_threads.pop_back();
 
+    server_connection con;
+    con.ip_addr = server->getRemoteAddress().toString();
+    con.port = server->getRemotePort();
+    if(reserved_ips.find(con) == reserved_ips.end()){
+        cout << COUT_RED_BOLD << "Connection from " << server->getRemoteAddress() << ":" << server->getRemotePort() << " is not allowed." << COUT_NOCOLOR << endl;
+        server->sendErrorMessage(ERR_UNAUTHORIZED, "Esta máquina no ha sido autorizada para jugar.");
+        return;
+    }
+    else{
+        reserved_ips.erase(con);
+    }
+
     // Receive the game_mode
     Packet packet;
     MessageKind message_kind;
@@ -626,12 +661,17 @@ void NinjaServer::acceptationStep(shared_ptr<ParchisServer> server){
     new_game.thread = thread;
     ninja_games.push_back(new_game);
 
+
+
     if (player == 0)
     {
         // J1 remoto.
-        shared_ptr<RemotePlayer> p1 = make_shared<RemotePlayer>("J1", server);
+        shared_ptr<RemotePlayer> p1 = make_shared<RemotePlayer>(name, server);
         // J2 Ninja.
         shared_ptr<Ninja> p2 = make_shared<Ninja>("J2", ai_id);
+        server->sendOKStartGame(p2->getName());
+
+
         // Inciar juego.
         Parchis parchis(init_board, p1, p2);
 
@@ -640,9 +680,11 @@ void NinjaServer::acceptationStep(shared_ptr<ParchisServer> server){
     else
     {
         // J2 remoto.
-        shared_ptr<RemotePlayer> p2 = make_shared<RemotePlayer>("J2", server);
+        shared_ptr<RemotePlayer> p2 = make_shared<RemotePlayer>(name, server);
         // J1 ninja.
         shared_ptr<Ninja> p1 = make_shared<Ninja>("J1", ai_id);
+
+        server->sendOKStartGame(p1->getName());
 
         // Inciar juego
         Parchis parchis(init_board, p1, p2);
@@ -828,12 +870,7 @@ void MasterServer::handleNinjaConnection(shared_ptr<ParchisServer> server, Packe
     if(ip_addr != server->getRemoteAddress().toString() && ip_addr != "127.0.0.1"){
         server->sendErrorMessage(ERR_UNAUTHORIZED, "La IP de contacto no se corresponde con la real.");
     }
-    else{
-        server_connection con;
-        con.ip_addr = ip_addr;
-        con.port = port;
-    }
-    if(allowed_ninja_ips.find(ip_addr) != allowed_ninja_ips.end()){
+    else if(allowed_ninja_ips.find(ip_addr) != allowed_ninja_ips.end()){
         server->sendAcceptNinjaMessage();
         cout << COUT_GREEN_BOLD << "New ninja added from " << server->getRemoteAddress() << ":" << server->getRemotePort() << COUT_NOCOLOR << endl;
         NinjaConnection ninja_connection;

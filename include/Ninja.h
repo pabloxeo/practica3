@@ -6,13 +6,20 @@
 
 
 class Ninja: public AIPlayer{
+    private:
+        /**
+         * @brief Establece el nombre del ninja.
+         */
+        void setNinjaName();
+
     public:
         /**
          * @brief Constructor de un objeto Ninja con id por defecto
          * 
          * @param name 
          */
-        inline Ninja(const string & name):AIPlayer(name){};
+        inline Ninja(const string & name):AIPlayer(name){setNinjaName();};
+
 
         /**
          * @brief Constructor de un objeto Ninja especificando id
@@ -20,7 +27,7 @@ class Ninja: public AIPlayer{
          * @param name 
          * @param id 
          */
-        inline Ninja(const string & name, int id):AIPlayer(name, id){};
+        inline Ninja(const string & name, int id):AIPlayer(name, id){setNinjaName();};
         
         /**
          * @brief Función que se encarga de decidir el mejor movimiento posible a 

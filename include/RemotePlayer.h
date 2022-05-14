@@ -23,6 +23,7 @@ class RemotePlayer : public Player {
 
         inline virtual bool isRemote() const{return true;}
 
+        virtual bool readyForNextTurn();
 };
 
 #endif

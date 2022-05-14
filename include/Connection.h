@@ -22,6 +22,7 @@ enum MessageKind{
     HOW_R_U = 104,
     QUEUED = 105,
     RESERVE_IP = 106,
+    KILL = 107,
 
     //2xx - OK messages.
     OK = 200,
@@ -30,6 +31,7 @@ enum MessageKind{
     NINJA_ACCEPTED = 203,
     ACCEPTED = 204,
     OK_RESERVED = 205,
+    OK_START_GAME = 206,
 
     //3xx - Game messages.
     TEST_MESSAGE = 300,
@@ -71,6 +73,8 @@ class ParchisRemote{
         void sendOK();
 
         void sendOKMoved();
+
+        void sendOKStartGame(string player_name);
 
         void sendNinjaStatus(int ninja_games, int random_games, int private_games);
 
@@ -256,7 +260,7 @@ class NinjaServer{
  */
 class MasterServer{
     private:
-        static const int MAX_ALLOWED_NINJA_GAMES = 1;
+        static const int MAX_ALLOWED_NINJA_GAMES = 10;
         bool is_running;
 
         int listener_port;

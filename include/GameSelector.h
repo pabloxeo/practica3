@@ -394,11 +394,17 @@ private:
     TextBox ip_box;
     TextBox port_box;
 
+    TextBox p1_name;
+    TextBox p2_name;
+
     Text ai1_id_text;
     Text ai2_id_text;
     Text ip_text;
     Text port_text;
 
+    Text p1_name_text;
+    Text p2_name_text;
+    
     vector<StandardGSButton*> gs_buttons;
     vector<StandardGSButton*> exclusive_selection_buttons;
 

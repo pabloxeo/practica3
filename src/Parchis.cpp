@@ -467,6 +467,12 @@ void Parchis::gameLoop(){
         players.at(i)->perceive(*this);
     }
 
+    cout << "++++++++++++++++++++++++++++++++++++++" << endl;
+    cout << "¡COMIENZA LA PARTIDA!" << endl;
+    cout << "Jugador 1: " << players.at(0)->getName() << endl;
+    cout << "Jugador 2: " << players.at(1)->getName() << endl;
+    cout << "++++++++++++++++++++++++++++++++++++++" << endl;
+
     // Bucle principal del juego.
     while (!gameOver()){
         // :)

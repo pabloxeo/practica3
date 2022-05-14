@@ -256,7 +256,8 @@ int main(int argc, char const *argv[]){
 
         if (player == 0){
             //J1 remoto.
-            p1 = make_shared<RemotePlayer>(name, server); //Gracias mario ;)
+            p1 = make_shared<RemotePlayer>(name, server); //Gracias Mario ;)
+            server->sendOKStartGame(p1->getName());
             if(type_j1 == "GUI"){
                 p2 = make_shared<GUIPlayer>(name_j1, id_j1);
             }
@@ -266,6 +267,7 @@ int main(int argc, char const *argv[]){
         }
         else{
             p2 = make_shared<RemotePlayer>(name, server);
+            server->sendOKStartGame(p2->getName());
             if(type_j1 == "GUI"){
                 p1 = make_shared<GUIPlayer>(name_j1, id_j1);
             }
@@ -273,6 +275,8 @@ int main(int argc, char const *argv[]){
                 p1 = make_shared<AIPlayer>(name_j1, id_j1);
             }
         }
+
+        
     }
     else{
         if(type_j1 == "GUI"){
@@ -284,10 +288,14 @@ int main(int argc, char const *argv[]){
         else if(type_j1 == "Remote"){
             shared_ptr<ParchisClient> client= make_shared<ParchisClient>();
             client->startClientConnection(ip, port);
+            client->sendGameParameters(1, name_j2, config);
             Packet packet;
-            MessageKind message_kind;
-            client->sendGameParameters(1, name_j1, config);
-            p1 = make_shared<RemotePlayer>(name_j1, client);
+            MessageKind msg = client->receive(packet);
+            if(msg != OK_START_GAME){
+                throw runtime_error("Error al iniciar juego. Esto no debería haber pasado.");
+            }
+            string remote_name = client->packet2message(packet);
+            p1 = make_shared<RemotePlayer>(remote_name, client);
             //p1 = make_shared<RemotePlayer>(id_j1, name_j1, ip, port);
         }
         else if(type_j1 == "Ninja"){
@@ -298,10 +306,15 @@ int main(int argc, char const *argv[]){
             // Se conecta al servidor de ninjas que establezcamos
             //client->startClientConnection("localhost", 8888);
             client->startClientConnection(ip_ninja, port_ninja);
+            client->sendGameParameters(1, name_j2, config, id_j1);
             Packet packet;
-            MessageKind message_kind;
-            client->sendGameParameters(1, name_j1, config, id_j1);
-            p1 = make_shared<RemotePlayer>(name_j1, client);
+            MessageKind msg = client->receive(packet);
+            if (msg != OK_START_GAME)
+            {
+                throw runtime_error("Error al iniciar juego. Esto no debería haber pasado.");
+            }
+            string remote_name = client->packet2message(packet);
+            p1 = make_shared<RemotePlayer>(remote_name, client);
         }
 
 
@@ -314,10 +327,15 @@ int main(int argc, char const *argv[]){
         else if(type_j2 == "Remote"){
             shared_ptr<ParchisClient> client= make_shared<ParchisClient>();
             client->startClientConnection(ip, port);
+            client->sendGameParameters(0, name_j1, GROUPED);
             Packet packet;
-            MessageKind message_kind;
-            client->sendGameParameters(0, name_j2, GROUPED);
-            p2 = make_shared<RemotePlayer>(name_j2, client);
+            MessageKind msg = client->receive(packet);
+            if (msg != OK_START_GAME)
+            {
+                throw runtime_error("Error al iniciar juego. Esto no debería haber pasado.");
+            }
+            string remote_name = client->packet2message(packet);
+            p2 = make_shared<RemotePlayer>(remote_name, client);
             //p2 = make_shared<RemotePlayer>(id_j2, name_j2, ip, port);
         }
         else if (type_j2 == "Ninja")
@@ -328,10 +346,15 @@ int main(int argc, char const *argv[]){
             shared_ptr<ParchisClient> client = make_shared<ParchisClient>();
             // Se conecta al servidor de ninjas que establezcamos
             client->startClientConnection(ip_ninja, port_ninja);
+            client->sendGameParameters(0, name_j1, config, id_j2);
             Packet packet;
-            MessageKind message_kind;
-            client->sendGameParameters(0, name_j2, config, id_j2);
-            p2 = make_shared<RemotePlayer>(name_j2, client);
+            MessageKind msg = client->receive(packet);
+            if (msg != OK_START_GAME)
+            {
+                throw runtime_error("Error al iniciar juego. Esto no debería haber pasado.");
+            }
+            string remote_name = client->packet2message(packet);
+            p2 = make_shared<RemotePlayer>(remote_name, client);
         }
     }
 

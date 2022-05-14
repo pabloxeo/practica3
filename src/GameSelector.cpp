@@ -881,6 +881,22 @@ GameSelector::GameSelector() : RenderWindow(VideoMode(1220, 750, VideoMode::getD
     this->port_box.setOnlyNumeric(true);
     this->port_box.setMaxSize(8);
 
+    this->p1_name = TextBox(window_fonts);
+    this->p1_name.setPosition(Vector2f(1000, 575));
+    this->p1_name.setSize(Vector2f(170, 30));
+    this->p1_name.setAllowTyping(true);
+    this->p1_name.setOnlyNumeric(false);
+    this->p1_name.setMaxSize(10);
+    this->p1_name.setText("J1");
+
+    this->p2_name = TextBox(window_fonts);
+    this->p2_name.setPosition(Vector2f(1000, 650));
+    this->p2_name.setSize(Vector2f(170, 30));
+    this->p2_name.setAllowTyping(true);
+    this->p2_name.setOnlyNumeric(false);
+    this->p2_name.setMaxSize(10);
+    this->p2_name.setText("J2");
+
     this->ai1_id_text.setFont(window_fonts);
     this->ai1_id_text.setString("ID de la IA (J1)");
     this->ai1_id_text.setPosition(Vector2f(530, 310));
@@ -909,9 +925,24 @@ GameSelector::GameSelector() : RenderWindow(VideoMode(1220, 750, VideoMode::getD
     this->port_text.setFillColor(Color::Black);
     this->port_text.setStyle(Text::Bold);
 
+    this->p1_name_text.setFont(window_fonts);
+    this->p1_name_text.setString("Nombre J1");
+    this->p1_name_text.setPosition(Vector2f(1000, 545));
+    this->p1_name_text.setCharacterSize(20);
+    this->p1_name_text.setFillColor(Color::Black);
+    this->p1_name_text.setStyle(Text::Bold);
+
+    this->p2_name_text.setFont(window_fonts);
+    this->p2_name_text.setString("Nombre J2");
+    this->p2_name_text.setPosition(Vector2f(1000, 620));
+    this->p2_name_text.setCharacterSize(20);
+    this->p2_name_text.setFillColor(Color::Black);
+    this->p2_name_text.setStyle(Text::Bold);
+
+
     other_buttons = {&ai1_id_incbt, &ai1_id_decbt, &ai2_id_incbt, &ai2_id_decbt};
-    text_boxes = {&ai1_id, &ai2_id, &ip_box, &port_box};
-    labels = {&ai1_id_text, &ai2_id_text, &ip_text, &port_text};
+    text_boxes = {&ai1_id, &ai2_id, &ip_box, &port_box, &p1_name, &p2_name};
+    labels = {&ai1_id_text, &ai2_id_text, &ip_text, &port_text, &p1_name_text, &p2_name_text};
 
     view = View(FloatRect(0, 0, this->getSize().x, this->getSize().y));
     view.setViewport(FloatRect(0.f, 0.f, 1.f, 1.f));
@@ -1212,8 +1243,8 @@ void GameSelector::StartGameButton::onClickAction(Window & container){
         }
 
         gs->game_parameters.config = GROUPED;
-        gs->game_parameters.name_j1 = "J1";
-        gs->game_parameters.name_j2 = "J2";
+        gs->game_parameters.name_j1 = gs->p1_name.getText();
+        gs->game_parameters.name_j2 = gs->p2_name.getText();
         gs->game_parameters.ninja_server = false;
         container.close();
     }
