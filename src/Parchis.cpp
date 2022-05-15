@@ -251,10 +251,6 @@ void Parchis::movePiece(color player, int piece, int dice_number){
                 this->last_moves.push_back(tuple<color, int, Box, Box>(player, piece, piece_box, Box(0, goal, player)));
                 this->last_moves.push_back(tuple<color, int, Box, Box>(player, piece, Box(0, goal, player), final_box));
                 bounces[player]++;
-                // Print the bounces map
-                for(auto it = bounces.begin(); it != bounces.end(); ++it){
-                    cout << str(it->first) << ": " << it->second << endl;
-                }
                 if(bounces[player] > 30){
                     overbounce_player = current_player;
                 }
