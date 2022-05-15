@@ -5,9 +5,21 @@ Repositorio para el juego del parchís sin dados elaborado para las prácticas d
 
 # Dependencias
 
-## Ubuntu
+## Ubuntu / Debian
 
 `sudo apt install libsfml-dev`
+
+## Otros sistemas linux
+
+`sudo pacman -S sfml`
+
+`sudo dnf -y install SFML`
+
+`sudo yum -y install SFML`
+
+Si ninguna de estas opciones te funciona, también es posible compilarla desde el código fuente.
+
+
   
 ## Windows
 
