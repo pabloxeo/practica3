@@ -17,7 +17,7 @@ Repositorio para el juego del parchís sin dados elaborado para las prácticas d
 
 `sudo yum -y install SFML`
 
-Si ninguna de estas opciones te funciona, también es posible compilarla desde el código fuente.
+Si ninguna de estas opciones te funciona, también hay otras [opciones de instalación](https://www.sfml-dev.org/tutorials/2.5/start-linux.php)
 
 
   
