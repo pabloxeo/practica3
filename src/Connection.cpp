@@ -989,7 +989,7 @@ void MasterServer::handleClientConnection(shared_ptr<ParchisServer> server, Pack
 
             // Asignarle el servidor ninja.
             instant_send_receive_mutex1.lock();
-            (*lowest_occupation_it).connection->sendReserveIp((*lowest_occupation_it).ip_addr, (*lowest_occupation_it).port);
+            (*lowest_occupation_it).connection->sendReserveIp(server->getRemoteAddress().toString(), server->getRemotePort());
             // Wait for the OK
             Packet packet;
             MessageKind message_kind;
