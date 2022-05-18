@@ -232,6 +232,10 @@ int main(int argc, char const *argv[]){
         }
     }
 
+    // Make type_j1 and type_j2 uppercase.
+    transform(type_j1.begin(), type_j1.end(), type_j1.begin(), ::toupper);
+    transform(type_j2.begin(), type_j2.end(), type_j2.begin(), ::toupper);
+
 
     if(argc == 1){
         // Si no se pasan argumentos se crea la ventana para la selección de modo de juego, que se encargará de asignar los parámetros del juego a las variables.
@@ -255,7 +259,7 @@ int main(int argc, char const *argv[]){
         ninja_server = params.ninja_server;
     }
 
-    bool is_remote = (type_j1 == "Remote" || type_j1 == "Server" || type_j1 == "Ninja") or (type_j2 == "Remote" || type_j2 == "Server" || type_j2 == "Ninja");
+    bool is_remote = (type_j1 == "REMOTE" || type_j1 == "SERVER" || type_j1 == "NINJA") or (type_j2 == "REMOTE" || type_j2 == "SERVER" || type_j2 == "NINJA");
 
     // Thanks Mario ;)
     shared_ptr<Player> p1, p2;
@@ -356,7 +360,7 @@ int main(int argc, char const *argv[]){
         else if(type_j1 == "AI"){ // Inicializo jugador 1 AI
             p1 = make_shared<AIPlayer>(name_j1, id_j1);
         }
-        else if(type_j1 == "Remote"){ // Inicializo j1 a cliente remoto
+        else if(type_j1 == "REMOTE"){ // Inicializo j1 a cliente remoto
             shared_ptr<ParchisClient> client= make_shared<ParchisClient>();
             // Comienzo la conexión al puerto e ip especificadas.
             client->startClientConnection(ip, port);
@@ -370,7 +374,7 @@ int main(int argc, char const *argv[]){
             string remote_name = client->packet2message(packet);
             p1 = make_shared<RemotePlayer>(remote_name, client);
         }
-        else if(type_j1 == "Ninja"){ // El j1 es ninja
+        else if(type_j1 == "NINJA"){ // El j1 es ninja
             string ip_ninja;
             int port_ninja;
             // Se establece conexión con el ninja
@@ -397,7 +401,7 @@ int main(int argc, char const *argv[]){
         else if(type_j2 == "AI"){ // Inicializo el jugador 2 AI
             p2 = make_shared<AIPlayer>(name_j2, id_j2);
         }
-        else if(type_j2 == "Remote"){ // Inicializo j2 a cliente remoto
+        else if(type_j2 == "REMOTE"){ // Inicializo j2 a cliente remoto
             shared_ptr<ParchisClient> client= make_shared<ParchisClient>();
             // Comienzo la conexión al puerto e ip especificadas.
             client->startClientConnection(ip, port);
@@ -412,7 +416,7 @@ int main(int argc, char const *argv[]){
             string remote_name = client->packet2message(packet);
             p2 = make_shared<RemotePlayer>(remote_name, client);
         }
-        else if (type_j2 == "Ninja") // El j1 es ninja
+        else if (type_j2 == "NINJA") // El j1 es ninja
         {
             string ip_ninja;
             int port_ninja;
