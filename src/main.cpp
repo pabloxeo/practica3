@@ -15,6 +15,10 @@
 #include <fstream>
 #include <sstream>
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
 #define ALLOWED_NINJAS_FILE "config/allowed_ninjas.txt"
 #define MASTER_ADDRESSES_FILE "config/master_addresses.txt"
 #define MY_PUBLIC_IP_FILE "config/my_public_ip.txt"
@@ -131,6 +135,9 @@ vector<string> readAllowedNinjas(string file_name){
 
 
 int main(int argc, char const *argv[]){
+    // Initialize the random number generator
+    srand(428);
+
     // Definimos los valors por defecto:
     // Tipos de los jugadores
     string type_j1 = "GUI", type_j2 = "GUI";
