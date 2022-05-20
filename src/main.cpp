@@ -239,11 +239,6 @@ int main(int argc, char const *argv[]){
         }
     }
 
-    // Make type_j1 and type_j2 uppercase.
-    transform(type_j1.begin(), type_j1.end(), type_j1.begin(), ::toupper);
-    transform(type_j2.begin(), type_j2.end(), type_j2.begin(), ::toupper);
-
-
     if(argc == 1){
         // Si no se pasan argumentos se crea la ventana para la selección de modo de juego, que se encargará de asignar los parámetros del juego a las variables.
         cout << "No se pasaron argumentos, mostrando ventana de selección de juego..." << endl;
@@ -265,6 +260,10 @@ int main(int argc, char const *argv[]){
         server = params.server;
         ninja_server = params.ninja_server;
     }
+
+    // Make type_j1 and type_j2 uppercase.
+    transform(type_j1.begin(), type_j1.end(), type_j1.begin(), ::toupper);
+    transform(type_j2.begin(), type_j2.end(), type_j2.begin(), ::toupper);
 
     bool is_remote = (type_j1 == "REMOTE" || type_j1 == "SERVER" || type_j1 == "NINJA") or (type_j2 == "REMOTE" || type_j2 == "SERVER" || type_j2 == "NINJA");
 
