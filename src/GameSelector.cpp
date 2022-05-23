@@ -285,6 +285,8 @@ void GameSelector::TwoPlayerButton::onSelectionAction(Window & container){
         gs->game_parameters.type_j1 = "GUI";
         gs->game_parameters.type_j2 = "GUI";
         gs->game_parameters.server = false;
+        gs->game_parameters.random = false;
+        gs->game_parameters.private_room = false;
 
         gs->use_gui_button.setSelected(true, *gs);
         gs->use_gui_button.setEnabled(false, *gs);
@@ -315,6 +317,8 @@ void GameSelector::VSHeuristicButton::onSelectionAction(Window &container)
     if(selected){
         GameSelector *gs = static_cast<GameSelector*>(&container);
         gs->game_parameters.server = false;
+        gs->game_parameters.random = false;
+        gs->game_parameters.private_room = false;
         gs->player_id_button.setEnabled(true, *gs);
 
         gs->use_gui_button.setSelected(true, *gs);
@@ -350,6 +354,8 @@ void GameSelector::Ninja1Button::onSelectionAction(Window &container)
     if(selected){
         GameSelector *gs = static_cast<GameSelector*>(&container);
         gs->game_parameters.server = false;
+        gs->game_parameters.random = false;
+        gs->game_parameters.private_room = false;
         gs->player_id_button.setEnabled(true, *gs);
 
         gs->use_gui_button.setSelected(true, *gs);
@@ -396,6 +402,8 @@ void GameSelector::Ninja2Button::onSelectionAction(Window &container)
     if(selected){
         GameSelector *gs = static_cast<GameSelector*>(&container);
         gs->game_parameters.server = false;
+        gs->game_parameters.random = false;
+        gs->game_parameters.private_room = false;
         gs->player_id_button.setEnabled(true, *gs);
 
         gs->use_gui_button.setSelected(true, *gs);
@@ -443,6 +451,8 @@ void GameSelector::Ninja3Button::onSelectionAction(Window &container)
     {
         GameSelector *gs = static_cast<GameSelector *>(&container);
         gs->game_parameters.server = false;
+        gs->game_parameters.random = false;
+        gs->game_parameters.private_room = false;
         gs->player_id_button.setEnabled(true, *gs);
 
         gs->use_gui_button.setSelected(true, *gs);
@@ -490,6 +500,8 @@ void GameSelector::HeuristicVSHeuristicButton::onSelectionAction(Window &contain
     if(selected){
         GameSelector *gs = static_cast<GameSelector*>(&container);
         gs->game_parameters.server = false;
+        gs->game_parameters.random = false;
+        gs->game_parameters.private_room = false;
 
         gs->player_id_button.setEnabled(false, *gs);
 
@@ -523,6 +535,8 @@ void GameSelector::HeuristicVSNinjaButton::onSelectionAction(Window &container)
     if(selected){
         GameSelector *gs = static_cast<GameSelector*>(&container);
         gs->game_parameters.server = false;
+        gs->game_parameters.random = false;
+        gs->game_parameters.private_room = false;
 
         gs->player_id_button.setEnabled(false, *gs);
         gs->player_id_button.setSelected(true, *gs);
@@ -557,6 +571,8 @@ void GameSelector::NinjaVSHeuristicButton::onSelectionAction(Window &container)
     if(selected){
         GameSelector *gs = static_cast<GameSelector*>(&container);
         gs->game_parameters.server = false;
+        gs->game_parameters.random = false;
+        gs->game_parameters.private_room = false;
 
         gs->player_id_button.setEnabled(false, *gs);
         gs->player_id_button.setSelected(false, *gs);
@@ -591,6 +607,8 @@ void GameSelector::OnlineClientButton::onSelectionAction(Window &container)
     if(selected){
         GameSelector *gs = static_cast<GameSelector*>(&container);
         gs->game_parameters.server = false;
+        gs->game_parameters.random = false;
+        gs->game_parameters.private_room = false;
 
         gs->player_id_button.setEnabled(true, *gs);
 
@@ -640,6 +658,8 @@ void GameSelector::OnlineServerButton::onSelectionAction(Window &container)
         gs->use_gui_button.setEnabled(false, *gs);
 
         gs->game_parameters.server = true;
+        gs->game_parameters.random = false;
+        gs->game_parameters.private_room = false;
 
         gs->ai1_id.setEnabled(true, container);
         gs->ai1_id_incbt.setEnabled(true, container);
@@ -663,6 +683,8 @@ void GameSelector::RandomPairingButton::onSelectionAction(Window &container)
     if(selected){
         GameSelector *gs = static_cast<GameSelector*>(&container);
         gs->game_parameters.server = false;
+        gs->game_parameters.random = true;
+        gs->game_parameters.private_room = false;
         gs->player_id_button.setEnabled(false, *gs);
         gs->use_gui_button.setSelected(true, *gs);
         gs->use_gui_button.setEnabled(false, *gs);
@@ -691,6 +713,8 @@ void GameSelector::PrivateRoomButton::onSelectionAction(Window &container)
     if(selected){
         GameSelector *gs = static_cast<GameSelector*>(&container);
         gs->game_parameters.server = false;
+        gs->game_parameters.random = false;
+        gs->game_parameters.private_room = true;
         gs->player_id_button.setEnabled(false, *gs);
         gs->use_gui_button.setSelected(true, *gs);
         gs->use_gui_button.setEnabled(false, *gs);

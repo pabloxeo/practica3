@@ -29,6 +29,7 @@ enum MessageKind{
     KILL = 107,
     RANDOM_GAME = 108,
     PRIVATE_GAME = 109,
+    WAITING_FOR_PLAYERS = 110,
 
     //2xx - OK messages.
     OK = 200,
@@ -38,6 +39,9 @@ enum MessageKind{
     ACCEPTED = 204,
     OK_RESERVED = 205,
     OK_START_GAME = 206,
+    OK_RANDOM_START = 207,
+    OK_PRIVATE_START = 208,
+    OK_RANDOM_PRIVATE_START = 209,
 
     //3xx - Game messages.
     TEST_MESSAGE = 300,
@@ -50,6 +54,7 @@ enum MessageKind{
     ERR_NO_NINJAS = 403,
     ERR_UNAUTHORIZED = 404,
     ERR_UPDATE = 405,
+    ERR_FULL_ROOM = 406,
 
 };
 
@@ -77,6 +82,12 @@ class ParchisRemote{
 
         void sendReserveIp(string ip, int port);
 
+        void sendRandomGame(string name);
+
+        void sendPrivateGame(string room_name, string name);
+
+        void sendWaitingForPlayers();
+
         void sendOK();
 
         void sendOKMoved();
@@ -90,6 +101,8 @@ class ParchisRemote{
         void sendAcceptedMessage(string ip_addr, int port);
 
         void sendOKReserved();
+
+        void sendOKRandomPrivateStart(int theplayer, string rival_name, BoardConfig config);
 
         void sendTestMessage(string message);
 
@@ -113,7 +126,13 @@ class ParchisRemote{
 
         static void packet2reservedIp(Packet & packet, string & ip, int & port);
 
+        static void packet2randomGame(Packet & packet, string & name);
+
+        static void packet2privateGame(Packet & packet, string & room_name, string & name);
+
         static void packet2ninjaStatus(Packet & packet, int & ninja_games, int & random_games, int & private_games);
+
+        static void packet2OKRandomPrivateStart(Packet & packet, int & my_player, string & rival_name, BoardConfig & config);
 
         static void packet2acceptedIp(Packet & packet, string & ip_addr, int & port);
 
@@ -179,8 +198,12 @@ class NinjaServer{
         // Para partidas "aleatorias".
         struct random_match_game{
             shared_ptr<ParchisServer> connection_p1;
+            string name_p1;
             shared_ptr<ParchisServer> connection_p2;
+            string name_p2;
+            shared_ptr<Thread> aux_thread;
             shared_ptr<Thread> thread;
+            bool waiting_for_players;
         };
         list<random_match_game> random_match_games;
 
@@ -188,8 +211,12 @@ class NinjaServer{
         struct private_room_game{
             string room_id;
             shared_ptr<ParchisServer> connection_p1;
+            string name_p1;
             shared_ptr<ParchisServer> connection_p2;
+            string name_p2;
+            shared_ptr<Thread> aux_thread;
             shared_ptr<Thread> thread;
+            bool waiting_for_players;
 
             inline bool operator<(const private_room_game &b)
             {
@@ -200,7 +227,10 @@ class NinjaServer{
         // Hebras sin asignar.
         vector<shared_ptr<Thread>> idle_threads;
 
-        set<private_room_game> private_room_games;
+        // Hebras para destruir (tienen que destruitse desde una hebra distinta).
+        list<shared_ptr<Thread>> dead_threads;
+
+        map<string, private_room_game> private_room_games;
         
         Thread reviser;
 
@@ -218,7 +248,9 @@ class NinjaServer{
         volatile bool is_running;
 
         Mutex ninja_games_mutex;
-
+        Mutex random_match_games_mutex;
+        Mutex private_room_games_mutex;
+        Mutex thread_mutex;
 
         set<server_connection> reserved_ips;
         Mutex reserved_ips_mutex;
@@ -232,6 +264,8 @@ class NinjaServer{
         void revisePrivateRoomThreadsStep();
         void revisePrivateRoomThreadsLoop();
 
+        void reviseDeadThreadsStep();
+
         void reviserLoop();
 
         void consoleReader();
@@ -242,9 +276,9 @@ class NinjaServer{
         void acceptationStep(shared_ptr<ParchisServer> server);
 
 
-        void newNinjaGame(int player, string name, BoardConfig init_board, int ai_id);
-        void queueRandomMatchGame(string player_name);
-        void queuePrivateRoomGame(string room_id, string player_name);
+        void newNinjaGame(shared_ptr<ParchisServer> server, Packet & packet, shared_ptr<Thread> thread);
+        void queueRandomMatchGame(shared_ptr<ParchisServer> server, Packet &packet, shared_ptr<Thread> thread);
+        void queuePrivateRoomGame(shared_ptr<ParchisServer> server, Packet &packet, shared_ptr<Thread> thread);
 
         void connectToMaster();
         
@@ -304,9 +338,15 @@ class MasterServer{
 
         vector<shared_ptr<Thread>> idle_threads;
 
+        NinjaConnection * last_random_assigned_connection;
+
+        map<string, NinjaConnection*> private_room_connections;
+
         Mutex queue_insert_mutex;
         Mutex instant_send_receive_mutex1;
         Mutex instant_send_receive_mutex2;
+        Mutex random_assign_mutex;
+        Mutex private_room_connections_mutex;
 
         void reviseNinjaConnectionsStep();
         void reviseNinjaConnectionsLoop();
@@ -325,6 +365,12 @@ class MasterServer{
         void handleNinjaConnection(shared_ptr<ParchisServer> server, Packet & packet);
 
         void handleClientConnection(shared_ptr<ParchisServer> server, Packet & packet);
+
+        void reserveNinjaGame(shared_ptr<ParchisServer> server);
+
+        void reserveRandomGame(shared_ptr<ParchisServer> server);
+
+        void reservePrivateGame(shared_ptr<ParchisServer> server, const string & room_name);
 
     public:
         MasterServer(const int & port);

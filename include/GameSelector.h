@@ -21,6 +21,9 @@ struct GameParameters{
     bool server;
     bool ninja_server;
     BoardConfig config;
+
+    bool random;
+    bool private_room;
 };
 
 class TextBox{

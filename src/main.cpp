@@ -147,18 +147,24 @@ int main(int argc, char const *argv[]){
     bool server = false;
     bool ninja_server = false;
     bool master_server = false;
+
+    bool random = false;
+    bool privateroom = false;
+
     // Configuración inicial del juego
     BoardConfig config = BoardConfig::GROUPED;
 
     /* Parse the command line arguments in the following way:
-     * --p1 <type=GUI|AI|Client|Server|Ninja> (id=0) (name=J1)
-     * --p2 <type=GUI|AI|Client|Server|Ninja> (id=0) (name=J2)
+     * --p1 <type=GUI|AI|Remote|Ninja> (id=0) (name=J1)
+     * --p2 <type=GUI|AI|Remote|Ninja> (id=0) (name=J2)
      * --ip <ip>  [Optional]
      * --port <port>  [Optional]
      * --board <config=GROUPED>
      * --no-gui  [Optional]
      * --server  [Optional]
      * --ninja-server [Optional]
+     * --random <type=GUI|AI> (id=0) (name=myName)
+     * --private <room_name> <type=GUI|AI> (id=0) (name=myName)
      *
      * Default parameters:
      * --p1 GUI 0 J1 --p2 GUI 0 J2 
@@ -224,6 +230,29 @@ int main(int argc, char const *argv[]){
         else if(strcmp(argv[i], "--master") == 0){
             master_server = true;
         }
+        // Capturo si se quiere jugar al emparejamiento "aleatorio"
+        else if(strcmp(argv[i], "--random") == 0){
+            random = true;
+            i++;
+            type_j1 = argv[i];
+            i++;
+            id_j1 = atoi(argv[i]);
+            i++;
+            name_j1 = argv[i];
+        }
+        // Capturo si se quiere jugar en una sala privada.
+        else if(strcmp(argv[i], "--private") == 0){
+            privateroom = true;
+            i++;
+            ip = argv[i]; //Ip stores the room name in this mode.
+            i++;
+            type_j2 = argv[i];
+            i++;
+            id_j2 = atoi(argv[i]);
+            i++;
+            name_j2 = argv[i];
+            i++;
+        }
         // Si los argumentos no son correctos....
         else{
             cout << "Error parsing command line arguments" << endl;
@@ -252,6 +281,8 @@ int main(int argc, char const *argv[]){
         gui = params.gui;
         server = params.server;
         ninja_server = params.ninja_server;
+        random = params.random;
+        privateroom = params.private_room;
     }
 
     // Make type_j1 and type_j2 uppercase.
@@ -322,6 +353,8 @@ int main(int argc, char const *argv[]){
         int ai_id; // Ignorado por el server, lo elige él mismo su id.
         server->packet2gameParameters(packet, player, name, init_board, ai_id);
 
+        type_j2 = "REMOTE";
+
         // Si player == 0, el J1 es remoto
         if (player == 0){
             //J1 remoto.
@@ -336,7 +369,7 @@ int main(int argc, char const *argv[]){
                 p2 = make_shared<AIPlayer>(name_j1, id_j1);
             }        
         }
-        // Si player == 0, el J2 es remoto
+        // Si player == 1, el J2 es remoto
         else{
             p2 = make_shared<RemotePlayer>(name, server);
             server->sendOKStartGame(p2->getName());
@@ -349,8 +382,72 @@ int main(int argc, char const *argv[]){
                 p1 = make_shared<AIPlayer>(name_j1, id_j1);
             }
         }
+    }
+    else if(random || privateroom){
+        string ip_ninja;
+        int port_ninja;
 
-        
+        // Se establece conexión con el ninja
+        if(random){
+            clientMasterHandshake(ip_ninja, port_ninja, {"randomgame"});
+        }
+        else{
+            clientMasterHandshake(ip_ninja, port_ninja, {"privateroom", ip});
+        }
+        shared_ptr<ParchisClient> client = make_shared<ParchisClient>();
+        client->startClientConnection(ip_ninja, port_ninja);
+
+        if(random){
+            client->sendRandomGame(name_j1);
+        }
+        else{
+            client->sendPrivateGame(ip, name_j1);
+        }
+        Packet packet;
+        MessageKind msg;
+        int my_player;
+        string rival_name;
+
+        type_j2 = "Remote";
+        do{
+            msg = client->receive(packet);
+            if(msg == WAITING_FOR_PLAYERS){
+                cout << "Esperando jugadores..." << endl;
+            }
+            else if(msg == OK_RANDOM_PRIVATE_START){
+                client->packet2OKRandomPrivateStart(packet, my_player, rival_name, config);
+                cout << "Listos para jugar!" << endl;
+                cout << "Soy el jugador " << my_player << endl;
+            }
+            else if(msg == TEST_ALIVE){
+            }
+            else if(msg == ERR_FULL_ROOM){
+                string msg = client->packet2errorMessage(packet);
+                cout << COUT_RED_BOLD << "Error: " << msg << COUT_NOCOLOR << endl;
+            }
+            else{
+                throw runtime_error("Error al iniciar el juego. Esto no debería haber pasado.");
+            }
+        }while(msg != OK_RANDOM_PRIVATE_START);
+
+        if(my_player == 0){
+            if(type_j1 == "GUI"){
+                p1 = make_shared<GUIPlayer>(name_j1, id_j1);
+            }
+            else if(type_j1 == "AI"){
+                p1 = make_shared<AIPlayer>(name_j1, id_j1);
+            }
+            p2 = make_shared<RemotePlayer>(rival_name, client);
+        }
+        else{
+            if(type_j1 == "GUI"){
+                p2 = make_shared<GUIPlayer>(name_j1, id_j1);
+            }
+            else if(type_j1 == "AI"){
+                p2 = make_shared<AIPlayer>(name_j1, id_j1);
+            }
+            p1 = make_shared<RemotePlayer>(rival_name, client);
+        }
     }
     else{
         if(type_j1 == "GUI"){ // Inicializo jugador 1 GUI
@@ -436,7 +533,7 @@ int main(int argc, char const *argv[]){
         }
     }
 
-    // Una vez creados los jugadores, se crea el objeto parchís con la configuración incial establecidal.
+    // Una vez creados los jugadores, se crea el objeto parchís con la configuración incial establecida.
     Parchis parchis(config, p1, p2);
     
     // Si jugamos con interfaz...
