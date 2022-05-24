@@ -611,6 +611,11 @@ int Parchis::piecesAtGoal(color col) const{
     return boxState(goal).size();
 }
 
+int Parchis::piecesAtHome(color col) const{
+    Box home(0, box_type::home, col);
+    return boxState(home).size();
+}
+
 int Parchis::distanceToGoal(color player, const Box & box) const{
     //Calculo número de casillas hasta llegar a la meta
     switch(box.type){
