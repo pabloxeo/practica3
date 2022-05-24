@@ -475,6 +475,13 @@ class Parchis{
         int piecesAtGoal(color player) const;
 
         /**
+        * @brief Devuelve el número de fichas de un color que estan en casa.
+        *
+        * @return int
+        */
+        int piecesAtHome(color player) const;
+
+        /**
          * @brief Función que devuelve la distancia a la meta del color "player" desde
          * la casilla "box". 
          * 
