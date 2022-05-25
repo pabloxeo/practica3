@@ -233,8 +233,9 @@ void Parchis::movePiece(color player, int piece, int dice_number){
                 //Comprobar que la casilla no es segura
                 vector<int>::const_iterator ci; 
                 if (final_box.type == normal && count(safe_boxes.begin(), safe_boxes.end(), final_box.num) == 0){
-                    //Movemos la ficha
+                    //Ficha comida
                     eating_move = true;
+                    eaten_piece = box_states.at(0);
                     
                 }   
             }
@@ -918,6 +919,14 @@ bool Parchis::isSafeBox(const Box & box) const{
 
 bool Parchis::isSafePiece(const color & player, const int & piece) const{
     return isSafeBox(this->board.getPiece(player, piece));
+}
+
+pair<color, int>  Parchis::eatenPiece() const{
+    if(eating_move){
+        return eaten_piece;
+    }else{
+        return {none, 0};
+    }
 }
 
 
