@@ -1377,6 +1377,7 @@ void MasterServer::reserveRandomGame(shared_ptr<ParchisServer> server){
         else
         {
             server->sendErrorMessage(ERR_COULDNT_RESERVE, "No se ha podido asignar un servidor. Inténtalo de nuevo, por favor. Si el problema persiste avisa a tus profesores.");
+            last_random_assigned_connection = nullptr;
         }
     }
     else{
@@ -1479,6 +1480,7 @@ void MasterServer::reservePrivateGame(shared_ptr<ParchisServer> server, const st
         else
         {
             server->sendErrorMessage(ERR_COULDNT_RESERVE, "No se ha podido asignar un servidor ninja. Inténtalo de nuevo, por favor. Si el problema persiste avisa a tus profesores.");
+            private_room_connections.erase(curr_room);
         }
     }
     else{
