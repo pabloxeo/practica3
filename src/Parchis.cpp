@@ -701,11 +701,11 @@ int Parchis::distanceBoxtoBox(color player, const Box & box1, const Box & box2) 
     // En caso contrario, es alcanzable.
     // Si el destino está por encima, devuelvo la diferencia.
     if(ref_box2.num > ref_box1.num){
-        distance = ref_box2.num - ref_box2.num;
+        distance = ref_box2.num - ref_box1.num;
     }
     // Si el destino está por debajo, devuelvo la distancia al 68 más lo que me queda hasta el destino.
     else{
-        distance = 68 - box1.num + box2.num;
+        distance = 68 - ref_box1.num + ref_box2.num;
     }
 
     // Añadimos los "extras".
