@@ -53,6 +53,16 @@ class AIPlayer: public Player{
          */
         virtual void think(color & c_piece,  int & id_piece, int & dice) const;
 
+        void thinkAleatorio(color & c_piece, int & id_piece, int & dice) const;
+
+        void thinkAleatorioMasInteligente(color & C_piece, int & id_piece, int & dice) const;
+
+        void thinkFichaMasAdelantada(color & c_piece, int & id_piece, int & dice) const;
+
+        void thinkMejorOpcion(color & c_piece, int & id_piece, int & dice) const;
+
+        double Poda_AlfaBeta(Parchis actual,int jugador,int PROFUNDIDAD_ALFABETA,color & c_piece,int & id_piece,int & dice,double & alpha,double & beta) const;
+
         /**
          * @brief Método que determina si el player es inteligente (decide el mejor movimiento)
          * o no. True para AIPlayer.
