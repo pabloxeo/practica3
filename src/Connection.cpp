@@ -131,6 +131,48 @@ void ParchisRemote::sendReserveIp(string ip, int port){
     }
 }
 
+void ParchisRemote::sendRandomGame(string name){
+    Packet packet;
+    packet << RANDOM_GAME;
+    packet << name;
+    Socket::Status status = socket.send(packet);
+    if(status != Socket::Done)
+    {
+        cout << COUT_RED_BOLD << "Error sending RANDOM_GAME." << COUT_NOCOLOR << endl;
+    }
+    else{
+        cout << "RANDOM_GAME sent" << endl;
+        cout << "name: " << name << endl;
+    }
+}
+
+void ParchisRemote::sendPrivateGame(string room_name, string name){
+    Packet packet;
+    packet << PRIVATE_GAME;
+    packet << room_name;
+    packet << name;
+    Socket::Status status = socket.send(packet);
+    if(status != Socket::Done)
+    {
+        cout << COUT_RED_BOLD << "Error sending PRIVATE_GAME." << COUT_NOCOLOR << endl;
+    }
+    else{
+        cout << "PRIVATE_GAME sent" << endl;
+        cout << "room_name: " << room_name << " name: " << name << endl;
+    }
+}
+
+void ParchisRemote::sendWaitingForPlayers(){
+    Packet packet;
+    packet << WAITING_FOR_PLAYERS;
+    Socket::Status status = socket.send(packet);
+    if(status != Socket::Done)
+    {
+        cout << COUT_RED_BOLD << "Error sending WAITING_FOR_PLAYERS." << COUT_NOCOLOR << endl;
+    }
+    else cout << "WAITING_FOR_PLAYERS sent" << endl;
+}
+
 void ParchisRemote::sendOK(){
     Packet packet;
     packet << OK;
@@ -228,6 +270,23 @@ void ParchisRemote::sendOKReserved(){
     }
     else{
         cout << "OK_RESERVED sent" << endl;
+    }
+}
+
+void ParchisRemote::sendOKRandomPrivateStart(int theplayer, string rival_name, BoardConfig config){
+    Packet packet;
+    packet << OK_RANDOM_PRIVATE_START;
+    packet << theplayer;
+    packet << rival_name;
+    packet << config;
+    Socket::Status status = socket.send(packet);
+    if(status != Socket::Done)
+    {
+        cout << COUT_RED_BOLD << "Error sending OK_RANDOM_PRIVATE_START." << COUT_NOCOLOR << endl;
+    }
+    else{
+        cout << "OK_RANDOM_PRIVATE_START sent" << endl;
+        cout << "theplayer: " << theplayer << " rival_name: " << rival_name << " config: " << config << endl;
     }
 }
 
@@ -335,6 +394,26 @@ MessageKind ParchisRemote::receive(Packet & packet)
             cout << "106 RESERVE_IP received" << endl;
             break;
         }
+        case KILL:
+        {
+            cout << "107 KILL received" << endl;
+            break;
+        }
+        case RANDOM_GAME:
+        {
+            cout << "108 RANDOM_GAME received" << endl;
+            break;
+        }
+        case PRIVATE_GAME:
+        {
+            cout << "109 PRIVATE_GAME received" << endl;
+            break;
+        }
+        case WAITING_FOR_PLAYERS:
+        {
+            cout << "110 WAITING_FOR_PLAYERS received" << endl;
+            break;
+        }
         case OK:
         {
             cout << "200 OK received" << endl;
@@ -368,6 +447,11 @@ MessageKind ParchisRemote::receive(Packet & packet)
         case OK_START_GAME:
         {
             cout << "206 OK_START_GAME received" << endl;
+            break;
+        }
+        case OK_RANDOM_PRIVATE_START:
+        {
+            cout << "209 OK_RANDOM_PRIVATE_START received" << endl;
             break;
         }
         case TEST_MESSAGE:
@@ -408,6 +492,11 @@ MessageKind ParchisRemote::receive(Packet & packet)
         case ERR_UPDATE:
         {
             cout << "405 ERR_UPDATE received" << endl;
+            break;
+        }
+        case ERR_FULL_ROOM:
+        {
+            cout << "406 ERR_FULL_ROOM received" << endl;
             break;
         }
         default:
@@ -491,11 +580,32 @@ void ParchisRemote::packet2reservedIp(Packet & packet, string & ip_addr, int & p
     cout << "ip_addr: " << ip_addr << " port: " << port << endl;
 }
 
+void ParchisRemote::packet2randomGame(Packet & packet, string & name){
+    packet >> name;
+    cout << "name: " << name << endl;
+}
+
+void ParchisRemote::packet2privateGame(Packet & packet, string & room_name, string & name){
+    packet >> room_name;
+    packet >> name;
+    cout << "room_name: " << room_name << " name: " << name << endl;
+}
+
 void ParchisRemote::packet2ninjaStatus(Packet & packet, int & ninja_games, int & random_games, int & private_games){
     packet >> ninja_games;
     packet >> random_games;
     packet >> private_games;
     cout << "ninja_games: " << ninja_games << " random_games: " << random_games << " private_games: " << private_games << endl;
+}
+
+void ParchisRemote::packet2OKRandomPrivateStart(Packet & packet, int & myplayer, string & rival_name, BoardConfig & config){
+    packet >> myplayer;
+    packet >> rival_name;
+    int int_config;
+    packet >> int_config;
+    config = (BoardConfig)int_config;
+    cout << "myplayer: " << myplayer << " rival_name: " << rival_name << endl;
+    cout << "config: " << config << endl;
 }
 
 void ParchisRemote::packet2acceptedIp(Packet &packet, string &ip_addr, int &port)
@@ -687,8 +797,24 @@ void NinjaServer::acceptationStep(shared_ptr<ParchisServer> server){
     do{
         message_kind = server->receive(packet);
         sleep(milliseconds(10));
-    } while (message_kind != GAME_PARAMETERS);
+    } while (message_kind != GAME_PARAMETERS && message_kind != RANDOM_GAME && message_kind != PRIVATE_GAME);
 
+    if(message_kind == GAME_PARAMETERS){
+        newNinjaGame(server, packet, thread);
+    }
+    else if(message_kind == RANDOM_GAME){
+        queueRandomMatchGame(server, packet, thread);
+    }
+    else if(message_kind == PRIVATE_GAME){
+        queuePrivateRoomGame(server, packet, thread);
+    }
+    else{
+        throw runtime_error("Invalid message kind");
+    }
+}
+
+void NinjaServer::newNinjaGame(shared_ptr<ParchisServer> server, Packet &packet, shared_ptr<Thread> thread)
+{
     int player;
     string name;
     BoardConfig init_board;
@@ -698,9 +824,9 @@ void NinjaServer::acceptationStep(shared_ptr<ParchisServer> server){
     ninja_game new_game;
     new_game.connection = server;
     new_game.thread = thread;
+    ninja_games_mutex.lock();
     ninja_games.push_back(new_game);
-
-
+    ninja_games_mutex.unlock();
 
     if (player == 0)
     {
@@ -709,7 +835,6 @@ void NinjaServer::acceptationStep(shared_ptr<ParchisServer> server){
         // J2 Ninja.
         shared_ptr<Ninja> p2 = make_shared<Ninja>("J2", ai_id);
         server->sendOKStartGame(p2->getName());
-
 
         // Inciar juego.
         Parchis parchis(init_board, p1, p2);
@@ -731,32 +856,228 @@ void NinjaServer::acceptationStep(shared_ptr<ParchisServer> server){
     }
 }
 
-void NinjaServer::reviserLoop(){
+void NinjaServer::queueRandomMatchGame(shared_ptr<ParchisServer> server, Packet &packet, shared_ptr<Thread> thread){
+    string name;
+    BoardConfig init_board = GROUPED;
+    server->packet2randomGame(packet, name);
+
+    random_match_games_mutex.lock();
+
+    if(!random_match_games.empty() && random_match_games.back().waiting_for_players){
+        random_match_games.back().connection_p2 = server;
+        random_match_games.back().name_p2 = name;
+        random_match_games.back().thread = thread;
+        random_match_games.back().waiting_for_players = false;
+
+        // Los dos jugadores remotos.
+        shared_ptr<RemotePlayer> p1 = make_shared<RemotePlayer>(random_match_games.back().name_p1, random_match_games.back().connection_p1);
+        shared_ptr<RemotePlayer> p2 = make_shared<RemotePlayer>(random_match_games.back().name_p2, random_match_games.back().connection_p2);
+
+        random_match_games.back().connection_p1->sendOKRandomPrivateStart(0, p2->getName(), init_board);
+        random_match_games.back().connection_p2->sendOKRandomPrivateStart(1, p1->getName(), init_board);
+
+        random_match_games_mutex.unlock();
+
+        // Inciar juego.
+        Parchis parchis(init_board, p1, p2);
+        parchis.gameLoop();
+    }
+    else{
+        random_match_games.push_back(random_match_game());
+        random_match_games.back().connection_p1 = server;
+        random_match_games.back().name_p1 = name;
+        random_match_games.back().waiting_for_players = true;
+        random_match_games.back().aux_thread = thread; // Para evitar que se intente destruir a sí misma cuando se libere el shared_ptr.
+
+        random_match_games_mutex.unlock();
+
+        server->sendWaitingForPlayers();
+    }
+
+    
+}
+
+void NinjaServer::queuePrivateRoomGame(shared_ptr<ParchisServer> server, Packet &packet, shared_ptr<Thread> thread){
+    string name;
+    string room_name;
+    BoardConfig init_board = GROUPED;
+    server->packet2privateGame(packet, room_name, name);
+
+    private_room_games_mutex.unlock();
+
+    auto curr_room = private_room_games.find(room_name);
+
+    if(curr_room != private_room_games.end()){
+        private_room_game * room = &curr_room->second;
+        if(room->waiting_for_players){
+            room->connection_p2 = server;
+            room->name_p2 = name;
+            room->thread = thread;
+            room->waiting_for_players = false;
+
+            // Los dos jugadores remotos.
+            shared_ptr<RemotePlayer> p1 = make_shared<RemotePlayer>(room->name_p1, room->connection_p1);
+            shared_ptr<RemotePlayer> p2 = make_shared<RemotePlayer>(room->name_p2, room->connection_p2);
+
+            room->connection_p1->sendOKRandomPrivateStart(0, p2->getName(), init_board);
+            room->connection_p2->sendOKRandomPrivateStart(1, p1->getName(), init_board);
+
+            private_room_games_mutex.unlock();
+
+            // Inciar juego.
+            Parchis parchis(init_board, p1, p2);
+            parchis.gameLoop();
+
+        }
+        else{
+            server->sendErrorMessage(ERR_FULL_ROOM, "La sala indicada ya existe y está completa. Por favor, indica otro nombre de sala.");
+            dead_threads.push_back(thread);
+        }
+    }
+    else{
+        private_room_games[room_name] = private_room_game();
+        private_room_games[room_name].connection_p1 = server;
+        private_room_games[room_name].name_p1 = name;
+        private_room_games[room_name].waiting_for_players = true;
+        private_room_games[room_name].aux_thread = thread; // Para evitar que se intente destruir a sí misma cuando se libere el shared_ptr.
+        private_room_games_mutex.unlock();
+
+        server->sendWaitingForPlayers();
+    }
+
+
+    
+}
+
+void NinjaServer::reviserLoop()
+{
     while (is_running)
     {
-        cout << COUT_BLUE_BOLD + "Checking threads..." + COUT_NOCOLOR << endl;
-        auto it_ninja_games = ninja_games.begin();
-        int nremoves = 0;
+        reviseNinjaThreadsStep();
+        reviseRandomMatchThreadsStep();
+        revisePrivateRoomThreadsStep();
+        reviseDeadThreadsStep();
+        sleep(seconds(10));
+    }
+}
 
-        for (; it_ninja_games != ninja_games.end();)
+void NinjaServer::reviseNinjaThreadsStep(){
+    cout << COUT_BLUE_BOLD + "Checking ninja threads..." + COUT_NOCOLOR << endl;
+    auto it_ninja_games = ninja_games.begin();
+    int nremoves = 0;
+
+    for (; it_ninja_games != ninja_games.end();)
+    {
+        (*it_ninja_games).connection->sendTestAlive();
+        if (!(*it_ninja_games).connection->isConnected())
         {
-            (*it_ninja_games).connection->sendTestAlive();
-            if (!(*it_ninja_games).connection->isConnected())
+            (*it_ninja_games).thread->wait();
+            it_ninja_games = ninja_games.erase(it_ninja_games);
+            nremoves++;
+            // delete (*it_threads);
+            // delete (*it_servers);
+        }
+        else
+        {
+            ++it_ninja_games;
+        }
+    }
+    cout << COUT_BLUE_BOLD + "Current connections: " << ninja_games.size() << " (" << nremoves << " removed)" + COUT_NOCOLOR << endl;
+}
+
+void NinjaServer::reviseRandomMatchThreadsStep(){
+    cout << COUT_BLUE_BOLD + "Checking random match threads..." + COUT_NOCOLOR << endl;
+    auto it_random_match_games = random_match_games.begin();
+    int nremoves = 0;
+
+    random_match_games_mutex.lock();
+    for (; it_random_match_games != random_match_games.end();)
+    {
+        (*it_random_match_games).connection_p1->sendTestAlive();
+        if(!(*it_random_match_games).connection_p1->isConnected()){
+            (*it_random_match_games).thread->wait();
+            it_random_match_games = random_match_games.erase(it_random_match_games);
+            nremoves++;
+            // delete (*it_threads);
+            // delete (*it_servers);
+        }
+        else if(!(*it_random_match_games).waiting_for_players){
+            (*it_random_match_games).connection_p2->sendTestAlive();
+            if (!(*it_random_match_games).connection_p2->isConnected())
             {
-                (*it_ninja_games).thread->wait();
-                it_ninja_games = ninja_games.erase(it_ninja_games);
+                (*it_random_match_games).thread->wait();
+                it_random_match_games = random_match_games.erase(it_random_match_games);
                 nremoves++;
                 // delete (*it_threads);
                 // delete (*it_servers);
             }
             else
             {
-                ++it_ninja_games;
+                ++it_random_match_games;
             }
         }
-        cout << COUT_BLUE_BOLD + "Current connections: " << ninja_games.size() << " (" << nremoves << " removed)" + COUT_NOCOLOR << endl;
-        sleep(seconds(10));
+        else{
+            ++it_random_match_games;
+        }
     }
+    random_match_games_mutex.unlock();
+    cout << COUT_BLUE_BOLD + "Current connections: " << random_match_games.size() << " (" << nremoves << " removed)" + COUT_NOCOLOR << endl;
+}
+
+void NinjaServer::revisePrivateRoomThreadsStep(){
+    cout << COUT_BLUE_BOLD + "Checking private room threads..." + COUT_NOCOLOR << endl;
+    auto it_private_room_games = private_room_games.begin();
+    int nremoves = 0;
+
+    private_room_games_mutex.lock();
+    for (; it_private_room_games != private_room_games.end();)
+    {
+        private_room_game * theroom = &it_private_room_games->second;
+        (*theroom).connection_p1->sendTestAlive();
+        if(!(*theroom).connection_p1->isConnected()){
+            (*theroom).thread->wait();
+            it_private_room_games = private_room_games.erase(it_private_room_games);
+            nremoves++;
+            // delete (*it_threads);
+            // delete (*it_servers);
+        }
+        else if(!(*theroom).waiting_for_players){
+            (*theroom).connection_p2->sendTestAlive();
+            if (!(*theroom).connection_p2->isConnected())
+            {
+                (*theroom).thread->wait();
+                it_private_room_games = private_room_games.erase(it_private_room_games);
+                nremoves++;
+                // delete (*it_threads);
+                // delete (*it_servers);
+            }
+            else
+            {
+                ++it_private_room_games;
+            }
+        }
+        else{
+            ++it_private_room_games;
+        }
+    }
+    private_room_games_mutex.unlock();
+    cout << COUT_BLUE_BOLD + "Current connections: " << private_room_games.size() << " (" << nremoves << " removed)" + COUT_NOCOLOR << endl;
+}
+
+void NinjaServer::reviseDeadThreadsStep(){
+    cout << COUT_BLUE_BOLD + "Checking dead threads..." + COUT_NOCOLOR << endl;
+    auto it_dead_threads = dead_threads.begin();
+    int nremoves = 0;
+
+    for (; it_dead_threads != dead_threads.end();)
+    {
+        (*it_dead_threads)->wait();
+        it_dead_threads = dead_threads.erase(it_dead_threads);
+        nremoves++;
+        // delete (*it_threads);
+        // delete (*it_servers);
+    }
+    cout << COUT_BLUE_BOLD + "Current connections: " << dead_threads.size() << " (" << nremoves << " removed)" + COUT_NOCOLOR << endl;
 }
 
 void NinjaServer::connectToMaster(){
@@ -835,6 +1156,7 @@ MasterServer::MasterServer(const int &myport) : reviser_thread(&MasterServer::re
 {
     this->listener_port = myport;
     //this->allowed_ninja_ips.insert(ip_addr);
+    this->last_random_assigned_connection = nullptr;
 }
 
 void MasterServer::addAllowedNinja(string ip){
@@ -947,7 +1269,22 @@ void MasterServer::handleClientConnection(shared_ptr<ParchisServer> server, Pack
         return;
     }
 
+    if(args.size() == 1 && args[0] == "ninjagame"){
+        this->reserveNinjaGame(server);
+    }
+    else if(args.size() == 1 && args[0] == "randomgame"){
+        this->reserveRandomGame(server);
+    }
+    else if(args.size() == 2 && args[0] == "privateroom"){
+        this->reservePrivateGame(server, args[1]);
+    }
+    else{
+        server->sendErrorMessage(ERR_INVALID_MESSAGE, "No entendí el modo de juego que me enviaste.");
+    }
 
+}
+
+void MasterServer::reserveNinjaGame(shared_ptr<ParchisServer> server){
     int lowest_occupation = 999999;
     auto lowest_occupation_it = ninja_connections.end();
     for (auto it = ninja_connections.begin(); it != ninja_connections.end(); ++it)
@@ -1018,6 +1355,209 @@ void MasterServer::handleClientConnection(shared_ptr<ParchisServer> server, Pack
     {
         server->sendErrorMessage(ERR_NO_NINJAS, "No hay servidores ninja disponibles. Avisa a tus profesores.");
     }
+}
+
+
+void MasterServer::reserveRandomGame(shared_ptr<ParchisServer> server){
+    // Si la última conexión random es no nula, reservo allí.
+    random_assign_mutex.lock();
+    if(last_random_assigned_connection != nullptr){
+        instant_send_receive_mutex1.lock();
+        last_random_assigned_connection->connection->sendReserveIp(server->getRemoteAddress().toString(), server->getRemotePort());
+        // Wait for the OK
+        Packet packet;
+        MessageKind message_kind;
+        message_kind = last_random_assigned_connection->connection->receive(packet);
+        instant_send_receive_mutex1.unlock();
+        if (message_kind == OK_RESERVED)
+        {
+            server->sendAcceptedMessage(last_random_assigned_connection->ip_addr, last_random_assigned_connection->port);
+            last_random_assigned_connection = nullptr;
+        }
+        else
+        {
+            server->sendErrorMessage(ERR_COULDNT_RESERVE, "No se ha podido asignar un servidor. Inténtalo de nuevo, por favor. Si el problema persiste avisa a tus profesores.");
+            last_random_assigned_connection = nullptr;
+        }
+    }
+    else{
+        // Busco el servidor menos ocupado.
+        int lowest_occupation = 999999;
+        auto lowest_occupation_it = ninja_connections.end();
+        for (auto it = ninja_connections.begin(); it != ninja_connections.end(); ++it)
+        {
+            instant_send_receive_mutex1.lock();
+            (*it).connection->sendHowAreYou();
+            if ((*it).connection->isConnected())
+            {
+                Packet packet;
+                MessageKind message_kind;
+                message_kind = (*it).connection->receive(packet);
+                if (message_kind == NINJA_STATUS)
+                {
+                    int ninja_games;
+                    int random_games;
+                    int private_games;
+                    (*it).connection->packet2ninjaStatus(packet, ninja_games, random_games, private_games);
+                    if (random_games < lowest_occupation)
+                    {
+                        lowest_occupation = random_games;
+                        lowest_occupation_it = it;
+                    }
+                }
+                else
+                {
+                    cout << COUT_RED_BOLD << "Error: El servidor ninja ha enviado un mensaje inesperado." << COUT_NOCOLOR << endl;
+                }
+            }
+            else
+            {
+                cout << COUT_RED_BOLD << "Conexión perdida con servidor ninja." << COUT_NOCOLOR << endl;
+            }
+            instant_send_receive_mutex1.unlock();
+        }
+        if (lowest_occupation_it != ninja_connections.end())
+        {
+            if (true) // TODO: Encolar también cuando la ocupación sube, pero hay que tener en cuenta el modo de juego.
+            {
+
+                // Asignarle el servidor ninja.
+                instant_send_receive_mutex1.lock();
+                (*lowest_occupation_it).connection->sendReserveIp(server->getRemoteAddress().toString(), server->getRemotePort());
+                // Wait for the OK
+                Packet packet;
+                MessageKind message_kind;
+                message_kind = (*lowest_occupation_it).connection->receive(packet);
+                instant_send_receive_mutex1.unlock();
+                if (message_kind == OK_RESERVED)
+                {
+                    last_random_assigned_connection = &(*lowest_occupation_it);
+                    server->sendAcceptedMessage((*lowest_occupation_it).ip_addr, (*lowest_occupation_it).port);
+                }
+                else
+                {
+                    server->sendErrorMessage(ERR_COULDNT_RESERVE, "No se ha podido asignar un servidor ninja. Inténtalo de nuevo, por favor. Si el problema persiste avisa a tus profesores.");
+                }
+            }
+            else
+            {
+                // Se encola el servidor.
+                queue_insert_mutex.lock();
+                queued_connections.push_back(server);
+                int queue_pos = queued_connections.size();
+                queue_insert_mutex.unlock();
+                server->sendQueued(queue_pos);
+            }
+        }
+        else
+        {
+            server->sendErrorMessage(ERR_NO_NINJAS, "No hay servidores ninja disponibles. Avisa a tus profesores.");
+        }
+
+    }
+    random_assign_mutex.unlock();
+}
+
+
+void MasterServer::reservePrivateGame(shared_ptr<ParchisServer> server, const string & room_name){
+    // Si la sala ya está creada en algún servidor ninja, reservo allí.
+    private_room_connections_mutex.lock();
+    auto curr_room = private_room_connections.find(room_name);
+    if (curr_room != private_room_connections.end())
+    {
+        instant_send_receive_mutex1.lock();
+        (*curr_room).second->connection->sendReserveIp(server->getRemoteAddress().toString(), server->getRemotePort());
+        // Wait for the OK
+        Packet packet;
+        MessageKind message_kind;
+        message_kind = (*curr_room).second->connection->receive(packet);
+        instant_send_receive_mutex1.unlock();
+        if (message_kind == OK_RESERVED)
+        {
+            server->sendAcceptedMessage((*curr_room).second->ip_addr, (*curr_room).second->port);
+            private_room_connections.erase(curr_room);
+        }
+        else
+        {
+            server->sendErrorMessage(ERR_COULDNT_RESERVE, "No se ha podido asignar un servidor ninja. Inténtalo de nuevo, por favor. Si el problema persiste avisa a tus profesores.");
+            private_room_connections.erase(curr_room);
+        }
+    }
+    else{
+        // Busco el servidor menos ocupado.
+        int lowest_occupation = 999999;
+        auto lowest_occupation_it = ninja_connections.end();
+        for (auto it = ninja_connections.begin(); it != ninja_connections.end(); ++it)
+        {
+            instant_send_receive_mutex1.lock();
+            (*it).connection->sendHowAreYou();
+            if ((*it).connection->isConnected())
+            {
+                Packet packet;
+                MessageKind message_kind;
+                message_kind = (*it).connection->receive(packet);
+                if (message_kind == NINJA_STATUS)
+                {
+                    int ninja_games;
+                    int random_games;
+                    int private_games;
+                    (*it).connection->packet2ninjaStatus(packet, ninja_games, random_games, private_games);
+                    if (private_games < lowest_occupation)
+                    {
+                        lowest_occupation = private_games;
+                        lowest_occupation_it = it;
+                    }
+                }
+                else
+                {
+                    cout << COUT_RED_BOLD << "Error: El servidor ninja ha enviado un mensaje inesperado." << COUT_NOCOLOR << endl;
+                }
+            }
+            else
+            {
+                cout << COUT_RED_BOLD << "Conexión perdida con servidor ninja." << COUT_NOCOLOR << endl;
+            }
+            instant_send_receive_mutex1.unlock();
+        }
+        if (lowest_occupation_it != ninja_connections.end())
+        {
+            if (true)  // TODO: Encolar también cuando la ocupación sube, pero hay que tener en cuenta el modo de juego.
+            {
+
+                // Asignarle el servidor ninja.
+                instant_send_receive_mutex1.lock();
+                (*lowest_occupation_it).connection->sendReserveIp(server->getRemoteAddress().toString(), server->getRemotePort());
+                // Wait for the OK
+                Packet packet;
+                MessageKind message_kind;
+                message_kind = (*lowest_occupation_it).connection->receive(packet);
+                instant_send_receive_mutex1.unlock();
+                if (message_kind == OK_RESERVED)
+                {
+                    private_room_connections.insert({room_name, &(*lowest_occupation_it)});
+                    server->sendAcceptedMessage((*lowest_occupation_it).ip_addr, (*lowest_occupation_it).port);
+                }
+                else
+                {
+                    server->sendErrorMessage(ERR_COULDNT_RESERVE, "No se ha podido asignar un servidor ninja. Inténtalo de nuevo, por favor. Si el problema persiste avisa a tus profesores.");
+                }
+            }
+            else
+            {
+                // Se encola el servidor.
+                queue_insert_mutex.lock();
+                queued_connections.push_back(server);
+                int queue_pos = queued_connections.size();
+                queue_insert_mutex.unlock();
+                server->sendQueued(queue_pos);
+            }
+        }
+        else
+        {
+            server->sendErrorMessage(ERR_NO_NINJAS, "No hay servidores ninja disponibles. Avisa a tus profesores.");
+        }
+    }
+    private_room_connections_mutex.unlock();
 }
 
 void MasterServer::reviserLoop(){
